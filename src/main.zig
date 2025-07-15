@@ -54,7 +54,7 @@ fn program2() !void {
     defer c.CloseWindow();
     c.InitAudioDevice();
 
-    const boomSound = c.LoadSound("src/boom.wav");
+    const boomSound = c.LoadSound("assets/boom.wav");
     defer c.UnloadSound(boomSound);
 
     while (!c.WindowShouldClose()) {
@@ -107,7 +107,7 @@ fn program4() !void {
     defer c.CloseWindow();
     c.InitAudioDevice();
 
-    const planeTexture = c.LoadTexture("plane.png");
+    const planeTexture = c.LoadTexture("assets/plane.png");
     defer c.UnloadTexture(planeTexture);
 
     while (!c.WindowShouldClose()) {
