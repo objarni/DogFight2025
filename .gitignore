@@ -1,3 +1,7 @@
-.idea/
+# Zig artifacts
 .zig-cache/
 zig-out/
+
+# IDE specific
+.idea/
+ZigBrains.iml
