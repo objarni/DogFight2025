@@ -77,10 +77,12 @@ fn program3() !void {
         nameNotPressed: []const u8,
     };
 
-    const keys: [3]Key = .{
+    const keys: [5]Key = .{
         Key{ .keyId = c.KEY_SPACE, .namePressed = "SPACE!", .nameNotPressed = "No space" },
         Key{ .keyId = c.KEY_A, .namePressed = "A", .nameNotPressed = "a" },
         Key{ .keyId = c.KEY_S, .namePressed = "S", .nameNotPressed = "s" },
+        Key{ .keyId = c.KEY_J, .namePressed = "J", .nameNotPressed = "j" },
+        Key{ .keyId = c.KEY_K, .namePressed = "K", .nameNotPressed = "k" },
     };
 
     while (!c.WindowShouldClose()) {
