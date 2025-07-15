@@ -29,6 +29,7 @@ pub fn main() !void {
         1 => try program1(),
         2 => try program2(),
         3 => try program3(),
+        4 => try program4(),
         else => {
             std.debug.print("Unknown program number: {d}\n", .{programNumber});
             return error.InvalidArgument;
@@ -37,7 +38,7 @@ pub fn main() !void {
 }
 
 fn program1() !void {
-    c.InitWindow(1280, 800, "DogFight 2025");
+    c.InitWindow(1280, 800, "program1");
     defer c.CloseWindow();
 
     while (!c.WindowShouldClose()) {
@@ -91,9 +92,28 @@ fn program3() !void {
         var y: i32 = 10;
         for (keys) |k| {
             y += 30;
-            const text = if(c.IsKeyDown(k.keyId)) k.namePressed else k.nameNotPressed;
+            const text = if (c.IsKeyDown(k.keyId)) k.namePressed else k.nameNotPressed;
             c.DrawText(text.ptr, 10, y, 20, c.LIGHTGRAY);
         }
+
+        c.EndDrawing();
+    }
+}
+
+fn program4() !void {
+    c.InitWindow(1280, 800, "program4");
+    defer c.CloseWindow();
+    c.InitAudioDevice();
+
+    const boomSound = c.LoadSound("src/boom.wav");
+    defer c.UnloadSound(boomSound);
+
+    while (!c.WindowShouldClose()) {
+        c.BeginDrawing();
+        c.ClearBackground(c.RAYWHITE);
+
+        c.DrawText("Press SPACE to PLAY the WAV sound!", 200, 180, 20, c.LIGHTGRAY);
+        if (c.IsKeyPressed(c.KEY_SPACE)) c.PlaySound(boomSound);
 
         c.EndDrawing();
     }
