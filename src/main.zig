@@ -101,19 +101,43 @@ fn program3() !void {
 }
 
 fn program4() !void {
-    c.InitWindow(1280, 800, "program4");
+    const winWidth = 1280;
+    const winHeight = 800;
+    c.InitWindow(winWidth, winHeight, "program4");
     defer c.CloseWindow();
     c.InitAudioDevice();
 
-    const boomSound = c.LoadSound("src/boom.wav");
-    defer c.UnloadSound(boomSound);
+    const planeTexture = c.LoadTexture("plane.png");
+    defer c.UnloadTexture(planeTexture);
 
     while (!c.WindowShouldClose()) {
         c.BeginDrawing();
-        c.ClearBackground(c.RAYWHITE);
+        c.ClearBackground(c.SKYBLUE);
 
-        c.DrawText("Press SPACE to PLAY the WAV sound!", 200, 180, 20, c.LIGHTGRAY);
-        if (c.IsKeyPressed(c.KEY_SPACE)) c.PlaySound(boomSound);
+        c.DrawFPS(0, 0);
+        const sourceRect = c.Rectangle{
+            .x = 0,
+            .y = 0,
+            .width = -1.0 * @as(f32, @floatFromInt(planeTexture.width)),
+            .height = @floatFromInt(planeTexture.height)
+        };
+        const destRect = c.Rectangle{
+            .x = winWidth/2,
+            .y = winHeight/2,
+            .width = 2.0 * @as(f32, @floatFromInt(planeTexture.width)),
+            .height = 2.0 * @as(f32, @floatFromInt(planeTexture.height))
+        };
+        const rotation = @as(f32, @floatCast(c.GetTime())) * 50.0; // Rotate at 50 degrees per second
+        const origin = c.Vector2{
+            .x = 32,
+            .y = 32
+        };
+        c.DrawTexturePro(planeTexture,
+            sourceRect,
+            destRect,
+            origin,
+            rotation,
+            c.WHITE);
 
         c.EndDrawing();
     }
