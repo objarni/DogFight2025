@@ -30,6 +30,7 @@ pub fn main() !void {
         2 => try program2(),
         3 => try program3(),
         4 => try program4(),
+        5 => try program5(),
         else => {
             std.debug.print("Unknown program number: {d}\n", .{programNumber});
             return error.InvalidArgument;
@@ -105,7 +106,6 @@ fn program4() !void {
     const winHeight = 800;
     c.InitWindow(winWidth, winHeight, "program4");
     defer c.CloseWindow();
-    c.InitAudioDevice();
 
     const planeTexture = c.LoadTexture("assets/plane.png");
     defer c.UnloadTexture(planeTexture);
@@ -140,6 +140,60 @@ fn program4() !void {
             c.WHITE);
 
         c.EndDrawing();
+    }
+}
+
+fn program5() !void {
+    // Trying out Vectors for frame-rate independent movement.
+    //
+    const winWidth = 800;
+    const winHeight = 800;
+    c.InitWindow(winWidth, winHeight, "program5");
+    defer c.CloseWindow();
+    c.InitAudioDevice();
+
+    const planeTexture = c.LoadTexture("assets/plane.png");
+    defer c.UnloadTexture(planeTexture);
+
+    const boomSound = c.LoadSound("assets/boom.wav");
+    defer c.UnloadSound(boomSound);
+
+    var position: @Vector(2, f32) = .{ 300, 400};
+    const velocity: @Vector(2, f32) = .{ 5, 45 };
+
+    while (!c.WindowShouldClose()) {
+        c.BeginDrawing();
+        c.ClearBackground(c.SKYBLUE);
+
+        const sourceRect = c.Rectangle{
+            .x = 0,
+            .y = 0,
+            .width = -1.0 * @as(f32, @floatFromInt(planeTexture.width)),
+            .height = @floatFromInt(planeTexture.height)
+        };
+        const destRect = c.Rectangle{
+            .x = position[0],
+            .y = position[1],
+            .width = 2.0 * @as(f32, @floatFromInt(planeTexture.width)),
+            .height = 2.0 * @as(f32, @floatFromInt(planeTexture.height))
+        };
+        const rotation = @as(f32, @floatCast(c.GetTime())) * 50.0; // Rotate at 50 degrees per second
+        const origin = c.Vector2{
+            .x = 32,
+            .y = 32
+        };
+        c.DrawTexturePro(planeTexture,
+            sourceRect,
+            destRect,
+            origin,
+            rotation,
+            c.WHITE);
+
+        c.EndDrawing();
+
+        // Update position based on direction and frame time
+        const dt = @as(f32, c.GetFrameTime());
+        position += velocity * @as(@Vector(2, f32), @splat(dt));
     }
 }
 
