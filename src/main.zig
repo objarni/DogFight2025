@@ -115,29 +115,11 @@ fn program4() !void {
         c.ClearBackground(c.SKYBLUE);
 
         c.DrawFPS(0, 0);
-        const sourceRect = c.Rectangle{
-            .x = 0,
-            .y = 0,
-            .width = -1.0 * @as(f32, @floatFromInt(planeTexture.width)),
-            .height = @floatFromInt(planeTexture.height)
-        };
-        const destRect = c.Rectangle{
-            .x = winWidth/2,
-            .y = winHeight/2,
-            .width = 2.0 * @as(f32, @floatFromInt(planeTexture.width)),
-            .height = 2.0 * @as(f32, @floatFromInt(planeTexture.height))
-        };
+        const sourceRect = c.Rectangle{ .x = 0, .y = 0, .width = -1.0 * @as(f32, @floatFromInt(planeTexture.width)), .height = @floatFromInt(planeTexture.height) };
+        const destRect = c.Rectangle{ .x = winWidth / 2, .y = winHeight / 2, .width = 2.0 * @as(f32, @floatFromInt(planeTexture.width)), .height = 2.0 * @as(f32, @floatFromInt(planeTexture.height)) };
         const rotation = @as(f32, @floatCast(c.GetTime())) * 50.0; // Rotate at 50 degrees per second
-        const origin = c.Vector2{
-            .x = 32,
-            .y = 32
-        };
-        c.DrawTexturePro(planeTexture,
-            sourceRect,
-            destRect,
-            origin,
-            rotation,
-            c.WHITE);
+        const origin = c.Vector2{ .x = 32, .y = 32 };
+        c.DrawTexturePro(planeTexture, sourceRect, destRect, origin, rotation, c.WHITE);
 
         c.EndDrawing();
     }
@@ -158,42 +140,57 @@ fn program5() !void {
     const boomSound = c.LoadSound("assets/boom.wav");
     defer c.UnloadSound(boomSound);
 
-    var position: @Vector(2, f32) = .{ 300, 400};
-    const velocity: @Vector(2, f32) = .{ 5, 45 };
+    var position: @Vector(2, f32) = .{ 300, 400 };
+    var velocity: @Vector(2, f32) = .{ 50, 450 };
 
     while (!c.WindowShouldClose()) {
         c.BeginDrawing();
         c.ClearBackground(c.SKYBLUE);
 
-        const sourceRect = c.Rectangle{
-            .x = 0,
-            .y = 0,
-            .width = -1.0 * @as(f32, @floatFromInt(planeTexture.width)),
-            .height = @floatFromInt(planeTexture.height)
-        };
-        const destRect = c.Rectangle{
-            .x = position[0],
-            .y = position[1],
-            .width = 2.0 * @as(f32, @floatFromInt(planeTexture.width)),
-            .height = 2.0 * @as(f32, @floatFromInt(planeTexture.height))
-        };
+        const sourceRect = c.Rectangle{ .x = 0, .y = 0, .width = -1.0 * @as(f32, @floatFromInt(planeTexture.width)), .height = @floatFromInt(planeTexture.height) };
+        const destRect = c.Rectangle{ .x = position[0], .y = position[1], .width = 2.0 * @as(f32, @floatFromInt(planeTexture.width)), .height = 2.0 * @as(f32, @floatFromInt(planeTexture.height)) };
         const rotation = @as(f32, @floatCast(c.GetTime())) * 50.0; // Rotate at 50 degrees per second
-        const origin = c.Vector2{
-            .x = 32,
-            .y = 32
-        };
-        c.DrawTexturePro(planeTexture,
-            sourceRect,
-            destRect,
-            origin,
-            rotation,
-            c.WHITE);
+        const origin = c.Vector2{ .x = 32, .y = 32 };
+        c.DrawTexturePro(planeTexture, sourceRect, destRect, origin, rotation, c.WHITE);
 
         c.EndDrawing();
 
         // Update position based on direction and frame time
         const dt = @as(f32, c.GetFrameTime());
         position += velocity * @as(@Vector(2, f32), @splat(dt));
+
+        for (0..2) |i| {
+            if (c.IsKeyDown(c.KEY_RIGHT)) {
+                velocity[i] += 100 * dt; // Increase speed
+            } else if (c.IsKeyDown(c.KEY_LEFT)) {
+                velocity[i] -= 100 * dt; // Decrease speed
+            }
+        }
+        for (0..2) |i| {
+            if(position[i] < 0) {
+                velocity[i] = -velocity[i];
+                position[i] = 10;
+            } else if (position[i] > 800) {
+                velocity[i] = -velocity[i];
+                position[i] = 790;
+            }
+        }
+        // if (position[0] < 0) {
+        //     velocity[0] = -velocity[0];
+        //     position[0] = 10;
+        // }
+        // if (position[0] > 800) {
+        //     velocity[0] = -velocity[0];
+        //     position[0] = 790;
+        // }
+        // if (position[1] < 0) {
+        //     velocity[1] = -velocity[1];
+        //     position[1] = 10;
+        // }
+        // if (position[1] > 800) {
+        //     velocity[1] = -velocity[1];
+        //     position[1] = 790;
+        // }
     }
 }
 
