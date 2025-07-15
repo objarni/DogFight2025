@@ -35,7 +35,7 @@ pub fn main() !void {
 }
 
 fn program1() !void {
-    c.InitWindow(1280, 800, "DogFigt 2025");
+    c.InitWindow(1280, 800, "DogFight 2025");
     defer c.CloseWindow();
     while (!c.WindowShouldClose()) {
         c.BeginDrawing();
