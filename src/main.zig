@@ -27,6 +27,7 @@ pub fn main() !void {
 
     switch (programNumber) {
         1 => try program1(),
+        2 => try program2(),
         else => {
             std.debug.print("Unknown program number: {d}\n", .{programNumber});
             return error.InvalidArgument;
@@ -43,6 +44,25 @@ fn program1() !void {
         c.DrawText("Hello, world!", 10, 10, 20, c.DARKGRAY);
         c.EndDrawing();
     }
+}
+
+fn program2() !void {
+
+    c.InitWindow(1280, 800, "DogFight 2025");
+    c.InitAudioDevice();
+
+    const boomSound = c.LoadSound("src/boom.wav");
+    defer c.UnloadSound(boomSound);
+
+    while (!c.WindowShouldClose())    // Detect window close button or ESC key
+    {
+        if (c.IsKeyPressed(c.KEY_SPACE)) c.PlaySound(boomSound);
+        c.BeginDrawing();
+        c.ClearBackground(c.RAYWHITE);
+        c.DrawText("Press SPACE to PLAY the WAV sound!", 200, 180, 20, c.LIGHTGRAY);
+        c.EndDrawing();
+    }
+
 }
 
 test "training" {
