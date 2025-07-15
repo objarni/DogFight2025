@@ -175,22 +175,6 @@ fn program5() !void {
                 position[i] = 790;
             }
         }
-        // if (position[0] < 0) {
-        //     velocity[0] = -velocity[0];
-        //     position[0] = 10;
-        // }
-        // if (position[0] > 800) {
-        //     velocity[0] = -velocity[0];
-        //     position[0] = 790;
-        // }
-        // if (position[1] < 0) {
-        //     velocity[1] = -velocity[1];
-        //     position[1] = 10;
-        // }
-        // if (position[1] > 800) {
-        //     velocity[1] = -velocity[1];
-        //     position[1] = 790;
-        // }
     }
 }
 
