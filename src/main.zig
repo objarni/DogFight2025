@@ -77,17 +77,20 @@ fn program3() !void {
         nameNotPressed: []const u8,
     };
 
-    const keys: [2]Key = .{
+    const keys: [3]Key = .{
         Key{ .keyId = c.KEY_SPACE, .namePressed = "SPACE!", .nameNotPressed = "No space" },
         Key{ .keyId = c.KEY_A, .namePressed = "A", .nameNotPressed = "a" },
+        Key{ .keyId = c.KEY_S, .namePressed = "S", .nameNotPressed = "s" },
     };
 
     while (!c.WindowShouldClose()) {
         c.BeginDrawing();
         c.ClearBackground(c.RAYWHITE);
+        var y: i32 = 10;
         for (keys) |k| {
+            y += 30;
             const text = if(c.IsKeyDown(k.keyId)) k.namePressed else k.nameNotPressed;
-            c.DrawText(text.ptr, 10, 10, 20, c.LIGHTGRAY);
+            c.DrawText(text.ptr, 10, y, 20, c.LIGHTGRAY);
         }
 
         c.EndDrawing();
