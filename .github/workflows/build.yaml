@@ -48,6 +48,11 @@ jobs:
       - name: Build
         run: zig build
 
+      - name: Archive binary
+        run: |
+          mkdir -p dist
+          cp zig-out/bin/* dist/ || echo "No binaries found!"
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
