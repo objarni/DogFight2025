@@ -46,6 +46,17 @@ pub fn build(b: *std.Build) void {
     // step when running `zig build`).
     b.installArtifact(exe);
 
+    // ✅ Copy assets directory into zig-out/bin
+    const asset_dir = b.path("assets/");
+    const install_step = b.addInstallDirectory(.{
+        .source_dir = asset_dir,
+        .install_dir = .bin,
+        .install_subdir = "assets/",
+    });
+
+    // Make sure assets are copied after building the exe
+    b.getInstallStep().dependOn(&install_step.step);
+
     // This *creates* a Run step in the build graph, to be executed when another
     // step is evaluated that depends on it. The next line below will establish
     // such a dependency.
