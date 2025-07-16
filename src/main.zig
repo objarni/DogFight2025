@@ -276,6 +276,8 @@ fn program7() !void {
     // Rain drop algorithm
     // Every frame, move all 'alive' drops. If they are below the window, push a random distance
     // 'backwards'. This way, there will be a constant number of raindrops on the screen. No allocations.
+    //
+
 
     while (!c.WindowShouldClose()) {
         c.UpdateMusicStream(rainSound);
@@ -283,10 +285,6 @@ fn program7() !void {
         c.ClearBackground(c.DARKBLUE);
 
         c.DrawFPS(0, 0);
-
-        c.DrawTexture(raindropTex, 0, 0, c.WHITE);
-        c.DrawTexture(raindropTex, 0, 10, c.WHITE);
-        c.DrawTexture(raindropTex, 330, 0, c.WHITE);
 
         // Draw houses
         for (houses.items) |h| {
