@@ -67,19 +67,19 @@ jobs:
       - name: Download Linux artifact
         uses: actions/download-artifact@v4
         with:
-          name: mygame-Linux
+          name: DogFight2005-Linux
           path: dist/
 
       - name: Download Windows artifact
         uses: actions/download-artifact@v4
         with:
-          name: mygame-Windows
+          name: DogFight2005-Windows
           path: dist/
 
       - name: Download macOS artifact
         uses: actions/download-artifact@v4
         with:
-          name: mygame-macOS
+          name: DogFight2005-macOS
           path: dist/
 
       - name: List downloaded files
