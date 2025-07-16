@@ -226,7 +226,12 @@ fn program7() !void {
     const winWidth = 1280;
     const winHeight = 800;
     c.InitWindow(winWidth, winHeight, "program7");
+    c.InitAudioDevice();
     defer c.CloseWindow();
+
+    const rainSound = c.LoadMusicStream("assets/rain.mp3");
+    defer c.UnloadMusicStream(rainSound);
+    c.PlayMusicStream(rainSound);
     // Rainy city.
     // One structure for the houses - xstart, xend, height.
     // One structure for the rain - x, y, speed.
@@ -261,6 +266,7 @@ fn program7() !void {
     const raindropTex = c.LoadTexture("assets/raindrop.gif");
 
     while (!c.WindowShouldClose()) {
+        c.UpdateMusicStream(rainSound);
         c.BeginDrawing();
         c.ClearBackground(c.DARKBLUE);
 
