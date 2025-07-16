@@ -232,43 +232,57 @@ fn program7() !void {
     const rainSound = c.LoadMusicStream("assets/rain.mp3");
     defer c.UnloadMusicStream(rainSound);
     c.PlayMusicStream(rainSound);
+    c.SetMusicPitch(rainSound, 0.5);
+    const raindropTex = c.LoadTexture("assets/raindrop.gif");
+    var random = std.crypto.random;
+
     // Rainy city.
     // One structure for the houses - xstart, xend, height.
     // One structure for the rain - x, y, speed.
 
-    // const RainDrop = struct {
-    //     x: f32,
-    //     y: f32,
-    //     speed: f32,
-    // };
+    const RainDrop = struct {
+        x: f32,
+        y: f32,
+    };
 
     const House = struct {
-        xstart: f32,
-        xend: f32,
+        x: f32,
+        width: f32,
         height: f32,
     };
 
-    var random = std.crypto.random;
 
     var houses = std.ArrayList(House).init(std.heap.page_allocator);
-    const numHouses = 80;
-    const maxWidth = 100.0;
+    const numHouses = 20;
+    const maxWidth = 150.0;
+    const minWidth = 50.0;
     const minHeight = 20.0;
     const maxHeight = 400.0;
-    // const raindrops = std.ArrayList(RainDrop).init(std.heap.page_allocator);
     for (0..numHouses) |_| {
-        const xstart = 10 + random.float(f32) * (winWidth - maxWidth);
-        const xend = xstart + random.float(f32) * maxWidth - 10;
+        const x = 10 + random.float(f32) * (winWidth - maxWidth);
+        const width = minWidth + random.float(f32) * (maxWidth - minWidth);
         const height = minHeight + random.float(f32) * maxHeight;
-        try houses.append(House{ .xstart = xstart, .xend = xend, .height = height });
+        try houses.append(House{ .x = x, .width = width, .height = height });
     }
 
-    const raindropTex = c.LoadTexture("assets/raindrop.gif");
+    var raindrops = std.ArrayList(RainDrop).init(std.heap.page_allocator);
+    const numRaindrops = 2000;
+    for(0..numRaindrops) |_| {
+        const x = random.float(f32) * winWidth;
+        const y = random.float(f32) * winHeight;
+        try raindrops.append(RainDrop{ .x = x, .y = y });
+    }
+
+    // Rain drop algorithm
+    // Every frame, move all 'alive' drops. If they are below the window, push a random distance
+    // 'backwards'. This way, there will be a constant number of raindrops on the screen. No allocations.
 
     while (!c.WindowShouldClose()) {
         c.UpdateMusicStream(rainSound);
         c.BeginDrawing();
         c.ClearBackground(c.DARKBLUE);
+
+        c.DrawFPS(0, 0);
 
         c.DrawTexture(raindropTex, 0, 0, c.WHITE);
         c.DrawTexture(raindropTex, 0, 10, c.WHITE);
@@ -277,12 +291,24 @@ fn program7() !void {
         // Draw houses
         for (houses.items) |h| {
             c.DrawRectangle(
-                @intFromFloat(h.xstart),
+                @intFromFloat(h.x),
                 @intFromFloat(winHeight - h.height),
-                @intFromFloat(h.xend - h.xstart),
-                @intFromFloat(h.height - 20),
+                @intFromFloat(h.width),
+                @intFromFloat(h.height),
                 c.BLACK,
             );
+        }
+
+        for (0..numRaindrops) |ix| {
+            var drop = &raindrops.items[ix];
+            c.DrawTexture(raindropTex, @intFromFloat(drop.x), @intFromFloat(drop.y), c.WHITE);
+            drop.x -= c.GetFrameTime() * 250.0;
+            drop.y += 1000.0 * c.GetFrameTime() * random.float(f32); // Move down
+            if (drop.y > winHeight) {
+                // Reset the raindrop to a random position at the top
+                drop.x = random.float(f32) * (winWidth + winHeight/2);
+                drop.y -= winHeight; // Start above the window
+            }
         }
         c.EndDrawing();
     }
