@@ -204,11 +204,6 @@ fn program6() !void {
         c.UpdateMusicStream(propellerPlane);
         c.UpdateMusicStream(secondPlane);
 
-        // if (c.IsKeyPressed(c.KEY_SPACE)) {
-        //     c.PlayMusicStream(propellerPlane);
-        //     c.SetMusicVolume(propellerPlane, 1.0);
-        // }
-
         c.BeginDrawing();
         c.ClearBackground(c.RAYWHITE);
 
