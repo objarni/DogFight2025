@@ -25,7 +25,7 @@ jobs:
     runs-on: ${{matrix.os}}
     needs: [test]
     steps:
-      - name: Linus only - Install required system libraries
+      - name: Linux only - Install required system libraries
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
@@ -44,5 +44,12 @@ jobs:
       - uses: mlugg/setup-zig@v1
         with:
           version: 0.14.0
+
       - name: Build
         run: zig build
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: DogFight2005-${{ runner.os }}
+          path: dist/*
