@@ -31,6 +31,7 @@ pub fn main() !void {
         3 => try program3(),
         4 => try program4(),
         5 => try program5(),
+        6 => try program6(),
         else => {
             std.debug.print("Unknown program number: {d}\n", .{programNumber});
             return error.InvalidArgument;
@@ -175,6 +176,53 @@ fn program5() !void {
                 position[i] = 790;
             }
         }
+    }
+}
+
+fn program6() !void {
+    c.InitWindow(1280, 800, "program6");
+    defer c.CloseWindow();
+    c.InitAudioDevice();
+
+    const propellerPlane = c.LoadMusicStream("assets/PropellerPlane.mp3");
+    defer c.UnloadMusicStream(propellerPlane);
+    const secondPlane = c.LoadMusicStream("assets/PropellerPlane.mp3");
+    defer c.UnloadMusicStream(secondPlane);
+
+    var pitch : f32 = 1.0;
+    var oldPitch : f32 = 1.0;
+    while (!c.WindowShouldClose()) {
+        if(!c.IsMusicStreamPlaying(propellerPlane)) {
+            c.PlayMusicStream(propellerPlane);
+            c.SetMusicPan(propellerPlane, 0.0); // Pan to the left
+        }
+        if(!c.IsMusicStreamPlaying(secondPlane)) {
+            c.PlayMusicStream(secondPlane);
+            c.SetMusicPan(secondPlane, 1.0); // Pan to the right
+        }
+
+        c.UpdateMusicStream(propellerPlane);
+        c.UpdateMusicStream(secondPlane);
+
+        // if (c.IsKeyPressed(c.KEY_SPACE)) {
+        //     c.PlayMusicStream(propellerPlane);
+        //     c.SetMusicVolume(propellerPlane, 1.0);
+        // }
+
+        c.BeginDrawing();
+        c.ClearBackground(c.RAYWHITE);
+
+        if (c.IsKeyDown(c.KEY_S) and pitch < 4.0)
+            pitch += 0.0001;
+        if (c.IsKeyDown(c.KEY_A) and pitch > 0.001)
+            pitch -= 0.0001;
+
+        if(oldPitch != pitch) {
+            oldPitch = pitch;
+            c.SetMusicPitch(propellerPlane, pitch);
+        }
+
+        c.EndDrawing();
     }
 }
 
