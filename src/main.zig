@@ -246,18 +246,27 @@ fn program7() !void {
     var random = std.crypto.random;
 
     var houses = std.ArrayList(House).init(std.heap.page_allocator);
-    const numHouses = 10;
+    const numHouses = 80;
+    const maxWidth = 100.0;
+    const minHeight = 20.0;
+    const maxHeight = 400.0;
     // const raindrops = std.ArrayList(RainDrop).init(std.heap.page_allocator);
     for (0..numHouses) |_| {
-        const xstart = random.float(f32) * (winWidth - 50);
-        const xend = xstart + random.float(f32) * 100;
-        const height = 50 + random.float(f32) * 300;
+        const xstart = 10 + random.float(f32) * (winWidth - maxWidth);
+        const xend = xstart + random.float(f32) * maxWidth - 10;
+        const height = minHeight + random.float(f32) * maxHeight;
         try houses.append(House{ .xstart = xstart, .xend = xend, .height = height });
     }
+
+    const raindropTex = c.LoadTexture("assets/raindrop.gif");
 
     while (!c.WindowShouldClose()) {
         c.BeginDrawing();
         c.ClearBackground(c.DARKBLUE);
+
+        c.DrawTexture(raindropTex, 0, 0, c.WHITE);
+        c.DrawTexture(raindropTex, 0, 10, c.WHITE);
+        c.DrawTexture(raindropTex, 330, 0, c.WHITE);
 
         // Draw houses
         for (houses.items) |h| {
@@ -265,8 +274,8 @@ fn program7() !void {
                 @intFromFloat(h.xstart),
                 @intFromFloat(winHeight - h.height),
                 @intFromFloat(h.xend - h.xstart),
-                @intFromFloat(h.height),
-                c.BLACK
+                @intFromFloat(h.height - 20),
+                c.BLACK,
             );
         }
         c.EndDrawing();
