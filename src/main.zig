@@ -32,6 +32,7 @@ pub fn main() !void {
         4 => try program4(),
         5 => try program5(),
         6 => try program6(),
+        7 => try program7(),
         else => {
             std.debug.print("Unknown program number: {d}\n", .{programNumber});
             return error.InvalidArgument;
@@ -168,7 +169,7 @@ fn program5() !void {
             }
         }
         for (0..2) |i| {
-            if(position[i] < 0) {
+            if (position[i] < 0) {
                 velocity[i] = -velocity[i];
                 position[i] = 10;
             } else if (position[i] > 800) {
@@ -189,14 +190,14 @@ fn program6() !void {
     const secondPlane = c.LoadMusicStream("assets/PropellerPlane.mp3");
     defer c.UnloadMusicStream(secondPlane);
 
-    var pitch : f32 = 1.0;
-    var oldPitch : f32 = 1.0;
+    var pitch: f32 = 1.0;
+    var oldPitch: f32 = 1.0;
     while (!c.WindowShouldClose()) {
-        if(!c.IsMusicStreamPlaying(propellerPlane)) {
+        if (!c.IsMusicStreamPlaying(propellerPlane)) {
             c.PlayMusicStream(propellerPlane);
             c.SetMusicPan(propellerPlane, 0.0); // Pan to the left
         }
-        if(!c.IsMusicStreamPlaying(secondPlane)) {
+        if (!c.IsMusicStreamPlaying(secondPlane)) {
             c.PlayMusicStream(secondPlane);
             c.SetMusicPan(secondPlane, 1.0); // Pan to the right
         }
@@ -212,11 +213,62 @@ fn program6() !void {
         if (c.IsKeyDown(c.KEY_A) and pitch > 0.001)
             pitch -= 0.0001;
 
-        if(oldPitch != pitch) {
+        if (oldPitch != pitch) {
             oldPitch = pitch;
             c.SetMusicPitch(propellerPlane, pitch);
         }
 
+        c.EndDrawing();
+    }
+}
+
+fn program7() !void {
+    const winWidth = 1280;
+    const winHeight = 800;
+    c.InitWindow(winWidth, winHeight, "program7");
+    defer c.CloseWindow();
+    // Rainy city.
+    // One structure for the houses - xstart, xend, height.
+    // One structure for the rain - x, y, speed.
+
+    // const RainDrop = struct {
+    //     x: f32,
+    //     y: f32,
+    //     speed: f32,
+    // };
+
+    const House = struct {
+        xstart: f32,
+        xend: f32,
+        height: f32,
+    };
+
+    var random = std.crypto.random;
+
+    var houses = std.ArrayList(House).init(std.heap.page_allocator);
+    const numHouses = 10;
+    // const raindrops = std.ArrayList(RainDrop).init(std.heap.page_allocator);
+    for (0..numHouses) |_| {
+        const xstart = random.float(f32) * (winWidth - 50);
+        const xend = xstart + random.float(f32) * 100;
+        const height = 50 + random.float(f32) * 300;
+        try houses.append(House{ .xstart = xstart, .xend = xend, .height = height });
+    }
+
+    while (!c.WindowShouldClose()) {
+        c.BeginDrawing();
+        c.ClearBackground(c.DARKBLUE);
+
+        // Draw houses
+        for (houses.items) |h| {
+            c.DrawRectangle(
+                @intFromFloat(h.xstart),
+                @intFromFloat(winHeight - h.height),
+                @intFromFloat(h.xend - h.xstart),
+                @intFromFloat(h.height),
+                c.BLACK
+            );
+        }
         c.EndDrawing();
     }
 }
