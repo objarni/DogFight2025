@@ -242,6 +242,11 @@ fn program7() !void {
 
     var random = std.crypto.random;
 
+    const V2 = @Vector(2, f32);
+    const Debris = struct {
+        pos: V2,
+    };
+
     // Rainy city.
     // One structure for the houses - xstart, xend, height.
     // One structure for the rain - x, y, speed.
@@ -257,7 +262,7 @@ fn program7() !void {
         height: f32,
     };
 
-    var debris = std.ArrayList(RainDrop).init(std.heap.page_allocator);
+    var debris = std.ArrayList(Debris).init(std.heap.page_allocator);
     defer debris.deinit();
 
     var houses = std.ArrayList(House).init(std.heap.page_allocator);
@@ -303,8 +308,11 @@ fn program7() !void {
             }
         }
         if(c.IsKeyPressed(c.KEY_SPACE)) {
-            // Add debris
-            try debris.append(RainDrop{ .x = random.float(f32) * winWidth, .y = random.float(f32) * winHeight });
+            const x = random.float(f32) * winWidth;
+            const y = random.float(f32) * winHeight;
+            const pos:@Vector(2, f32) = .{ x, y };
+            const d: Debris = .{ .pos = pos };
+            try debris.append(d);
         }
 
         c.UpdateMusicStream(rainSound);
@@ -332,7 +340,7 @@ fn program7() !void {
 
         for(0..debris.items.len) |ix| {
             const d = debris.items[ix];
-            c.DrawTexture(debrisTex[ix % 2], @intFromFloat(d.x), @intFromFloat(d.y), c.WHITE);
+            c.DrawTexture(debrisTex[ix % 2], @intFromFloat(d.pos[0]), @intFromFloat(d.pos[1]), c.WHITE);
         }
 
         c.EndDrawing();
