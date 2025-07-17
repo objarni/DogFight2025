@@ -234,6 +234,12 @@ fn program7() !void {
     c.PlayMusicStream(rainSound);
     c.SetMusicPitch(rainSound, 0.5);
     const raindropTex = c.LoadTexture("assets/raindrop.gif");
+
+    const debrisTex: [2]c.Texture2D = .{
+        c.LoadTexture("assets/Debris1.gif"),
+        c.LoadTexture("assets/Debris2.gif"),
+    };
+
     var random = std.crypto.random;
 
     // Rainy city.
@@ -251,8 +257,12 @@ fn program7() !void {
         height: f32,
     };
 
+    var debris = std.ArrayList(RainDrop).init(std.heap.page_allocator);
+    defer debris.deinit();
 
     var houses = std.ArrayList(House).init(std.heap.page_allocator);
+    defer houses.deinit();
+
     const numHouses = 20;
     const maxWidth = 150.0;
     const minWidth = 50.0;
@@ -266,6 +276,7 @@ fn program7() !void {
     }
 
     var raindrops = std.ArrayList(RainDrop).init(std.heap.page_allocator);
+    defer raindrops.deinit();
     const numRaindrops = 2000;
     for(0..numRaindrops) |_| {
         const x = random.float(f32) * winWidth;
@@ -280,8 +291,26 @@ fn program7() !void {
 
 
     while (!c.WindowShouldClose()) {
+        // Update world state
+        for (0..numRaindrops) |ix| {
+            var drop = &raindrops.items[ix];
+            drop.x -= c.GetFrameTime() * 250.0;
+            drop.y += 1000.0 * c.GetFrameTime() * random.float(f32); // Move down
+            if (drop.y > winHeight) {
+                // Reset the raindrop to a random position at the top
+                drop.x = random.float(f32) * (winWidth + winHeight/2);
+                drop.y -= winHeight; // Start above the window
+            }
+        }
+        if(c.IsKeyPressed(c.KEY_SPACE)) {
+            // Add debris
+            try debris.append(RainDrop{ .x = random.float(f32) * winWidth, .y = random.float(f32) * winHeight });
+        }
+
         c.UpdateMusicStream(rainSound);
         c.BeginDrawing();
+
+        // Draw
         c.ClearBackground(c.DARKBLUE);
 
         c.DrawFPS(0, 0);
@@ -297,17 +326,15 @@ fn program7() !void {
             );
         }
 
-        for (0..numRaindrops) |ix| {
-            var drop = &raindrops.items[ix];
+        for(raindrops.items) |drop| {
             c.DrawTexture(raindropTex, @intFromFloat(drop.x), @intFromFloat(drop.y), c.WHITE);
-            drop.x -= c.GetFrameTime() * 250.0;
-            drop.y += 1000.0 * c.GetFrameTime() * random.float(f32); // Move down
-            if (drop.y > winHeight) {
-                // Reset the raindrop to a random position at the top
-                drop.x = random.float(f32) * (winWidth + winHeight/2);
-                drop.y -= winHeight; // Start above the window
-            }
         }
+
+        for(0..debris.items.len) |ix| {
+            const d = debris.items[ix];
+            c.DrawTexture(debrisTex[ix % 2], @intFromFloat(d.x), @intFromFloat(d.y), c.WHITE);
+        }
+
         c.EndDrawing();
     }
 }
