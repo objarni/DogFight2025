@@ -69,7 +69,7 @@ fn updateModel(model: Model, msg: Msg) Model {
 
 
 
-test {
+test "scene transition behaviour" {
     // game starts in menu
     const actual: Model = .init();
     const expected: Model = .{ .menu = MenuModel{} };
