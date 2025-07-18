@@ -46,10 +46,9 @@ const Keys = enum {
 };
 
 fn updateModel(model: Model, msg: Msg) Model {
-    switch(model)
-    {
+    switch (model) {
         .menu => |_| {
-            switch(msg) {
+            switch (msg) {
                 .keyPressed => |key| {
                     // Handle key presses in the menu
                     switch (key) {
@@ -58,16 +57,13 @@ fn updateModel(model: Model, msg: Msg) Model {
                         },
                         else => {},
                     }
-                }
+                },
             }
         },
-        .game => |_| {
-        },
+        .game => |_| {},
     }
     return model; // Return the updated model
 }
-
-
 
 test "scene transition behaviour" {
     // game starts in menu
@@ -86,7 +82,6 @@ test "scene transition behaviour" {
     );
 }
 
-
 pub fn run() !void {
     rl.InitWindow(window_width, window_height, "DogFight 2025");
     defer rl.CloseWindow();
@@ -99,16 +94,47 @@ pub fn run() !void {
     const planeTexture = rl.LoadTexture("assets/plane.png");
     defer rl.UnloadTexture(planeTexture);
 
+    var model = Model.init();
+
     while (!rl.WindowShouldClose()) {
         rl.BeginDrawing();
-        rl.ClearBackground(rl.RAYWHITE);
 
-        rl.DrawText("Press SPACE to PLAY the WAV sound!", 200, 180, 20, rl.LIGHTGRAY);
-        if (rl.IsKeyPressed(rl.KEY_SPACE)) rl.PlaySound(boomSound);
+        // Draw
+        switch (model) {
+            .menu => |_| {
+                drawMenu(model.menu);
+            },
+            .game => |_| {
+                drawGame(model.game, planeTexture, boomSound);
+            },
+        }
 
-        rl.DrawTexture(planeTexture, 50, 50, rl.WHITE);
-        rl.DrawTexture(planeTexture, 150, 50, rl.GREEN);
+        // Update
+        if (rl.IsKeyPressed(rl.KEY_SPACE)) {
+            model = updateModel(model, Msg{ .keyPressed = Keys.GeneralAction });
+        }
 
         rl.EndDrawing();
     }
+}
+
+fn drawMenu(_: MenuModel) void {
+    rl.ClearBackground(rl.RAYWHITE);
+    rl.DrawText("DogFight 2025", 200, 180, 20, rl.LIGHTGRAY);
+    rl.DrawText("Press SPACE to START!", 200, 220, 20, rl.LIGHTGRAY);
+
+    if (rl.IsKeyPressed(rl.KEY_SPACE)) {
+        // Transition to game state
+        // This would typically be handled by updating the model
+    }
+}
+
+fn drawGame(_: GameModel, planeTexture: rl.Texture2D, boomSound: rl.Sound) void {
+    rl.ClearBackground(rl.RAYWHITE);
+
+    rl.DrawText("Press SPACE to PLAY the WAV sound!", 200, 180, 20, rl.LIGHTGRAY);
+    if (rl.IsKeyPressed(rl.KEY_SPACE)) rl.PlaySound(boomSound);
+
+    rl.DrawTexture(planeTexture, 50, 50, rl.WHITE);
+    rl.DrawTexture(planeTexture, 150, 50, rl.GREEN);
 }
