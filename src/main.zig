@@ -15,6 +15,11 @@ pub fn main() !void {
     const argv = try std.process.argsAlloc(ally);
     defer std.process.argsFree(ally, argv);
 
+    if(argv.len == 1) {
+        try DogFight2025();
+        return;
+    }
+
     if (argv.len != 2) {
         std.debug.print("Usage: {s} <program number>\n", .{argv});
         return error.InvalidArgument;
@@ -38,6 +43,12 @@ pub fn main() !void {
             return error.InvalidArgument;
         },
     }
+}
+
+fn DogFight2025() !void {
+    // This is a placeholder for the DogFight2005 program.
+    // You can implement it as needed.
+    std.debug.print("DogFight2005 program is not implemented yet.\n", .{});
 }
 
 fn program1() !void {
