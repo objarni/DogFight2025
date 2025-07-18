@@ -27,6 +27,7 @@ pub fn run() !void {
         if (rl.IsKeyPressed(rl.KEY_SPACE)) rl.PlaySound(boomSound);
 
         rl.DrawTexture(planeTexture, 50, 50, rl.WHITE);
+        rl.DrawTexture(planeTexture, 150, 50, rl.GREEN);
 
         rl.EndDrawing();
     }
