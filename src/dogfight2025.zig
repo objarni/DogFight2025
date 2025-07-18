@@ -31,15 +31,8 @@ const GameModel = struct {
     // ...
 };
 
-test {
-    // game starts in menu
-    const actual: Model = .init();
-    const expected: Model = .{ .menu = MenuModel{} };
-    try std.testing.expectEqual(expected, actual);
-}
-
 const Msg = union(enum) {
-    keyPressed: rl.KeyboardKey,
+    keyPressed: Keys,
     // Define messages that can be sent to the model
     // e.g., StartGame, QuitGame, etc.
 };
@@ -52,9 +45,47 @@ const Keys = enum {
     GeneralAction, // This is starting game, pausing/unpausing, switching from game over to menu etc
 };
 
-fn updateModel(model: Model, _: Msg) Model {
+fn updateModel(model: Model, msg: Msg) Model {
+    switch(model)
+    {
+        .menu => |_| {
+            switch(msg) {
+                .keyPressed => |key| {
+                    // Handle key presses in the menu
+                    switch (key) {
+                        .GeneralAction => {
+                            return Model{ .game = GameModel{} };
+                        },
+                        else => {},
+                    }
+                }
+            }
+        },
+        .game => |_| {
+        },
+    }
     return model; // Return the updated model
 }
+
+
+
+test {
+    // game starts in menu
+    const actual: Model = .init();
+    const expected: Model = .{ .menu = MenuModel{} };
+    try std.testing.expectEqual(expected, actual);
+
+    // hitting action button should switch to game
+    const newState = updateModel(actual, Msg{ .keyPressed = Keys.GeneralAction });
+    try std.testing.expectEqual(
+        GameModel{},
+        switch (newState) {
+            .game => |game| game,
+            else => unreachable,
+        },
+    );
+}
+
 
 pub fn run() !void {
     rl.InitWindow(window_width, window_height, "DogFight 2025");
