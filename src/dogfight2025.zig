@@ -7,6 +7,55 @@ const rl = @cImport({
 const window_width: u32 = 960;
 const window_height: u32 = 540;
 
+// Loosely TEA inspired architecture
+// Model = All state of the game
+// Msg = Messages that can be sent to the model
+// Update = Function that updates the model given a message
+// View = Function that draws the model to the screen, this is most different from TEA
+//        since it will call raylib directly rather than returning a list of commands
+
+const Model = union(enum) {
+    menu: MenuModel,
+    game: GameModel,
+
+    fn init() Model {
+        return Model{ .menu = MenuModel{} };
+    }
+};
+
+const MenuModel = struct {
+    // ...
+};
+
+const GameModel = struct {
+    // ...
+};
+
+test {
+    // game starts in menu
+    const actual: Model = .init();
+    const expected: Model = .{ .menu = MenuModel{} };
+    try std.testing.expectEqual(expected, actual);
+}
+
+const Msg = union(enum) {
+    keyPressed: rl.KeyboardKey,
+    // Define messages that can be sent to the model
+    // e.g., StartGame, QuitGame, etc.
+};
+
+const Keys = enum {
+    Plane1Rise,
+    Plane1Dive,
+    Plane2Rise,
+    Plane2Dive,
+    GeneralAction, // This is starting game, pausing/unpausing, switching from game over to menu etc
+};
+
+fn updateModel(model: Model, _: Msg) Model {
+    return model; // Return the updated model
+}
+
 pub fn run() !void {
     rl.InitWindow(window_width, window_height, "DogFight 2025");
     defer rl.CloseWindow();

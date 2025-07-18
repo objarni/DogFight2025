@@ -363,3 +363,7 @@ fn program7() !void {
 test "training" {
     _ = @import("training.zig");
 }
+
+test "dogfight2025" {
+    _ = @import("dogfight2025.zig");
+}
