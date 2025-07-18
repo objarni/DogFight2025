@@ -146,6 +146,7 @@ fn program5() !void {
     c.InitWindow(winWidth, winHeight, "program5");
     defer c.CloseWindow();
     c.InitAudioDevice();
+    c.ToggleFullscreen();
 
     const planeTexture = c.LoadTexture("assets/plane.png");
     defer c.UnloadTexture(planeTexture);
@@ -238,6 +239,7 @@ fn program7() !void {
     const winHeight = 800;
     c.InitWindow(winWidth, winHeight, "program7");
     c.InitAudioDevice();
+    c.ToggleFullscreen();
     defer c.CloseWindow();
 
     const rainSound = c.LoadMusicStream("assets/rain.mp3");
