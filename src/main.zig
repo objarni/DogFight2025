@@ -45,10 +45,10 @@ pub fn main() !void {
     }
 }
 
+const dogfight2025 = @import("dogfight2025.zig");
+
 fn DogFight2025() !void {
-    // This is a placeholder for the DogFight2005 program.
-    // You can implement it as needed.
-    std.debug.print("DogFight2005 program is not implemented yet.\n", .{});
+    try dogfight2025.run();
 }
 
 fn program1() !void {
