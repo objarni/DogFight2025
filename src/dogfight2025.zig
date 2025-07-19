@@ -44,6 +44,9 @@ pub fn run() !void {
         if (rl.IsKeyPressed(rl.KEY_SPACE)) {
             const result = screen.updateScreen(currentScreen, screen.Msg{ .inputClicked = screen.Inputs.GeneralAction });
             currentScreen = result.screen;
+            if(result.sideEffects.sound != null) {
+                rl.PlaySound(boomSound);
+            }
         }
 
         rl.EndDrawing();
