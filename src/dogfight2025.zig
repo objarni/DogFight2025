@@ -7,73 +7,7 @@ const rl = @cImport({
 const window_width: u32 = 960;
 const window_height: u32 = 540;
 
-const Screen = union(enum) {
-    menu: MenuScreen,
-    game: GameScreen,
-
-    fn init() Screen {
-        return Screen{ .menu = MenuScreen{} };
-    }
-};
-
-const MenuScreen = struct {
-    // ...
-};
-
-const GameScreen = struct {
-    // ...
-};
-
-const Msg = union(enum) {
-    inputClicked: Inputs,
-    // Define messages that can be sent to the model
-    // e.g., StartGame, QuitGame, etc.
-};
-
-const Inputs = enum {
-    Plane1Rise,
-    Plane1Dive,
-    Plane2Rise,
-    Plane2Dive,
-    GeneralAction, // This is starting game, pausing/unpausing, switching from game over to menu etc
-};
-
-fn updateScreen(screen: Screen, msg: Msg) Screen {
-    switch (screen) {
-        .menu => |_| {
-            switch (msg) {
-                .inputClicked => |input| {
-                    switch (input) {
-                        .GeneralAction => {
-                            return Screen{ .game = GameScreen{} };
-                        },
-                        else => {},
-                    }
-                },
-            }
-        },
-        .game => |_| {},
-    }
-    return screen;
-}
-
-test "game starts in menu" {
-    const actual: Screen = .init();
-    const expected: Screen = .{ .menu = MenuScreen{} };
-    try std.testing.expectEqual(expected, actual);
-}
-
-test "hitting action button should switch to game" {
-    const oldScreen: Screen = .init();
-    const newScreen = updateScreen(oldScreen, Msg{ .inputClicked = Inputs.GeneralAction });
-    try std.testing.expectEqual(
-        GameScreen{},
-        switch (newScreen) {
-            .game => |game| game,
-            else => unreachable,
-        },
-    );
-}
+const screen = @import("Screen.zig");
 
 test {
     _ = @import("Screen.zig");
@@ -91,7 +25,7 @@ pub fn run() !void {
     const planeTexture = rl.LoadTexture("assets/plane.png");
     defer rl.UnloadTexture(planeTexture);
 
-    var model = Screen.init();
+    var model = screen.Screen.init();
 
     while (!rl.WindowShouldClose()) {
         rl.BeginDrawing();
@@ -108,14 +42,14 @@ pub fn run() !void {
 
         // Update - handle input
         if (rl.IsKeyPressed(rl.KEY_SPACE)) {
-            model = updateScreen(model, Msg{ .inputClicked = Inputs.GeneralAction });
+            model = screen.updateScreen(model, screen.Msg{ .inputClicked = screen.Inputs.GeneralAction });
         }
 
         rl.EndDrawing();
     }
 }
 
-fn drawMenu(_: MenuScreen) void {
+fn drawMenu(_: screen.MenuScreen) void {
     rl.ClearBackground(rl.RAYWHITE);
     rl.DrawText("DogFight 2025", 200, 180, 20, rl.LIGHTGRAY);
     rl.DrawText("Press SPACE to START!", 200, 220, 20, rl.LIGHTGRAY);
@@ -126,7 +60,7 @@ fn drawMenu(_: MenuScreen) void {
     }
 }
 
-fn drawGame(_: GameScreen, planeTexture: rl.Texture2D, boomSound: rl.Sound) void {
+fn drawGame(_: screen.GameScreen, planeTexture: rl.Texture2D, boomSound: rl.Sound) void {
     rl.ClearBackground(rl.RAYWHITE);
 
     rl.DrawText("Press SPACE to PLAY the WAV sound!", 200, 180, 20, rl.LIGHTGRAY);
