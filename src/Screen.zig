@@ -8,7 +8,7 @@ pub const Screen = union(enum) {
 };
 
 pub const MenuScreen = struct {
-    // ...
+    blink: bool = false,
 };
 
 pub const GameScreen = struct {
@@ -17,8 +17,7 @@ pub const GameScreen = struct {
 
 pub const Msg = union(enum) {
     inputClicked: Inputs,
-    // Define messages that can be sent to the model
-    // e.g., StartGame, QuitGame, etc.
+    timePassed: f32,
 };
 
 pub const Inputs = enum {
@@ -55,6 +54,13 @@ pub fn updateScreen(screen: Screen, msg: Msg) UpdateResult {
                         else => {},
                     }
                 },
+                .timePassed => |time| {
+                    const blink : bool = @mod(@divFloor(time, 0.5), 2) == 0;
+                    return UpdateResult{
+                        .screen = Screen{ .menu = MenuScreen{ .blink = blink } },
+                        .sideEffects = SideEffects{ .sound = null },
+                    };
+                },
             }
         },
         .game => |_| {},
@@ -81,6 +87,14 @@ test "hitting action button should switch to game and plays Boom sound" {
         .sideEffects = SideEffects{ .sound = Sound.boom },
     };
     try std.testing.expectEqual(expected, actual);
+}
+
+test "press space blinks every 0.5 second on menu screen" {
+    const oldScreen: Screen = .init();
+    const actual: UpdateResult = updateScreen(oldScreen, Msg{ .timePassed = 0.25 });
+    try std.testing.expectEqual(actual.screen.menu.blink, true);
+    const actual2: UpdateResult = updateScreen(actual.screen, Msg{ .timePassed = 0.75 });
+    try std.testing.expectEqual(actual2.screen.menu.blink, false);
 }
 
 // TODO
