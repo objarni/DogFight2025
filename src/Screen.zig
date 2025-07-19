@@ -67,3 +67,7 @@ test "hitting action button should switch to game" {
         },
     );
 }
+
+// TODO
+// Make updateScreen return 'side effects' which describe what sounds to play, plane pan/pitch audio, possibly
+// even screen transition 'requests'
