@@ -54,8 +54,13 @@ pub fn updateScreen(screen: Screen, msg: Msg) UpdateResult {
                         else => {},
                     }
                 },
-                .timePassed => |_| {
-                    const blink = true;
+                .timePassed => |time| {
+                    const t: f32 = time;
+                    const numPeriods: f32 = t / 0.5;
+                    const intNumPeriods: u32 = @intFromFloat(numPeriods);
+                    const two: u32 = 2;
+                    const one: u32 = 1;
+                    const blink: bool = intNumPeriods % two == one;
                     return UpdateResult{
                         .screen = Screen{ .menu = MenuScreen{ .blink = blink } },
                         .sideEffects = SideEffects{ .sound = null },
@@ -92,9 +97,9 @@ test "hitting action button should switch to game and plays Boom sound" {
 test "press space blinks every 0.5 second on menu screen" {
     const oldScreen: Screen = .init();
     const actual: UpdateResult = updateScreen(oldScreen, Msg{ .timePassed = 0.25 });
-    try std.testing.expectEqual(actual.screen.menu.blink, true);
+    try std.testing.expectEqual(actual.screen.menu.blink, false);
     const actual2: UpdateResult = updateScreen(actual.screen, Msg{ .timePassed = 0.75 });
-    try std.testing.expectEqual(actual2.screen.menu.blink, false);
+    try std.testing.expectEqual(actual2.screen.menu.blink, true);
 }
 
 // TODO
