@@ -61,7 +61,7 @@ fn centerText(text: []const u8, y: u16, fontSize: u16, color: rl.Color) void {
 
 
 fn drawMenu(_: screen.MenuScreen) void {
-    rl.ClearBackground(rl.RAYWHITE);
+    rl.ClearBackground(rl.BLACK);
     const textSize = 40;
     centerText("Dogfight 2025", 180, textSize, rl.GREEN);
     centerText("Press SPACE to START!", 220, 20, rl.LIGHTGRAY);
