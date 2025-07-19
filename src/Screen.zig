@@ -54,8 +54,8 @@ pub fn updateScreen(screen: Screen, msg: Msg) UpdateResult {
                         else => {},
                     }
                 },
-                .timePassed => |time| {
-                    const blink : bool = @mod(@divFloor(time, 0.5), 2) == 0;
+                .timePassed => |_| {
+                    const blink = true;
                     return UpdateResult{
                         .screen = Screen{ .menu = MenuScreen{ .blink = blink } },
                         .sideEffects = SideEffects{ .sound = null },

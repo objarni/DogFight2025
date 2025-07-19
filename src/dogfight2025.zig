@@ -48,6 +48,12 @@ pub fn run() !void {
                 rl.PlaySound(boomSound);
             }
         }
+        // Update - handle time
+        const result = screen.updateScreen(currentScreen, screen.Msg{ .timePassed = @floatCast(rl.GetTime()) });
+        currentScreen = result.screen;
+        if (result.sideEffects.sound != null) {
+            rl.PlaySound(boomSound);
+        }
 
         rl.EndDrawing();
     }
@@ -59,12 +65,13 @@ fn centerText(text: []const u8, y: u16, fontSize: u16, color: rl.Color) void {
     rl.DrawText(text.ptr, xPos, y, fontSize, color);
 }
 
-
-fn drawMenu(_: screen.MenuScreen) void {
+fn drawMenu(menu: screen.MenuScreen) void {
     rl.ClearBackground(rl.BLACK);
     const textSize = 40;
     centerText("Dogfight 2025", 180, textSize, rl.GREEN);
-    centerText("Press SPACE to START!", 220, 20, rl.LIGHTGRAY);
+    std.debug.print("Menu blink: {}\n", .{menu.blink});
+    if (menu.blink)
+        centerText("Press SPACE to START!", 220, 20, rl.LIGHTGRAY);
 }
 
 fn drawGame(_: screen.GameScreen, planeTexture: rl.Texture2D, boomSound: rl.Sound) void {
