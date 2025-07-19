@@ -7,13 +7,6 @@ const rl = @cImport({
 const window_width: u32 = 960;
 const window_height: u32 = 540;
 
-// Loosely TEA inspired architecture
-// Model = All state of the game
-// Msg = Messages that can be sent to the model
-// Update = Function that updates the model given a message
-// View = Function that draws the model to the screen, this is most different from TEA
-//        since it will call raylib directly rather than returning a list of commands
-
 const Screen = union(enum) {
     menu: MenuScreen,
     game: GameScreen,
