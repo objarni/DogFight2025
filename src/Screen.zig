@@ -1,27 +1,27 @@
-const Screen = union(enum) {
+pub const Screen = union(enum) {
     menu: MenuScreen,
     game: GameScreen,
 
-    fn init() Screen {
+    pub fn init() Screen {
         return Screen{ .menu = MenuScreen{} };
     }
 };
 
-const MenuScreen = struct {
+pub const MenuScreen = struct {
     // ...
 };
 
-const GameScreen = struct {
+pub const GameScreen = struct {
     // ...
 };
 
-const Msg = union(enum) {
+pub const Msg = union(enum) {
     inputClicked: Inputs,
     // Define messages that can be sent to the model
     // e.g., StartGame, QuitGame, etc.
 };
 
-const Inputs = enum {
+pub const Inputs = enum {
     Plane1Rise,
     Plane1Dive,
     Plane2Rise,
@@ -29,14 +29,28 @@ const Inputs = enum {
     GeneralAction, // This is starting game, pausing/unpausing, switching from game over to menu etc
 };
 
-fn updateScreen(screen: Screen, msg: Msg) Screen {
+pub const UpdateResult = struct {
+    screen: Screen,
+    sideEffects: SideEffects,
+};
+
+const SideEffects = struct {
+    sound: ?Sound,
+};
+
+const Sound = enum { boom };
+
+pub fn updateScreen(screen: Screen, msg: Msg) UpdateResult {
     switch (screen) {
         .menu => |_| {
             switch (msg) {
                 .inputClicked => |input| {
                     switch (input) {
                         .GeneralAction => {
-                            return Screen{ .game = GameScreen{} };
+                            return UpdateResult{
+                                .screen = Screen{ .game = GameScreen{} },
+                                .sideEffects = SideEffects{ .sound = Sound.boom },
+                            };
                         },
                         else => {},
                     }
@@ -45,7 +59,10 @@ fn updateScreen(screen: Screen, msg: Msg) Screen {
         },
         .game => |_| {},
     }
-    return screen;
+    return UpdateResult{
+        .screen = screen,
+        .sideEffects = SideEffects{ .sound = null },
+    };
 }
 
 const std = @import("std");
@@ -56,10 +73,13 @@ test "game starts in menu" {
     try std.testing.expectEqual(expected, actual);
 }
 
-test "hitting action button should switch to game and plays " {
+test "hitting action button should switch to game and plays Boom sound" {
     const oldScreen: Screen = .init();
-    const actual: Screen = updateScreen(oldScreen, Msg{ .inputClicked = Inputs.GeneralAction });
-    const expected: Screen = .{ .game = GameScreen{} };
+    const actual: UpdateResult = updateScreen(oldScreen, Msg{ .inputClicked = Inputs.GeneralAction });
+    const expected: UpdateResult = .{
+        .screen = Screen{ .game = GameScreen{} },
+        .sideEffects = SideEffects{ .sound = Sound.boom },
+    };
     try std.testing.expectEqual(expected, actual);
 }
 

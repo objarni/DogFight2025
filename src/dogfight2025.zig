@@ -25,24 +25,25 @@ pub fn run() !void {
     const planeTexture = rl.LoadTexture("assets/plane.png");
     defer rl.UnloadTexture(planeTexture);
 
-    var model = screen.Screen.init();
+    var currentScreen = screen.Screen.init();
 
     while (!rl.WindowShouldClose()) {
         rl.BeginDrawing();
 
         // Draw
-        switch (model) {
+        switch (currentScreen) {
             .menu => |_| {
-                drawMenu(model.menu);
+                drawMenu(currentScreen.menu);
             },
             .game => |_| {
-                drawGame(model.game, planeTexture, boomSound);
+                drawGame(currentScreen.game, planeTexture, boomSound);
             },
         }
 
         // Update - handle input
         if (rl.IsKeyPressed(rl.KEY_SPACE)) {
-            model = screen.updateScreen(model, screen.Msg{ .inputClicked = screen.Inputs.GeneralAction });
+            const result = screen.updateScreen(currentScreen, screen.Msg{ .inputClicked = screen.Inputs.GeneralAction });
+            currentScreen = result.screen;
         }
 
         rl.EndDrawing();
