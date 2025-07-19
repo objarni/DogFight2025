@@ -53,18 +53,18 @@ pub fn run() !void {
     }
 }
 
-fn centerText(text: []const u8, y: u16, fontSize: u16) void {
+fn centerText(text: []const u8, y: u16, fontSize: u16, color: rl.Color) void {
     const textWidth: u16 = @intCast(rl.MeasureText(text.ptr, fontSize));
     const xPos: u16 = (window_width - textWidth) / 2;
-    rl.DrawText(text.ptr, xPos, y, fontSize, rl.LIGHTGRAY);
+    rl.DrawText(text.ptr, xPos, y, fontSize, color);
 }
 
 
 fn drawMenu(_: screen.MenuScreen) void {
     rl.ClearBackground(rl.RAYWHITE);
     const textSize = 40;
-    centerText("Dogfight 2025", 180, textSize);
-    centerText("Press SPACE to START!", 220, 20);
+    centerText("Dogfight 2025", 180, textSize, rl.GREEN);
+    centerText("Press SPACE to START!", 220, 20, rl.LIGHTGRAY);
 }
 
 fn drawGame(_: screen.GameScreen, planeTexture: rl.Texture2D, boomSound: rl.Sound) void {
