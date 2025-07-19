@@ -75,6 +75,10 @@ test "hitting action button should switch to game" {
     );
 }
 
+test {
+    _ = @import("Screen.zig");
+}
+
 pub fn run() !void {
     rl.InitWindow(window_width, window_height, "DogFight 2025");
     defer rl.CloseWindow();
