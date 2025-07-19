@@ -71,11 +71,11 @@ test "game starts in menu" {
 }
 
 test "hitting action button should switch to game" {
-    const oldState: Screen = .init();
-    const newState = updateScreen(oldState, Msg{ .inputClicked = Inputs.GeneralAction });
+    const oldScreen: Screen = .init();
+    const newScreen = updateScreen(oldScreen, Msg{ .inputClicked = Inputs.GeneralAction });
     try std.testing.expectEqual(
         GameScreen{},
-        switch (newState) {
+        switch (newScreen) {
             .game => |game| game,
             else => unreachable,
         },
