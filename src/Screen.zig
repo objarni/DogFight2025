@@ -56,16 +56,11 @@ test "game starts in menu" {
     try std.testing.expectEqual(expected, actual);
 }
 
-test "hitting action button should switch to game" {
+test "hitting action button should switch to game and plays " {
     const oldScreen: Screen = .init();
-    const newScreen = updateScreen(oldScreen, Msg{ .inputClicked = Inputs.GeneralAction });
-    try std.testing.expectEqual(
-        GameScreen{},
-        switch (newScreen) {
-            .game => |game| game,
-            else => unreachable,
-        },
-    );
+    const actual: Screen = updateScreen(oldScreen, Msg{ .inputClicked = Inputs.GeneralAction });
+    const expected: Screen = .{ .game = GameScreen{} };
+    try std.testing.expectEqual(expected, actual);
 }
 
 // TODO
