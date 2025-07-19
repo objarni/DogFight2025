@@ -14,30 +14,30 @@ const window_height: u32 = 540;
 // View = Function that draws the model to the screen, this is most different from TEA
 //        since it will call raylib directly rather than returning a list of commands
 
-const Model = union(enum) {
-    menu: MenuModel,
-    game: GameModel,
+const Screen = union(enum) {
+    menu: MenuScreen,
+    game: GameScreen,
 
-    fn init() Model {
-        return Model{ .menu = MenuModel{} };
+    fn init() Screen {
+        return Screen{ .menu = MenuScreen{} };
     }
 };
 
-const MenuModel = struct {
+const MenuScreen = struct {
     // ...
 };
 
-const GameModel = struct {
+const GameScreen = struct {
     // ...
 };
 
 const Msg = union(enum) {
-    keyPressed: Keys,
+    inputClicked: Inputs,
     // Define messages that can be sent to the model
     // e.g., StartGame, QuitGame, etc.
 };
 
-const Keys = enum {
+const Inputs = enum {
     Plane1Rise,
     Plane1Dive,
     Plane2Rise,
@@ -45,15 +45,14 @@ const Keys = enum {
     GeneralAction, // This is starting game, pausing/unpausing, switching from game over to menu etc
 };
 
-fn updateModel(model: Model, msg: Msg) Model {
-    switch (model) {
+fn updateScreen(screen: Screen, msg: Msg) Screen {
+    switch (screen) {
         .menu => |_| {
             switch (msg) {
-                .keyPressed => |key| {
-                    // Handle key presses in the menu
-                    switch (key) {
+                .inputClicked => |input| {
+                    switch (input) {
                         .GeneralAction => {
-                            return Model{ .game = GameModel{} };
+                            return Screen{ .game = GameScreen{} };
                         },
                         else => {},
                     }
@@ -62,19 +61,20 @@ fn updateModel(model: Model, msg: Msg) Model {
         },
         .game => |_| {},
     }
-    return model; // Return the updated model
+    return screen;
 }
 
-test "scene transition behaviour" {
-    // game starts in menu
-    const actual: Model = .init();
-    const expected: Model = .{ .menu = MenuModel{} };
+test "game starts in menu" {
+    const actual: Screen = .init();
+    const expected: Screen = .{ .menu = MenuScreen{} };
     try std.testing.expectEqual(expected, actual);
+}
 
-    // hitting action button should switch to game
-    const newState = updateModel(actual, Msg{ .keyPressed = Keys.GeneralAction });
+test "hitting action button should switch to game" {
+    const oldState: Screen = .init();
+    const newState = updateScreen(oldState, Msg{ .inputClicked = Inputs.GeneralAction });
     try std.testing.expectEqual(
-        GameModel{},
+        GameScreen{},
         switch (newState) {
             .game => |game| game,
             else => unreachable,
@@ -94,7 +94,7 @@ pub fn run() !void {
     const planeTexture = rl.LoadTexture("assets/plane.png");
     defer rl.UnloadTexture(planeTexture);
 
-    var model = Model.init();
+    var model = Screen.init();
 
     while (!rl.WindowShouldClose()) {
         rl.BeginDrawing();
@@ -109,16 +109,16 @@ pub fn run() !void {
             },
         }
 
-        // Update
+        // Update - handle input
         if (rl.IsKeyPressed(rl.KEY_SPACE)) {
-            model = updateModel(model, Msg{ .keyPressed = Keys.GeneralAction });
+            model = updateScreen(model, Msg{ .inputClicked = Inputs.GeneralAction });
         }
 
         rl.EndDrawing();
     }
 }
 
-fn drawMenu(_: MenuModel) void {
+fn drawMenu(_: MenuScreen) void {
     rl.ClearBackground(rl.RAYWHITE);
     rl.DrawText("DogFight 2025", 200, 180, 20, rl.LIGHTGRAY);
     rl.DrawText("Press SPACE to START!", 200, 220, 20, rl.LIGHTGRAY);
@@ -129,7 +129,7 @@ fn drawMenu(_: MenuModel) void {
     }
 }
 
-fn drawGame(_: GameModel, planeTexture: rl.Texture2D, boomSound: rl.Sound) void {
+fn drawGame(_: GameScreen, planeTexture: rl.Texture2D, boomSound: rl.Sound) void {
     rl.ClearBackground(rl.RAYWHITE);
 
     rl.DrawText("Press SPACE to PLAY the WAV sound!", 200, 180, 20, rl.LIGHTGRAY);
