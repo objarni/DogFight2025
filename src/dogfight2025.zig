@@ -53,11 +53,6 @@ fn drawMenu(_: screen.MenuScreen) void {
     rl.ClearBackground(rl.RAYWHITE);
     rl.DrawText("DogFight 2025", 200, 180, 20, rl.LIGHTGRAY);
     rl.DrawText("Press SPACE to START!", 200, 220, 20, rl.LIGHTGRAY);
-
-    if (rl.IsKeyPressed(rl.KEY_SPACE)) {
-        // Transition to game state
-        // This would typically be handled by updating the model
-    }
 }
 
 fn drawGame(_: screen.GameScreen, planeTexture: rl.Texture2D, boomSound: rl.Sound) void {
