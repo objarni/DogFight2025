@@ -31,6 +31,9 @@ pub fn run() !void {
     var currentScreen = screen.Screen.init();
     var drawAverage: i128 = 0;
     var drawAverageCount: u32 = 0;
+
+    const ally : std.mem.Allocator = std.heap.page_allocator;
+
     while (!rl.WindowShouldClose()) {
         rl.BeginDrawing();
 
@@ -57,6 +60,7 @@ pub fn run() !void {
         // Update - handle input
         if (rl.IsKeyPressed(rl.KEY_SPACE)) {
             const result = screen.updateScreen(
+                ally,
                 currentScreen,
                 screen.Msg{ .inputClicked = screen.Inputs.GeneralAction },
             );
@@ -67,6 +71,7 @@ pub fn run() !void {
         }
         // Update - handle time
         const result = screen.updateScreen(
+            ally,
             currentScreen,
             screen.Msg{
                 .timePassed = screen.TimePassed{

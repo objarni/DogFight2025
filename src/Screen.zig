@@ -53,7 +53,7 @@ const SideEffects = struct {
 
 const Sound = enum { boom };
 
-pub fn updateScreen(screen: Screen, msg: Msg) UpdateResult {
+pub fn updateScreen(_: std.mem.Allocator, screen: Screen, msg: Msg) UpdateResult {
     switch (screen) {
         .menu => |_| {
             switch (msg) {
