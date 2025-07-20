@@ -22,8 +22,11 @@ pub fn run() !void {
     const boomSound = rl.LoadSound("assets/boom.wav");
     defer rl.UnloadSound(boomSound);
 
-    const planeTexture = rl.LoadTexture("assets/plane.png");
-    defer rl.UnloadTexture(planeTexture);
+    const planeTex = rl.LoadTexture("assets/plane.png");
+    defer rl.UnloadTexture(planeTex);
+
+    const cloudTex = rl.LoadTexture("assets/Cloud.png");
+    defer rl.UnloadTexture(cloudTex);
 
     var currentScreen = screen.Screen.init();
 
@@ -36,20 +39,26 @@ pub fn run() !void {
                 drawMenu(currentScreen.menu);
             },
             .game => |_| {
-                drawGame(currentScreen.game, planeTexture, boomSound);
+                drawGame(currentScreen.game, planeTex, cloudTex);
             },
         }
 
         // Update - handle input
         if (rl.IsKeyPressed(rl.KEY_SPACE)) {
-            const result = screen.updateScreen(currentScreen, screen.Msg{ .inputClicked = screen.Inputs.GeneralAction });
+            const result = screen.updateScreen(
+                currentScreen,
+                screen.Msg{ .inputClicked = screen.Inputs.GeneralAction },
+            );
             currentScreen = result.screen;
             if (result.sideEffects.sound != null) {
                 rl.PlaySound(boomSound);
             }
         }
         // Update - handle time
-        const result = screen.updateScreen(currentScreen, screen.Msg{ .timePassed = @floatCast(rl.GetTime()) });
+        const result = screen.updateScreen(
+            currentScreen,
+            screen.Msg{ .timePassed = @floatCast(rl.GetTime()) },
+        );
         currentScreen = result.screen;
         if (result.sideEffects.sound != null) {
             rl.PlaySound(boomSound);
@@ -74,12 +83,13 @@ fn drawMenu(menu: screen.MenuScreen) void {
         centerText("Press SPACE to START!", 220, 20, rl.LIGHTGRAY);
 }
 
-fn drawGame(_: screen.GameScreen, planeTexture: rl.Texture2D, boomSound: rl.Sound) void {
+fn drawGame(state: screen.GameScreen, planeTex: rl.Texture2D, cloudTex: rl.Texture2D) void {
     rl.ClearBackground(rl.RAYWHITE);
 
-    rl.DrawText("Press SPACE to PLAY the WAV sound!", 200, 180, 20, rl.LIGHTGRAY);
-    if (rl.IsKeyPressed(rl.KEY_SPACE)) rl.PlaySound(boomSound);
-
-    rl.DrawTexture(planeTexture, 50, 50, rl.WHITE);
-    rl.DrawTexture(planeTexture, 150, 50, rl.GREEN);
+    rl.DrawTexture(planeTex, 50, 50, rl.WHITE);
+    rl.DrawTexture(planeTex, 150, 50, rl.GREEN);
+    for (state.clouds) |cloud| {
+        const color = if (cloud[1] < 300) rl.LIGHTGRAY else rl.GRAY;
+        rl.DrawTexture(cloudTex, @intFromFloat(cloud[0]), @intFromFloat(cloud[1]), color);
+    }
 }

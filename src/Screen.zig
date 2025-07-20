@@ -11,8 +11,19 @@ pub const MenuScreen = struct {
     blink: bool = false,
 };
 
+const V: type = @Vector(2, f32);
+fn v(x: f32, y: f32) V {
+    return V{ x, y };
+}
+
 pub const GameScreen = struct {
-    // ...
+    clouds: [2]V,
+
+    fn init() GameScreen {
+        return GameScreen{
+            .clouds = .{ v(5.0, 305.0), v(100.0, 100.0) }
+        };
+    }
 };
 
 pub const Msg = union(enum) {
@@ -47,7 +58,7 @@ pub fn updateScreen(screen: Screen, msg: Msg) UpdateResult {
                     switch (input) {
                         .GeneralAction => {
                             return UpdateResult{
-                                .screen = Screen{ .game = GameScreen{} },
+                                .screen = Screen{ .game = GameScreen.init() },
                                 .sideEffects = SideEffects{ .sound = Sound.boom },
                             };
                         },
