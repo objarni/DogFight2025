@@ -178,14 +178,5 @@ test "both clouds move left by, but the lower cloud moves faster" {
     try std.testing.expectEqual(initialX2 - 1.7, updatedScreen.screen.game.clouds[1][0]);
 }
 
-// test "press space blinks every 0.5 second on menu screen" {
-//     const oldScreen: Screen = .init();
-//     const actual: UpdateResult = updateScreen(oldScreen, Msg{ .timePassed = 0.25 });
-//     try std.testing.expectEqual(actual.screen.menu.blink, false);
-//     const actual2: UpdateResult = updateScreen(actual.screen, Msg{ .timePassed = 0.75 });
-//     try std.testing.expectEqual(actual2.screen.menu.blink, true);
-// }
-
 // TODO
-// Make updateScreen return 'side effects' which describe what sounds to play, plane pan/pitch audio, possibly
-// even screen transition 'requests'
+// remove sideEffects in favor of commands
