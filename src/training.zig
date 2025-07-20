@@ -186,3 +186,26 @@ test "floating point arithmetic" {
     const blink: bool = intNumPeriods % 2 == 1;
     try std.testing.expectEqual(false, blink);
 }
+
+test "modulo is available for unsigned integers" {
+    const a: u32 = 500;
+    const b: u32 = 5;
+    const result: u32 = a % b;
+    try std.testing.expectEqual(0, result);
+}
+
+test "@mod is needed for signed integers" {
+    const a: i32 = 10;
+    const b: i32 = 3;
+    const result: i32 = @mod(a, b);
+    try std.testing.expectEqual(1, result);
+}
+
+test "@rem meaning" {
+    try std.testing.expectEqual(1, @rem(3, 2));
+    try std.testing.expectEqual(0, @rem(2, 2));
+    try std.testing.expectEqual(1, @rem(1, 2));
+    try std.testing.expectEqual(0, @rem(0, 2));
+    try std.testing.expectEqual(-1, @rem(-1, 2));
+    try std.testing.expectEqual(0, @rem(-2, 2));
+}
