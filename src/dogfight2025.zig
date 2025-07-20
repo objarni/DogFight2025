@@ -59,7 +59,7 @@ pub fn run() !void {
 
         // Update - handle input
         if (rl.IsKeyPressed(rl.KEY_SPACE)) {
-            const result = screen.updateScreen(
+            const result = try screen.updateScreen(
                 ally,
                 currentScreen,
                 screen.Msg{ .inputClicked = screen.Inputs.GeneralAction },
@@ -70,7 +70,7 @@ pub fn run() !void {
             }
         }
         // Update - handle time
-        const result = screen.updateScreen(
+        const result = try screen.updateScreen(
             ally,
             currentScreen,
             screen.Msg{

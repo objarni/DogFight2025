@@ -45,6 +45,19 @@ pub const Inputs = enum {
 pub const UpdateResult = struct {
     screen: Screen,
     sideEffects: SideEffects,
+    commands: std.ArrayList(Command),
+
+    fn init(ally: std.mem.Allocator, screen: Screen, cmds: []const Command) !UpdateResult {
+        return UpdateResult{
+            .screen = screen,
+            .sideEffects = SideEffects{ .sound = null },
+            .commands = try arrayListOf(Command, ally, cmds),
+        };
+    }
+};
+
+const Command = union(enum) {
+    playSound: Sound,
 };
 
 const SideEffects = struct {
@@ -53,16 +66,27 @@ const SideEffects = struct {
 
 const Sound = enum { boom };
 
-pub fn updateScreen(_: std.mem.Allocator, screen: Screen, msg: Msg) UpdateResult {
+fn arrayListOf(comptime T: type, ally: std.mem.Allocator, items: []const T) !std.ArrayList(T) {
+    var list = std.ArrayList(T).init(ally);
+    for (items) |item| {
+        try list.append(item);
+    }
+    return list;
+}
+
+pub fn updateScreen(ally: std.mem.Allocator, screen: Screen, msg: Msg) !UpdateResult {
     switch (screen) {
         .menu => |_| {
             switch (msg) {
                 .inputClicked => |input| {
                     switch (input) {
                         .GeneralAction => {
-                            return UpdateResult{
-                                .screen = Screen{ .game = GameScreen.init() },
-                                .sideEffects = SideEffects{ .sound = Sound.boom },
+                            return UpdateResult.init(
+                                ally,
+                                Screen{ .game = GameScreen.init() },
+                                &.{Command{ .playSound = Sound.boom }},
+                            ) catch |err| {
+                                std.debug.panic("Failed to create UpdateResult: {}", .{err});
                             };
                         },
                         else => {},
@@ -74,10 +98,11 @@ pub fn updateScreen(_: std.mem.Allocator, screen: Screen, msg: Msg) UpdateResult
                     const intNumPeriods: u32 = @intFromFloat(numPeriods);
                     const two: u32 = 2;
                     const blink: bool = intNumPeriods % two == 1;
-                    return UpdateResult{
-                        .screen = Screen{ .menu = MenuScreen{ .blink = blink } },
-                        .sideEffects = SideEffects{ .sound = null },
-                    };
+                    return UpdateResult.init(
+                        ally,
+                        Screen{ .menu = MenuScreen{ .blink = blink } },
+                        &.{},
+                    );
                 },
             }
         },
@@ -88,19 +113,17 @@ pub fn updateScreen(_: std.mem.Allocator, screen: Screen, msg: Msg) UpdateResult
                     var newState = state;
                     newState.clouds[0][0] += deltaX;
                     newState.clouds[1][0] += deltaX * 1.7; // lower cloud moves faster
-                    return UpdateResult{
-                        .screen = Screen{ .game = newState },
-                        .sideEffects = SideEffects{ .sound = null },
-                    };
+                    return UpdateResult.init(ally, Screen{ .game = newState }, &.{});
                 },
                 else => {},
             }
         },
     }
-    return UpdateResult{
-        .screen = screen,
-        .sideEffects = SideEffects{ .sound = null },
-    };
+    return UpdateResult.init(
+        ally,
+        screen,
+        &.{},
+    );
 }
 
 const std = @import("std");
