@@ -70,8 +70,7 @@ pub fn updateScreen(screen: Screen, msg: Msg) UpdateResult {
                     const numPeriods: f32 = t / 0.5;
                     const intNumPeriods: u32 = @intFromFloat(numPeriods);
                     const two: u32 = 2;
-                    const one: u32 = 1;
-                    const blink: bool = intNumPeriods % two == one;
+                    const blink: bool = intNumPeriods % two == 1;
                     return UpdateResult{
                         .screen = Screen{ .menu = MenuScreen{ .blink = blink } },
                         .sideEffects = SideEffects{ .sound = null },
@@ -99,7 +98,7 @@ test "hitting action button should switch to game and plays Boom sound" {
     const oldScreen: Screen = .init();
     const actual: UpdateResult = updateScreen(oldScreen, Msg{ .inputClicked = Inputs.GeneralAction });
     const expected: UpdateResult = .{
-        .screen = Screen{ .game = GameScreen{} },
+        .screen = Screen{ .game = GameScreen.init() },
         .sideEffects = SideEffects{ .sound = Sound.boom },
     };
     try std.testing.expectEqual(expected, actual);

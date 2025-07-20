@@ -183,7 +183,6 @@ test "floating point arithmetic" {
     const t: f32 = 0.2;
     const numPeriods: f32 = t/0.5;
     const intNumPeriods: i32 = @intFromFloat(numPeriods);
-    std.debug.print("numPeriods: {}, intNumPeriods: {}\n", .{numPeriods, intNumPeriods});
     const blink: bool = intNumPeriods % 2 == 1;
     try std.testing.expectEqual(false, blink);
 }

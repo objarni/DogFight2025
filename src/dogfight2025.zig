@@ -78,7 +78,6 @@ fn drawMenu(menu: screen.MenuScreen) void {
     rl.ClearBackground(rl.BLACK);
     const textSize = 40;
     centerText("Dogfight 2025", 180, textSize, rl.GREEN);
-    std.debug.print("Menu blink: {}\n", .{menu.blink});
     if (menu.blink)
         centerText("Press SPACE to START!", 220, 20, rl.LIGHTGRAY);
 }
