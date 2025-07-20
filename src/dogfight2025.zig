@@ -57,7 +57,12 @@ pub fn run() !void {
         // Update - handle time
         const result = screen.updateScreen(
             currentScreen,
-            screen.Msg{ .timePassed = @floatCast(rl.GetTime()) },
+            screen.Msg{
+                .timePassed = screen.TimePassed{
+                    .totalTime = @floatCast(rl.GetTime()),
+                    .deltaTime = @floatCast(rl.GetFrameTime()),
+                },
+            },
         );
         currentScreen = result.screen;
         if (result.sideEffects.sound != null) {

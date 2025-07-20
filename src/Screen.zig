@@ -20,15 +20,18 @@ pub const GameScreen = struct {
     clouds: [2]V,
 
     fn init() GameScreen {
-        return GameScreen{
-            .clouds = .{ v(5.0, 305.0), v(100.0, 100.0) }
-        };
+        return GameScreen{ .clouds = .{ v(5.0, 305.0), v(100.0, 100.0) } };
     }
+};
+
+pub const TimePassed = struct {
+    deltaTime: f32,
+    totalTime: f32,
 };
 
 pub const Msg = union(enum) {
     inputClicked: Inputs,
-    timePassed: f32,
+    timePassed: TimePassed,
 };
 
 pub const Inputs = enum {
@@ -66,7 +69,7 @@ pub fn updateScreen(screen: Screen, msg: Msg) UpdateResult {
                     }
                 },
                 .timePassed => |time| {
-                    const t: f32 = time;
+                    const t: f32 = time.totalTime;
                     const numPeriods: f32 = t / 0.5;
                     const intNumPeriods: u32 = @intFromFloat(numPeriods);
                     const two: u32 = 2;
@@ -78,7 +81,21 @@ pub fn updateScreen(screen: Screen, msg: Msg) UpdateResult {
                 },
             }
         },
-        .game => |_| {},
+        .game => |state| {
+            switch (msg) {
+                .timePassed => |time| {
+                    const deltaX: f32 = -1.0 * time.deltaTime;
+                    var newState = state;
+                    newState.clouds[0][0] += deltaX;
+                    newState.clouds[1][0] += deltaX * 1.7; // lower cloud moves faster
+                    return UpdateResult{
+                        .screen = Screen{ .game = newState },
+                        .sideEffects = SideEffects{ .sound = null },
+                    };
+                },
+                else => {},
+            }
+        },
     }
     return UpdateResult{
         .screen = screen,
@@ -105,12 +122,38 @@ test "hitting action button should switch to game and plays Boom sound" {
 }
 
 test "press space blinks every 0.5 second on menu screen" {
-    const oldScreen: Screen = .init();
-    const actual: UpdateResult = updateScreen(oldScreen, Msg{ .timePassed = 0.25 });
-    try std.testing.expectEqual(actual.screen.menu.blink, false);
-    const actual2: UpdateResult = updateScreen(actual.screen, Msg{ .timePassed = 0.75 });
-    try std.testing.expectEqual(actual2.screen.menu.blink, true);
+    const initialScreen: Screen = .init();
+    const menuScreenNoTextExpected: UpdateResult = updateScreen(
+        initialScreen,
+        Msg{ .timePassed = .{ .totalTime = 0.40, .deltaTime = 0.40 } },
+    );
+    try std.testing.expectEqual(menuScreenNoTextExpected.screen.menu.blink, false);
+    const menuScreenTextExpected: UpdateResult = updateScreen(
+        menuScreenNoTextExpected.screen,
+        Msg{ .timePassed = .{ .totalTime = 0.75, .deltaTime = 0.35 } },
+    );
+    try std.testing.expectEqual(menuScreenTextExpected.screen.menu.blink, true);
 }
+
+test "both clouds move left by, but the lower cloud moves faster" {
+    const initialScreen: Screen = Screen{ .game = GameScreen.init() };
+    const initialX1 = initialScreen.game.clouds[0][0];
+    const initialX2 = initialScreen.game.clouds[1][0];
+    const updatedScreen: UpdateResult = updateScreen(
+        initialScreen,
+        Msg{ .timePassed = TimePassed{ .totalTime = 1.0, .deltaTime = 1.0 } },
+    );
+    try std.testing.expectEqual(initialX1 - 1.0, updatedScreen.screen.game.clouds[0][0]);
+    try std.testing.expectEqual(initialX2 - 1.7, updatedScreen.screen.game.clouds[1][0]);
+}
+
+// test "press space blinks every 0.5 second on menu screen" {
+//     const oldScreen: Screen = .init();
+//     const actual: UpdateResult = updateScreen(oldScreen, Msg{ .timePassed = 0.25 });
+//     try std.testing.expectEqual(actual.screen.menu.blink, false);
+//     const actual2: UpdateResult = updateScreen(actual.screen, Msg{ .timePassed = 0.75 });
+//     try std.testing.expectEqual(actual2.screen.menu.blink, true);
+// }
 
 // TODO
 // Make updateScreen return 'side effects' which describe what sounds to play, plane pan/pitch audio, possibly
