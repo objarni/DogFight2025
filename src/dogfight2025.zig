@@ -29,11 +29,13 @@ pub fn run() !void {
     defer rl.UnloadTexture(cloudTex);
 
     var currentScreen = screen.Screen.init();
-
+    var drawAverage: i128 = 0;
+    var drawAverageCount: u32 = 0;
     while (!rl.WindowShouldClose()) {
         rl.BeginDrawing();
 
         // Draw
+        const before : i128 = std.time.nanoTimestamp();
         switch (currentScreen) {
             .menu => |_| {
                 drawMenu(currentScreen.menu);
@@ -41,6 +43,15 @@ pub fn run() !void {
             .game => |_| {
                 drawGame(currentScreen.game, planeTex, cloudTex);
             },
+        }
+        const after : i128 = std.time.nanoTimestamp();
+        drawAverage += after - before;
+        drawAverageCount += 1;
+        if(drawAverageCount == 10000) {
+            const average: i128 = @divTrunc(@divTrunc(drawAverage, drawAverageCount), 1000);
+            std.debug.print("average draw time: {d} ms\n", .{average});
+            drawAverage = 0;
+            drawAverageCount = 0;
         }
 
         // Update - handle input
