@@ -64,7 +64,7 @@ const SideEffects = struct {
     sound: ?Sound,
 };
 
-const Sound = enum { boom };
+pub const Sound = enum { boom };
 
 fn arrayListOf(comptime T: type, ally: std.mem.Allocator, items: []const T) !std.ArrayList(T) {
     var list = std.ArrayList(T).init(ally);

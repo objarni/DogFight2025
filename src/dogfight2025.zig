@@ -65,8 +65,14 @@ pub fn run() !void {
                 screen.Msg{ .inputClicked = screen.Inputs.GeneralAction },
             );
             currentScreen = result.screen;
-            if (result.sideEffects.sound != null) {
-                rl.PlaySound(boomSound);
+            for (result.commands.items) |command| {
+                switch (command) {
+                    .playSound => |sound| {
+                        if (sound == screen.Sound.boom) {
+                            rl.PlaySound(boomSound);
+                        }
+                    },
+                }
             }
         }
         // Update - handle time
