@@ -136,22 +136,29 @@ test "game starts in menu" {
 
 test "hitting action button should switch to game and plays Boom sound" {
     const oldScreen: Screen = .init();
-    const actual: UpdateResult = updateScreen(oldScreen, Msg{ .inputClicked = Inputs.GeneralAction });
-    const expected: UpdateResult = .{
-        .screen = Screen{ .game = GameScreen.init() },
-        .sideEffects = SideEffects{ .sound = Sound.boom },
-    };
+    const actual: UpdateResult = try updateScreen(
+        std.testing.allocator,
+        oldScreen,
+        Msg{ .inputClicked = Inputs.GeneralAction },
+    );
+    const expected = try UpdateResult.init(
+        std.testing.allocator,
+        Screen{ .game = GameScreen.init() },
+        &.{Command{ .playSound = Sound.boom }},
+    );
     try std.testing.expectEqual(expected, actual);
 }
 
 test "press space blinks every 0.5 second on menu screen" {
     const initialScreen: Screen = .init();
-    const menuScreenNoTextExpected: UpdateResult = updateScreen(
+    const menuScreenNoTextExpected: UpdateResult = try updateScreen(
+        std.testing.allocator,
         initialScreen,
         Msg{ .timePassed = .{ .totalTime = 0.40, .deltaTime = 0.40 } },
     );
     try std.testing.expectEqual(menuScreenNoTextExpected.screen.menu.blink, false);
-    const menuScreenTextExpected: UpdateResult = updateScreen(
+    const menuScreenTextExpected: UpdateResult = try updateScreen(
+        std.testing.allocator,
         menuScreenNoTextExpected.screen,
         Msg{ .timePassed = .{ .totalTime = 0.75, .deltaTime = 0.35 } },
     );
@@ -162,7 +169,8 @@ test "both clouds move left by, but the lower cloud moves faster" {
     const initialScreen: Screen = Screen{ .game = GameScreen.init() };
     const initialX1 = initialScreen.game.clouds[0][0];
     const initialX2 = initialScreen.game.clouds[1][0];
-    const updatedScreen: UpdateResult = updateScreen(
+    const updatedScreen: UpdateResult = try updateScreen(
+        std.testing.allocator,
         initialScreen,
         Msg{ .timePassed = TimePassed{ .totalTime = 1.0, .deltaTime = 1.0 } },
     );
