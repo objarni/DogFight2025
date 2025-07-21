@@ -91,11 +91,9 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: Screen, msg: Msg) !UpdateRe
                     }
                 },
                 .timePassed => |time| {
-                    const t: f32 = time.totalTime;
-                    const numPeriods: f32 = t / 0.5;
+                    const numPeriods: f32 = time.totalTime / 0.5;
                     const intNumPeriods: u32 = @intFromFloat(numPeriods);
-                    const two: u32 = 2;
-                    const blink: bool = intNumPeriods % two == 1;
+                    const blink: bool = intNumPeriods % 2 == 1;
                     return UpdateResult.init(
                         ally,
                         Screen{ .menu = MenuState{ .blink = blink } },
