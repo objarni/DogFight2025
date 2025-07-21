@@ -1,5 +1,5 @@
 const std = @import("std");
-const raySdk = @import("raylib");
+// const raySdk = @import("raylib");
 
 // Although this function looks imperative, note that its job is to
 // declaratively construct a build graph that will be executed by an external
@@ -22,7 +22,7 @@ pub fn build(b: *std.Build) void {
         .linux_display_backend = .X11,
     });
     const raylib = raylib_dep.artifact("raylib");
-    raylib.addIncludePath(raylib_dep.path("src"));
+    // raylib.addIncludePath(raylib_dep.path("src"));
 
     // We will also create a module for our other entry point, 'main.zig'.
     const exe_mod = b.createModule(.{
