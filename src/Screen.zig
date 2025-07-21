@@ -1,13 +1,13 @@
 pub const Screen = union(enum) {
-    menu: MenuScreen,
-    game: GameScreen,
+    menu: MenuState,
+    game: GameState,
 
     pub fn init() Screen {
-        return Screen{ .menu = MenuScreen{} };
+        return Screen{ .menu = MenuState{} };
     }
 };
 
-pub const MenuScreen = struct {
+pub const MenuState = struct {
     blink: bool = false,
 };
 
@@ -16,11 +16,11 @@ fn v(x: f32, y: f32) V {
     return V{ x, y };
 }
 
-pub const GameScreen = struct {
+pub const GameState = struct {
     clouds: [2]V,
 
-    fn init() GameScreen {
-        return GameScreen{ .clouds = .{ v(555.0, 305.0), v(100.0, 100.0) } };
+    fn init() GameState {
+        return GameState{ .clouds = .{ v(555.0, 305.0), v(100.0, 100.0) } };
     }
 };
 
@@ -81,7 +81,7 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: Screen, msg: Msg) !UpdateRe
                         .GeneralAction => {
                             return UpdateResult.init(
                                 ally,
-                                Screen{ .game = GameScreen.init() },
+                                Screen{ .game = GameState.init() },
                                 &.{Command{ .playSound = Sound.boom }},
                             ) catch |err| {
                                 std.debug.panic("Failed to create UpdateResult: {}", .{err});
@@ -98,7 +98,7 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: Screen, msg: Msg) !UpdateRe
                     const blink: bool = intNumPeriods % two == 1;
                     return UpdateResult.init(
                         ally,
-                        Screen{ .menu = MenuScreen{ .blink = blink } },
+                        Screen{ .menu = MenuState{ .blink = blink } },
                         &.{},
                     );
                 },
@@ -128,7 +128,7 @@ const std = @import("std");
 
 test "game starts in menu" {
     const actual: Screen = .init();
-    const expected: Screen = .{ .menu = MenuScreen{} };
+    const expected: Screen = .{ .menu = MenuState{} };
     try std.testing.expectEqual(expected, actual);
 }
 
@@ -141,7 +141,7 @@ test "hitting action button should switch to game and plays Boom sound" {
     );
     const expected = try UpdateResult.init(
         std.testing.allocator,
-        Screen{ .game = GameScreen.init() },
+        Screen{ .game = GameState.init() },
         &.{Command{ .playSound = Sound.boom }},
     );
     try std.testing.expectEqual(expected, actual);
@@ -164,7 +164,7 @@ test "press space blinks every 0.5 second on menu screen" {
 }
 
 test "both clouds move left by, but the lower cloud moves faster" {
-    const initialScreen: Screen = Screen{ .game = GameScreen.init() };
+    const initialScreen: Screen = Screen{ .game = GameState.init() };
     const highCloudX: f32 = initialScreen.game.clouds[0][0];
     const lowCloudX: f32 = initialScreen.game.clouds[1][0];
     const updatedScreen: UpdateResult = try updateScreen(

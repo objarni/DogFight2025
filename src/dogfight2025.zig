@@ -98,7 +98,7 @@ fn centerText(text: []const u8, y: u16, fontSize: u16, color: rl.Color) void {
     rl.DrawText(text.ptr, xPos, y, fontSize, color);
 }
 
-fn drawMenu(menu: screen.MenuScreen) void {
+fn drawMenu(menu: screen.MenuState) void {
     rl.ClearBackground(rl.BLACK);
     const textSize = 40;
     centerText("Dogfight 2025", 180, textSize, rl.GREEN);
@@ -106,7 +106,7 @@ fn drawMenu(menu: screen.MenuScreen) void {
         centerText("Press SPACE to START!", 220, 20, rl.LIGHTGRAY);
 }
 
-fn drawGame(state: screen.GameScreen, planeTex: rl.Texture2D, cloudTex: rl.Texture2D) void {
+fn drawGame(state: screen.GameState, planeTex: rl.Texture2D, cloudTex: rl.Texture2D) void {
     rl.ClearBackground(rl.RAYWHITE);
 
     rl.DrawTexture(planeTex, 50, 50, rl.WHITE);
