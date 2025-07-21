@@ -177,4 +177,9 @@ test "both clouds move left by, but the lower cloud moves faster" {
 }
 
 // TODO
+// wrap clouds around the screen
+// display airplanes left (10 to start with)
 // add planes
+// figure out how to write unit tests that avoid hard coded values (so simple to tweak in the future)
+// figure out how to express state machines in Zig
+// Break out update logic for menu and game screens into separate functions
