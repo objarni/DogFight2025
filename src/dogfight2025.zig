@@ -87,9 +87,6 @@ pub fn run() !void {
             },
         );
         currentScreen = result.screen;
-        if (result.sideEffects.sound != null) {
-            rl.PlaySound(boomSound);
-        }
 
         rl.EndDrawing();
     }

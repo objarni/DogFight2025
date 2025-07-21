@@ -44,13 +44,11 @@ pub const Inputs = enum {
 
 pub const UpdateResult = struct {
     screen: Screen,
-    sideEffects: SideEffects,
     commands: std.ArrayList(Command),
 
     fn init(ally: std.mem.Allocator, screen: Screen, cmds: []const Command) !UpdateResult {
         return UpdateResult{
             .screen = screen,
-            .sideEffects = SideEffects{ .sound = null },
             .commands = try arrayListOf(Command, ally, cmds),
         };
     }
@@ -179,6 +177,6 @@ test "both clouds move left by, but the lower cloud moves faster" {
 }
 
 // TODO
-// remove sideEffects in favor of commands
+// remove  in favor of commands
 // make clouds bigger, so that planes can fly behind them
 // add planes
