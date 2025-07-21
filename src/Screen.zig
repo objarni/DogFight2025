@@ -20,7 +20,7 @@ pub const GameScreen = struct {
     clouds: [2]V,
 
     fn init() GameScreen {
-        return GameScreen{ .clouds = .{ v(5.0, 305.0), v(100.0, 100.0) } };
+        return GameScreen{ .clouds = .{ v(555.0, 305.0), v(100.0, 100.0) } };
     }
 };
 
@@ -109,10 +109,10 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: Screen, msg: Msg) !UpdateRe
         .game => |state| {
             switch (msg) {
                 .timePassed => |time| {
-                    const deltaX: f32 = -1.0 * time.deltaTime;
+                    const deltaX: f32 = time.deltaTime;
                     var newState = state;
-                    newState.clouds[0][0] += deltaX;
-                    newState.clouds[1][0] += deltaX * 1.7; // lower cloud moves faster
+                    newState.clouds[0][0] -= deltaX * 5.0;
+                    newState.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
                     return UpdateResult.init(ally, Screen{ .game = newState }, &.{});
                 },
                 else => {},
@@ -167,15 +167,15 @@ test "press space blinks every 0.5 second on menu screen" {
 
 test "both clouds move left by, but the lower cloud moves faster" {
     const initialScreen: Screen = Screen{ .game = GameScreen.init() };
-    const initialX1 = initialScreen.game.clouds[0][0];
-    const initialX2 = initialScreen.game.clouds[1][0];
+    const highCloudX: f32 = initialScreen.game.clouds[0][0];
+    const lowCloudX: f32 = initialScreen.game.clouds[1][0];
     const updatedScreen: UpdateResult = try updateScreen(
         std.testing.allocator,
         initialScreen,
         Msg{ .timePassed = TimePassed{ .totalTime = 1.0, .deltaTime = 1.0 } },
     );
-    try std.testing.expectEqual(initialX1 - 1.0, updatedScreen.screen.game.clouds[0][0]);
-    try std.testing.expectEqual(initialX2 - 1.7, updatedScreen.screen.game.clouds[1][0]);
+    try std.testing.expectApproxEqAbs(highCloudX - 5.0, updatedScreen.screen.game.clouds[0][0], 0.1);
+    try std.testing.expectApproxEqAbs(lowCloudX - 8.9, updatedScreen.screen.game.clouds[1][0], 0.1);
 }
 
 // TODO

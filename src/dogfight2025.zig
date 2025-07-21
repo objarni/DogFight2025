@@ -25,7 +25,7 @@ pub fn run() !void {
     const planeTex = rl.LoadTexture("assets/plane.png");
     defer rl.UnloadTexture(planeTex);
 
-    const cloudTex = rl.LoadTexture("assets/Cloud.png");
+    const cloudTex = rl.LoadTexture("assets/CloudBig.png");
     defer rl.UnloadTexture(cloudTex);
 
     var currentScreen = screen.Screen.init();
