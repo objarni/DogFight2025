@@ -22,6 +22,19 @@ pub const GameState = struct {
     fn init() GameState {
         return GameState{ .clouds = .{ v(555.0, 305.0), v(100.0, 100.0) } };
     }
+
+    fn handleMsg(ally: std.mem.Allocator, state: GameState, msg: Msg) !?UpdateResult {
+        return switch (msg) {
+            .timePassed => |time| {
+                const deltaX: f32 = time.deltaTime;
+                var newState = state;
+                newState.clouds[0][0] -= deltaX * 5.0;
+                newState.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
+                return try UpdateResult.init(ally, Screen{ .game = newState }, &.{});
+            },
+            else => null,
+        };
+    }
 };
 
 pub const TimePassed = struct {
@@ -103,16 +116,8 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: Screen, msg: Msg) !UpdateRe
             }
         },
         .game => |state| {
-            switch (msg) {
-                .timePassed => |time| {
-                    const deltaX: f32 = time.deltaTime;
-                    var newState = state;
-                    newState.clouds[0][0] -= deltaX * 5.0;
-                    newState.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
-                    return UpdateResult.init(ally, Screen{ .game = newState }, &.{});
-                },
-                else => {},
-            }
+            const maybeResult = try GameState.handleMsg(ally, state, msg);
+            if (maybeResult) |result| return result;
         },
     }
     return UpdateResult.init(
