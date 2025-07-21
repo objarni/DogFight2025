@@ -177,6 +177,4 @@ test "both clouds move left by, but the lower cloud moves faster" {
 }
 
 // TODO
-// remove  in favor of commands
-// make clouds bigger, so that planes can fly behind them
 // add planes
