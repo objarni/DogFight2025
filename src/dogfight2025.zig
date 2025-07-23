@@ -137,6 +137,14 @@ fn drawGame(state: screen.GameState, planeTex: rl.Texture2D, cloudTex: rl.Textur
 
     rl.DrawTexture(planeTex, 50, 50, rl.WHITE);
     rl.DrawTexture(planeTex, 150, 50, rl.GREEN);
+
+    rl.DrawTexture(
+        planeTex,
+        @intFromFloat(state.plane1.position[0]),
+        @intFromFloat(state.plane1.position[1]),
+        rl.WHITE,
+    );
+
     for (state.clouds) |cloud| {
         const color = if (cloud[1] < 300) rl.LIGHTGRAY else rl.GRAY;
         rl.DrawTexture(cloudTex, @intFromFloat(cloud[0]), @intFromFloat(cloud[1]), color);
