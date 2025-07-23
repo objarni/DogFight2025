@@ -90,6 +90,15 @@ pub fn run() !void {
                 }
             }
         }
+        if (rl.IsKeyPressed(rl.KEY_A)) {
+            const result = try screen.updateScreen(
+                ally,
+                currentScreen,
+                screen.Msg{ .inputClicked = screen.Inputs.Plane1Rise },
+            );
+            currentScreen = result.screen;
+        }
+
         // Update - handle time
         const result = try screen.updateScreen(
             ally,

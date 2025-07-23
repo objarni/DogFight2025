@@ -35,6 +35,12 @@ pub const GameState = struct {
     fn handleMsg(ally: std.mem.Allocator, state: GameState, msg: Msg) !?UpdateResult {
         return switch (msg) {
             .timePassed => |time| {
+
+                std.debug.print("plane position: {d}, {d}\n", .{
+                    state.plane1.position[0],
+                    state.plane1.position[1],
+                });
+
                 const deltaX: f32 = time.deltaTime;
                 var newState = state;
                 newState.clouds[0][0] -= deltaX * 5.0;
@@ -204,3 +210,4 @@ test "both clouds move left by, but the lower cloud moves faster" {
 // figure out how to write unit tests that avoid hard coded values (so simple to tweak in the future)
 // figure out how to express state machines in Zig
 // Break out update logic for menu and game screens into separate functions
+// 'Collect' all commands from updates and execute in a loop after all updates?
