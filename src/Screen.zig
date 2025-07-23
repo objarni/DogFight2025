@@ -11,10 +11,10 @@ pub const MenuState = struct {
     blink: bool = false,
 };
 
-const V: type = @Vector(2, f32);
-fn v(x: f32, y: f32) V {
-    return V{ x, y };
-}
+const v2 = @import("v.zig");
+const V = v2.V;
+const v = v2.v;
+
 
 pub const GameState = struct {
     clouds: [2]V,
