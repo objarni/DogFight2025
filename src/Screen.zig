@@ -15,12 +15,21 @@ const v2 = @import("v.zig");
 const V = v2.V;
 const v = v2.v;
 
+const Plane = @import("Plane.zig").Plane;
 
 pub const GameState = struct {
     clouds: [2]V,
+    plane1: Plane,
 
     fn init() GameState {
-        return GameState{ .clouds = .{ v(555.0, 305.0), v(100.0, 100.0) } };
+        return GameState{
+            .clouds = .{ v(555.0, 305.0), v(100.0, 100.0) },
+            .plane1 = Plane.init(.{
+                .initialPos = v(100.0, 200.0),
+                .takeoffSpeed = 50.0,
+                .groundAccelerationPerS = 10.0,
+            }),
+        };
     }
 
     fn handleMsg(ally: std.mem.Allocator, state: GameState, msg: Msg) !?UpdateResult {
@@ -30,9 +39,18 @@ pub const GameState = struct {
                 var newState = state;
                 newState.clouds[0][0] -= deltaX * 5.0;
                 newState.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
+                newState.plane1 = newState.plane1.timePassed(time.deltaTime);
                 return try UpdateResult.init(ally, Screen{ .game = newState }, &.{});
             },
-            else => null,
+            .inputClicked => |input| {
+                var newState = state;
+                switch (input) {
+                    .Plane1Rise => newState.plane1 = newState.plane1.rise(),
+                    .Plane2Rise => {}, // TODO: Implement second plane
+                    else => {},
+                }
+                return try UpdateResult.init(ally, Screen{ .game = newState }, &.{});
+            },
         };
     }
 };

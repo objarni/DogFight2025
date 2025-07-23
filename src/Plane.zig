@@ -18,7 +18,7 @@ const PlaneState = enum {
     CRASH,
 };
 
-const Plane = struct {
+pub const Plane = struct {
     position: V,
     velocity: V,
     state: PlaneState,
