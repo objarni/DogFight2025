@@ -41,6 +41,18 @@ const Plane = struct {
         }
         return self;
     }
+
+    pub fn dive(self: Plane) Plane {
+        if (self.state == .STILL) {
+            const newState :Plane = .{
+                .state = .TAKEOFF_ROLL,
+                .position = self.position,
+                .velocity = self.velocity,
+            };
+            return newState;
+        }
+        return self;
+    }
 };
 
 const testPlaneConstants = PlaneConstants{
@@ -65,8 +77,15 @@ test {
     try std.testing.expectEqual(PlaneState.TAKEOFF_ROLL, newPlane.state);
 }
 
-// plane initial state is STILL
-// when hitting rise/dive from STILL, goes to TAKEOFF_ROLL
+test {
+    const plane = Plane.init(testPlaneConstants);
+    // Act
+    const newPlane = plane.dive();
+    try std.testing.expectEqual(PlaneState.TAKEOFF_ROLL, newPlane.state);
+}
+
+// #plane initial state is STILL
+// #when hitting rise/dive from STILL, goes to TAKEOFF_ROLL
 // if hitting rise/dive before enough speed in TAKEOFF_ROLL, goes to CRASH
 // if hitting rise when enough speed in TAKEOFF_ROLL, goes to FLYING
 // if hitting dive when enough speed in TAKEOFF_ROLL, goes to CRASH
