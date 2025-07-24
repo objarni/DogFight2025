@@ -87,6 +87,8 @@ pub fn run() !void {
                             rl.PlaySound(boomSound);
                         }
                     },
+                    .playPropellerSound => |_| {
+                    }
                 }
             }
         }

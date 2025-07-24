@@ -93,10 +93,17 @@ pub const UpdateResult = struct {
 
 const Command = union(enum) {
     playSound: Sound,
+    playPropellerSound: PlaneAudio,
 };
 
 
 pub const Sound = enum { boom };
+pub const PlaneAudio = struct {
+    plane: i1, // 1 for plane 1, 2 for plane 2
+    on: bool, // true if sound is on, false if muted
+    pan: f32, // 0.0 to 1.0, where 0.0 is left, 1.0 is right
+    pitch: f32, // 1.0 is normal, 0.5 is half speed, 2.0 is double speed
+};
 
 fn arrayListOf(comptime T: type, ally: std.mem.Allocator, items: []const T) !std.ArrayList(T) {
     var list = std.ArrayList(T).init(ally);
