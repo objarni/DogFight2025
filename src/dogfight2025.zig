@@ -52,8 +52,8 @@ pub fn run() !void {
     try allMsgs.ensureTotalCapacity(10);
 
     while (!rl.WindowShouldClose()) {
-        if (!rl.IsMusicStreamPlaying(res.propellerAudio1))
-            rl.PlayMusicStream(res.propellerAudio1);
+        // if (!rl.IsMusicStreamPlaying(res.propellerAudio1))
+        //     rl.PlayMusicStream(res.propellerAudio1);
         rl.BeginDrawing();
 
         // Draw
@@ -165,12 +165,14 @@ fn executeCommands(
                     rl.PlaySound(res.boomSound);
                 }
             },
-            .playPropellerAudio => |_| {
-                // if (audio.on) {
-                //     rl.PlayMusicStream(propellerAudio1);
-                // } else {
-                //     rl.StopMusicStream(propellerAudio1);
-                // }
+            .playPropellerAudio => |audio| {
+                if (audio.on) {
+                    if (!rl.IsMusicStreamPlaying(res.propellerAudio1))
+                        rl.PlayMusicStream(res.propellerAudio1);
+                } else {
+                    if (rl.IsMusicStreamPlaying(res.propellerAudio1))
+                        rl.StopMusicStream(res.propellerAudio1);
+                }
             },
         }
     }

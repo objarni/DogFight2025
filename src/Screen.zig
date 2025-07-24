@@ -35,7 +35,6 @@ pub const GameState = struct {
     fn handleMsg(ally: std.mem.Allocator, state: GameState, msg: Msg) !?UpdateResult {
         return switch (msg) {
             .timePassed => |time| {
-
                 std.debug.print("plane position: {d}, {d}\n", .{
                     state.plane1.position[0],
                     state.plane1.position[1],
@@ -96,11 +95,10 @@ pub const Command = union(enum) {
     playPropellerAudio: PropellerAudio,
 };
 
-
 pub const SoundEffect = enum { boom };
 
 pub const PropellerAudio = struct {
-    plane: i1, // 1 for plane 1, 2 for plane 2
+    plane: u1, // 0 for plane 1, 1 for plane 2
     on: bool, // true if sound is on, false if muted
     pan: f32, // 0.0 to 1.0, where 0.0 is left, 1.0 is right
     pitch: f32, // 1.0 is normal, 0.5 is half speed, 2.0 is double speed
@@ -119,12 +117,26 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: Screen, msg: Msg) !UpdateRe
         .menu => |_| {
             switch (msg) {
                 .inputClicked => |input| {
+                    const boomCmd = Command{
+                        .playSoundEffect = SoundEffect.boom,
+                    };
+                    const propellerCmd = Command{
+                        .playPropellerAudio = PropellerAudio{
+                            .plane = 0,
+                            .on = true,
+                            .pan = 0.5,
+                            .pitch = 1.0,
+                        },
+                    };
                     switch (input) {
                         .GeneralAction => {
                             return UpdateResult.init(
                                 ally,
                                 Screen{ .game = GameState.init() },
-                                &.{Command{ .playSoundEffect = SoundEffect.boom }},
+                                &.{
+                                    boomCmd,
+                                    propellerCmd,
+                                },
                             ) catch |err| {
                                 std.debug.panic("Failed to create UpdateResult: {}", .{err});
                             };
