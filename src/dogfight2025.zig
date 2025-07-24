@@ -19,6 +19,19 @@ pub fn run() !void {
     defer rl.CloseWindow();
     rl.InitAudioDevice();
     // rl.ToggleFullscreen();
+    //
+    const res = Resources{
+        .boomSound = rl.LoadSound("assets/boom.wav"),
+        .planeTex = rl.LoadTexture("assets/plane.png"),
+        .cloudTex = rl.LoadTexture("assets/CloudBig.png"),
+        .propellerAudio1 = rl.LoadMusicStream("assets/PropellerPlane.mp3"),
+    };
+    defer {
+        rl.UnloadSound(res.boomSound);
+        rl.UnloadTexture(res.planeTex);
+        rl.UnloadTexture(res.cloudTex);
+        rl.UnloadMusicStream(res.propellerAudio1);
+    }
 
     const screen_w = rl.GetScreenWidth();
     const screen_h = rl.GetScreenHeight();
@@ -53,7 +66,7 @@ pub fn run() !void {
     const ally: std.mem.Allocator = std.heap.page_allocator;
 
     while (!rl.WindowShouldClose()) {
-        if(!rl.IsMusicStreamPlaying(propellerAudio1))
+        if (!rl.IsMusicStreamPlaying(propellerAudio1))
             rl.PlayMusicStream(propellerAudio1);
         rl.BeginDrawing();
 
@@ -64,7 +77,7 @@ pub fn run() !void {
                 drawMenu(currentScreen.menu);
             },
             .game => |_| {
-                drawGame(currentScreen.game, planeTex, cloudTex);
+                drawGame(currentScreen.game, res);
             },
         }
         const after: i128 = std.time.nanoTimestamp();
@@ -131,16 +144,26 @@ fn drawMenu(menu: screen.MenuState) void {
         centerText("Press SPACE to START!", 220, 20, rl.LIGHTGRAY);
 }
 
-fn drawGame(state: screen.GameState, planeTex: rl.Texture2D, cloudTex: rl.Texture2D) void {
+const Resources = struct {
+    boomSound: rl.Sound,
+    planeTex: rl.Texture2D,
+    cloudTex: rl.Texture2D,
+    propellerAudio1: rl.Music,
+};
+
+fn drawGame(
+    state: screen.GameState,
+    res: Resources,
+) void {
     rl.ClearBackground(rl.RAYWHITE);
 
     rl.DrawCircle(200, 200, 50, rl.RED);
 
-    rl.DrawTexture(planeTex, 50, 50, rl.WHITE);
-    rl.DrawTexture(planeTex, 150, 50, rl.GREEN);
+    rl.DrawTexture(res.planeTex, 50, 50, rl.WHITE);
+    rl.DrawTexture(res.planeTex, 150, 50, rl.GREEN);
 
     rl.DrawTexture(
-        planeTex,
+        res.planeTex,
         @intFromFloat(state.plane1.position[0]),
         @intFromFloat(state.plane1.position[1]),
         rl.WHITE,
@@ -148,7 +171,7 @@ fn drawGame(state: screen.GameState, planeTex: rl.Texture2D, cloudTex: rl.Textur
 
     for (state.clouds) |cloud| {
         const color = if (cloud[1] < 300) rl.LIGHTGRAY else rl.GRAY;
-        rl.DrawTexture(cloudTex, @intFromFloat(cloud[0]), @intFromFloat(cloud[1]), color);
+        rl.DrawTexture(res.cloudTex, @intFromFloat(cloud[0]), @intFromFloat(cloud[1]), color);
     }
 }
 
