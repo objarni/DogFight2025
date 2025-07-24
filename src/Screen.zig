@@ -220,11 +220,7 @@ test "both clouds move left by, but the lower cloud moves faster" {
     try std.testing.expectApproxEqAbs(lowCloudX - 8.9, updatedScreen.screen.game.clouds[1][0], 0.1);
 }
 
-// TODO
-// wrap clouds around the screen
-// display airplanes left (10 to start with)
-// add planes
-// figure out how to write unit tests that avoid hard coded values (so simple to tweak in the future)
-// figure out how to express state machines in Zig
-// Break out update logic for menu and game screens into separate functions
-// 'Collect' all commands from updates and execute in a loop after all updates?
+// TODO wrap clouds around the screen
+// TODO display airplanes left (10 to start with)
+// TODO add planes
+// TODO Break out update logic for menu into separate function
