@@ -95,9 +95,6 @@ const Command = union(enum) {
     playSound: Sound,
 };
 
-const SideEffects = struct {
-    sound: ?Sound,
-};
 
 pub const Sound = enum { boom };
 
