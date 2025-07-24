@@ -79,25 +79,9 @@ pub fn run() !void {
         // Update music streams
         rl.UpdateMusicStream(res.propellerAudio1);
 
-        allMsgs.clearAndFree();
-        if(rl.IsKeyPressed(rl.KEY_SPACE))
-            allMsgs.append(screen.Msg{ .inputClicked = screen.Inputs.GeneralAction }) catch |err| {
-                std.debug.print("Error appending message: {}\n", .{err});
-            };
-        if(rl.IsKeyPressed(rl.KEY_A))
-            allMsgs.append(screen.Msg{ .inputClicked = screen.Inputs.Plane1Rise }) catch |err| {
-                std.debug.print("Error appending message: {}\n", .{err});
-            };
-        const timePassed = screen.Msg{
-                .timePassed = screen.TimePassed{
-                    .totalTime = @floatCast(rl.GetTime()),
-                    .deltaTime = @floatCast(rl.GetFrameTime()),
-                } };
-        allMsgs.append(timePassed) catch |err| {
-            std.debug.print("Error appending time message: {}\n", .{err});
-        };
+        collectMessages(&allMsgs);
 
-        for(allMsgs.items) |msg| {
+        for (allMsgs.items) |msg| {
             const result = try screen.updateScreen(ally, currentScreen, msg);
             currentScreen = result.screen;
             executeCommands(result.commands.items, res);
@@ -105,6 +89,25 @@ pub fn run() !void {
 
         rl.EndDrawing();
     }
+}
+
+fn collectMessages(allMsgs: *std.ArrayList(screen.Msg)) void {
+    allMsgs.clearAndFree();
+    if (rl.IsKeyPressed(rl.KEY_SPACE))
+        allMsgs.append(screen.Msg{ .inputClicked = screen.Inputs.GeneralAction }) catch |err| {
+            std.debug.print("Error appending message: {}\n", .{err});
+        };
+    if (rl.IsKeyPressed(rl.KEY_A))
+        allMsgs.append(screen.Msg{ .inputClicked = screen.Inputs.Plane1Rise }) catch |err| {
+            std.debug.print("Error appending message: {}\n", .{err});
+        };
+    const timePassed = screen.Msg{ .timePassed = screen.TimePassed{
+        .totalTime = @floatCast(rl.GetTime()),
+        .deltaTime = @floatCast(rl.GetFrameTime()),
+    } };
+    allMsgs.append(timePassed) catch |err| {
+        std.debug.print("Error appending time message: {}\n", .{err});
+    };
 }
 
 fn centerText(text: []const u8, y: u16, fontSize: u16, color: rl.Color) void {
