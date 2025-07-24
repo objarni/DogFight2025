@@ -50,9 +50,6 @@ pub fn run() !void {
     }
     defer rl.UnloadTexture(planeTex);
 
-    const propellerAudio1 = rl.LoadMusicStream("assets/PropellerPlane.mp3");
-    defer rl.UnloadMusicStream(propellerAudio1);
-
     const cloudTex = rl.LoadTexture("assets/CloudBig.png");
     if (!rl.IsTextureValid(cloudTex)) {
         std.debug.print("Texture failed!\n", .{});
@@ -66,8 +63,8 @@ pub fn run() !void {
     const ally: std.mem.Allocator = std.heap.page_allocator;
 
     while (!rl.WindowShouldClose()) {
-        if (!rl.IsMusicStreamPlaying(propellerAudio1))
-            rl.PlayMusicStream(propellerAudio1);
+        if (!rl.IsMusicStreamPlaying(res.propellerAudio1))
+            rl.PlayMusicStream(res.propellerAudio1);
         rl.BeginDrawing();
 
         // Draw
@@ -91,7 +88,7 @@ pub fn run() !void {
         }
 
         // Update music streams
-        rl.UpdateMusicStream(propellerAudio1);
+        rl.UpdateMusicStream(res.propellerAudio1);
 
         // Update - handle input
         if (rl.IsKeyPressed(rl.KEY_SPACE)) {
