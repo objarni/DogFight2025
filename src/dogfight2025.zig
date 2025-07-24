@@ -44,12 +44,6 @@ pub fn run() !void {
     const boomSound = rl.LoadSound("assets/boom.wav");
     defer rl.UnloadSound(boomSound);
 
-    const planeTex = rl.LoadTexture("assets/plane.png");
-    if (!rl.IsTextureValid(planeTex)) {
-        std.debug.print("Texture failed!\n", .{});
-    }
-    defer rl.UnloadTexture(planeTex);
-
     const cloudTex = rl.LoadTexture("assets/CloudBig.png");
     if (!rl.IsTextureValid(cloudTex)) {
         std.debug.print("Texture failed!\n", .{});
