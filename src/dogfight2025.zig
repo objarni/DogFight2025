@@ -80,19 +80,18 @@ pub fn run() !void {
         rl.UpdateMusicStream(res.propellerAudio1);
 
         collectMessages(&allMsgs);
-
         for (allMsgs.items) |msg| {
             const result = try screen.updateScreen(ally, currentScreen, msg);
             currentScreen = result.screen;
             executeCommands(result.commands.items, res);
         }
+        allMsgs.clearAndFree();
 
         rl.EndDrawing();
     }
 }
 
 fn collectMessages(allMsgs: *std.ArrayList(screen.Msg)) void {
-    allMsgs.clearAndFree();
     if (rl.IsKeyPressed(rl.KEY_SPACE))
         allMsgs.append(screen.Msg{ .inputClicked = screen.Inputs.GeneralAction }) catch |err| {
             std.debug.print("Error appending message: {}\n", .{err});
