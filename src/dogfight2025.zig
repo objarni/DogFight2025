@@ -41,15 +41,6 @@ pub fn run() !void {
         screen_w, screen_h, fb_w, fb_h,
     });
 
-    const boomSound = rl.LoadSound("assets/boom.wav");
-    defer rl.UnloadSound(boomSound);
-
-    const cloudTex = rl.LoadTexture("assets/CloudBig.png");
-    if (!rl.IsTextureValid(cloudTex)) {
-        std.debug.print("Texture failed!\n", .{});
-    }
-    defer rl.UnloadTexture(cloudTex);
-
     var currentScreen = screen.Screen.init();
     var drawAverage: i128 = 0;
     var drawAverageCount: u32 = 0;
@@ -93,7 +84,7 @@ pub fn run() !void {
             );
             currentScreen = result.screen;
             const cmds = result.commands.items;
-            executeCommands(cmds, boomSound);
+            executeCommands(cmds, res);
         }
         if (rl.IsKeyPressed(rl.KEY_A)) {
             const result = try screen.updateScreen(
@@ -168,13 +159,13 @@ fn drawGame(
 
 fn executeCommands(
     cmds: []const screen.Command,
-    boomSound: rl.Sound,
+    res: Resources,
 ) void {
     for (cmds) |command| {
         switch (command) {
             .playSoundEffect => |sfx| {
                 if (sfx == screen.SoundEffect.boom) {
-                    rl.PlaySound(boomSound);
+                    rl.PlaySound(res.boomSound);
                 }
             },
             .playPropellerAudio => |_| {
