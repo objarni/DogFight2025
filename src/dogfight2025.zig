@@ -53,6 +53,8 @@ pub fn run() !void {
     const ally: std.mem.Allocator = std.heap.page_allocator;
 
     while (!rl.WindowShouldClose()) {
+        if(!rl.IsMusicStreamPlaying(propellerAudio1))
+            rl.PlayMusicStream(propellerAudio1);
         rl.BeginDrawing();
 
         // Draw
@@ -74,6 +76,9 @@ pub fn run() !void {
             drawAverage = 0;
             drawAverageCount = 0;
         }
+
+        // Update music streams
+        rl.UpdateMusicStream(propellerAudio1);
 
         // Update - handle input
         if (rl.IsKeyPressed(rl.KEY_SPACE)) {
