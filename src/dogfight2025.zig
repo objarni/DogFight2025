@@ -37,6 +37,9 @@ pub fn run() !void {
     }
     defer rl.UnloadTexture(planeTex);
 
+    const propellerAudio1 = rl.LoadMusicStream("assets/PropellerPlane.mp3");
+    defer rl.UnloadMusicStream(propellerAudio1);
+
     const cloudTex = rl.LoadTexture("assets/CloudBig.png");
     if (!rl.IsTextureValid(cloudTex)) {
         std.debug.print("Texture failed!\n", .{});
@@ -82,13 +85,18 @@ pub fn run() !void {
             currentScreen = result.screen;
             for (result.commands.items) |command| {
                 switch (command) {
-                    .playSound => |sound| {
-                        if (sound == screen.Sound.boom) {
+                    .playSoundEffect => |sfx| {
+                        if (sfx == screen.SoundEffect.boom) {
                             rl.PlaySound(boomSound);
                         }
                     },
-                    .playPropellerSound => |_| {
-                    }
+                    .playPropellerAudio => |audio| {
+                        if (audio.on) {
+                            rl.PlayMusicStream(propellerAudio1);
+                        } else {
+                            rl.StopMusicStream(propellerAudio1);
+                        }
+                    },
                 }
             }
         }

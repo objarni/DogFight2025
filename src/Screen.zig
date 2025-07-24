@@ -92,13 +92,14 @@ pub const UpdateResult = struct {
 };
 
 const Command = union(enum) {
-    playSound: Sound,
-    playPropellerSound: PlaneAudio,
+    playSoundEffect: SoundEffect,
+    playPropellerAudio: PropellerAudio,
 };
 
 
-pub const Sound = enum { boom };
-pub const PlaneAudio = struct {
+pub const SoundEffect = enum { boom };
+
+pub const PropellerAudio = struct {
     plane: i1, // 1 for plane 1, 2 for plane 2
     on: bool, // true if sound is on, false if muted
     pan: f32, // 0.0 to 1.0, where 0.0 is left, 1.0 is right
@@ -123,7 +124,7 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: Screen, msg: Msg) !UpdateRe
                             return UpdateResult.init(
                                 ally,
                                 Screen{ .game = GameState.init() },
-                                &.{Command{ .playSound = Sound.boom }},
+                                &.{Command{ .playSoundEffect = SoundEffect.boom }},
                             ) catch |err| {
                                 std.debug.panic("Failed to create UpdateResult: {}", .{err});
                             };
@@ -173,7 +174,7 @@ test "hitting action button should switch to game and plays Boom sound" {
     const expected = try UpdateResult.init(
         std.testing.allocator,
         Screen{ .game = GameState.init() },
-        &.{Command{ .playSound = Sound.boom }},
+        &.{Command{ .playSoundEffect = SoundEffect.boom }},
     );
     try std.testing.expectEqual(expected, actual);
 }
