@@ -91,7 +91,7 @@ pub const UpdateResult = struct {
     }
 };
 
-const Command = union(enum) {
+pub const Command = union(enum) {
     playSoundEffect: SoundEffect,
     playPropellerAudio: PropellerAudio,
 };

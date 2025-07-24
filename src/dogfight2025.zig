@@ -88,22 +88,8 @@ pub fn run() !void {
                 screen.Msg{ .inputClicked = screen.Inputs.GeneralAction },
             );
             currentScreen = result.screen;
-            for (result.commands.items) |command| {
-                switch (command) {
-                    .playSoundEffect => |sfx| {
-                        if (sfx == screen.SoundEffect.boom) {
-                            rl.PlaySound(boomSound);
-                        }
-                    },
-                    .playPropellerAudio => |audio| {
-                        if (audio.on) {
-                            rl.PlayMusicStream(propellerAudio1);
-                        } else {
-                            rl.StopMusicStream(propellerAudio1);
-                        }
-                    },
-                }
-            }
+            const cmds = result.commands.items;
+            executeCommands(cmds, boomSound);
         }
         if (rl.IsKeyPressed(rl.KEY_A)) {
             const result = try screen.updateScreen(
@@ -163,5 +149,27 @@ fn drawGame(state: screen.GameState, planeTex: rl.Texture2D, cloudTex: rl.Textur
     for (state.clouds) |cloud| {
         const color = if (cloud[1] < 300) rl.LIGHTGRAY else rl.GRAY;
         rl.DrawTexture(cloudTex, @intFromFloat(cloud[0]), @intFromFloat(cloud[1]), color);
+    }
+}
+
+fn executeCommands(
+    cmds: []const screen.Command,
+    boomSound: rl.Sound,
+) void {
+    for (cmds) |command| {
+        switch (command) {
+            .playSoundEffect => |sfx| {
+                if (sfx == screen.SoundEffect.boom) {
+                    rl.PlaySound(boomSound);
+                }
+            },
+            .playPropellerAudio => |_| {
+                // if (audio.on) {
+                //     rl.PlayMusicStream(propellerAudio1);
+                // } else {
+                //     rl.StopMusicStream(propellerAudio1);
+                // }
+            },
+        }
     }
 }
