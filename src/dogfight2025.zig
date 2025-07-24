@@ -93,6 +93,7 @@ pub fn run() !void {
                 screen.Msg{ .inputClicked = screen.Inputs.Plane1Rise },
             );
             currentScreen = result.screen;
+            executeCommands(result.commands.items, res);
         }
 
         // Update - handle time
@@ -107,6 +108,7 @@ pub fn run() !void {
             },
         );
         currentScreen = result.screen;
+        executeCommands(result.commands.items, res);
 
         rl.EndDrawing();
     }
