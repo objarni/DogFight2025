@@ -167,8 +167,13 @@ fn executeCommands(
             },
             .playPropellerAudio => |audio| {
                 if (audio.on) {
-                    if (!rl.IsMusicStreamPlaying(res.propellerAudio1))
+                    if (!rl.IsMusicStreamPlaying(res.propellerAudio1)) {
                         rl.PlayMusicStream(res.propellerAudio1);
+                    }
+                    rl.SetMusicPitch(res.propellerAudio1, audio.pitch);
+                    std.debug.print("Playing propeller audio with pitch: {}\n", .{audio.pitch});
+                    rl.SetMusicPan(res.propellerAudio1, audio.pan);
+                    std.debug.print("Setting propeller audio pan: {}\n", .{audio.pan});
                 } else {
                     if (rl.IsMusicStreamPlaying(res.propellerAudio1))
                         rl.StopMusicStream(res.propellerAudio1);
