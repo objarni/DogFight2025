@@ -47,6 +47,10 @@ pub fn run() !void {
 
     const ally: std.mem.Allocator = std.heap.page_allocator;
 
+    var allMsgs: std.ArrayList(screen.Msg) = .init(ally);
+    defer ally.free(allMsgs.items);
+    try allMsgs.ensureTotalCapacity(10);
+
     while (!rl.WindowShouldClose()) {
         if (!rl.IsMusicStreamPlaying(res.propellerAudio1))
             rl.PlayMusicStream(res.propellerAudio1);
@@ -75,40 +79,29 @@ pub fn run() !void {
         // Update music streams
         rl.UpdateMusicStream(res.propellerAudio1);
 
-        // Update - handle input
-        if (rl.IsKeyPressed(rl.KEY_SPACE)) {
-            const result = try screen.updateScreen(
-                ally,
-                currentScreen,
-                screen.Msg{ .inputClicked = screen.Inputs.GeneralAction },
-            );
-            currentScreen = result.screen;
-            const cmds = result.commands.items;
-            executeCommands(cmds, res);
-        }
-        if (rl.IsKeyPressed(rl.KEY_A)) {
-            const result = try screen.updateScreen(
-                ally,
-                currentScreen,
-                screen.Msg{ .inputClicked = screen.Inputs.Plane1Rise },
-            );
-            currentScreen = result.screen;
-            executeCommands(result.commands.items, res);
-        }
-
-        // Update - handle time
-        const result = try screen.updateScreen(
-            ally,
-            currentScreen,
-            screen.Msg{
+        allMsgs.clearAndFree();
+        if(rl.IsKeyPressed(rl.KEY_SPACE))
+            allMsgs.append(screen.Msg{ .inputClicked = screen.Inputs.GeneralAction }) catch |err| {
+                std.debug.print("Error appending message: {}\n", .{err});
+            };
+        if(rl.IsKeyPressed(rl.KEY_A))
+            allMsgs.append(screen.Msg{ .inputClicked = screen.Inputs.Plane1Rise }) catch |err| {
+                std.debug.print("Error appending message: {}\n", .{err});
+            };
+        const timePassed = screen.Msg{
                 .timePassed = screen.TimePassed{
                     .totalTime = @floatCast(rl.GetTime()),
                     .deltaTime = @floatCast(rl.GetFrameTime()),
-                },
-            },
-        );
-        currentScreen = result.screen;
-        executeCommands(result.commands.items, res);
+                } };
+        allMsgs.append(timePassed) catch |err| {
+            std.debug.print("Error appending time message: {}\n", .{err});
+        };
+
+        for(allMsgs.items) |msg| {
+            const result = try screen.updateScreen(ally, currentScreen, msg);
+            currentScreen = result.screen;
+            executeCommands(result.commands.items, res);
+        }
 
         rl.EndDrawing();
     }
