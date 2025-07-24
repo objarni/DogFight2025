@@ -11,7 +11,7 @@ const PlaneConstants = struct {
     groundAccelerationPerS: f32,
 };
 
-const PlaneState = enum {
+pub const PlaneState = enum {
     STILL,
     TAKEOFF_ROLL,
     FLYING,

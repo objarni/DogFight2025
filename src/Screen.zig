@@ -7,6 +7,9 @@ pub const Screen = union(enum) {
     }
 };
 
+const window_width: u16 = 960;
+const window_height: u16 = 540;
+
 pub const MenuState = struct {
     blink: bool = false,
 };
@@ -16,6 +19,7 @@ const V = v2.V;
 const v = v2.v;
 
 const Plane = @import("Plane.zig").Plane;
+const PlaneState = @import("Plane.zig").PlaneState;
 
 pub const GameState = struct {
     clouds: [2]V,
@@ -40,12 +44,34 @@ pub const GameState = struct {
                     state.plane1.position[1],
                 });
 
+                // Pitch of propeller audio should be based on plane speed
+                // but with minimum 0.5 and maximum 2.0
+                const propellerPitch: f32 = @max(0.5, @min(2.0, state.plane1.velocity[0] / 50.0));
+                // Panning of propeller audio should be based on plane position
+                // but with minimum 0.0 and maximum 1.0
+                const propellerPan: f32 = @max(0.0, @min(1.0, (state.plane1.position[0] - 100.0) / window_width));
+                const propellerOn = state.plane1.state != PlaneState.STILL;
+
+                const propellerCmd = Command{
+                    .playPropellerAudio = PropellerAudio{
+                        .plane = 0, // 0 for plane 1
+                        .on = propellerOn,
+                        .pan = propellerPan,
+                        .pitch = propellerPitch,
+                    },
+                };
+
                 const deltaX: f32 = time.deltaTime;
                 var newState = state;
                 newState.clouds[0][0] -= deltaX * 5.0;
                 newState.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
                 newState.plane1 = newState.plane1.timePassed(time.deltaTime);
-                return try UpdateResult.init(ally, Screen{ .game = newState }, &.{});
+
+                return try UpdateResult.init(
+                    ally,
+                    Screen{ .game = newState },
+                    &.{propellerCmd},
+                );
             },
             .inputClicked => |input| {
                 var newState = state;
