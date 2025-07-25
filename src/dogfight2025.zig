@@ -164,8 +164,15 @@ fn executeCommands(
     for (cmds) |command| {
         switch (command) {
             .playSoundEffect => |sfx| {
-                if (sfx == screen.SoundEffect.boom) {
-                    rl.PlaySound(res.boomSound);
+                switch(sfx) {
+                    .boom => {
+                        rl.PlaySound(res.boomSound);
+                        std.debug.print("Playing boom sound effect\n", .{});
+                    },
+                    .crash => {
+                        rl.PlaySound(res.crashSound);
+                        std.debug.print("Playing crash sound effect\n", .{});
+                    },
                 }
             },
             .playPropellerAudio => |audio| {
@@ -174,9 +181,9 @@ fn executeCommands(
                         rl.PlayMusicStream(res.propellerAudio1);
                     }
                     rl.SetMusicPitch(res.propellerAudio1, audio.pitch);
-                    std.debug.print("Playing propeller audio with pitch: {}\n", .{audio.pitch});
+                    // std.debug.print("Playing propeller audio with pitch: {}\n", .{audio.pitch});
                     rl.SetMusicPan(res.propellerAudio1, audio.pan);
-                    std.debug.print("Setting propeller audio pan: {}\n", .{audio.pan});
+                    // std.debug.print("Setting propeller audio pan: {}\n", .{audio.pan});
                 } else {
                     if (rl.IsMusicStreamPlaying(res.propellerAudio1))
                         rl.StopMusicStream(res.propellerAudio1);
