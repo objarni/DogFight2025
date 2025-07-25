@@ -1,4 +1,3 @@
-
 const std = @import("std");
 
 const v2 = @import("v.zig");
@@ -6,9 +5,10 @@ const V = v2.V;
 const v = v2.v;
 
 const PlaneConstants = struct {
-    initialPos : V,
+    initialPos: V,
     takeoffSpeed: f32,
     groundAccelerationPerS: f32,
+    minTakeOffSpeed: f32 = 50.0,
 };
 
 pub const PlaneState = enum {
@@ -35,7 +35,7 @@ pub const Plane = struct {
 
     pub fn rise(self: Plane) Plane {
         if (self.state == .STILL) {
-            const newState :Plane = .{
+            const newState: Plane = .{
                 .state = .TAKEOFF_ROLL,
                 .position = self.position,
                 .velocity = self.velocity,
@@ -43,12 +43,17 @@ pub const Plane = struct {
             };
             return newState;
         }
+        if (self.state == .TAKEOFF_ROLL) {
+            var newState = self;
+            newState.state = .CRASH;
+            return newState;
+        }
         return self;
     }
 
     pub fn dive(self: Plane) Plane {
         if (self.state == .STILL) {
-            const newState :Plane = .{
+            const newState: Plane = .{
                 .state = .TAKEOFF_ROLL,
                 .position = self.position,
                 .velocity = self.velocity,
@@ -82,12 +87,7 @@ const testPlaneConstants = PlaneConstants{
 
 test {
     const plane = Plane.init(testPlaneConstants);
-    const expected = Plane{
-        .position = v(50, 200),
-        .velocity = v(0, 0),
-        .state = .STILL,
-        .planeConstants = testPlaneConstants
-    };
+    const expected = Plane{ .position = v(50, 200), .velocity = v(0, 0), .state = .STILL, .planeConstants = testPlaneConstants };
     try std.testing.expectEqual(expected, plane);
 }
 
@@ -107,6 +107,12 @@ test "plane acceleration on ground during takeoff roll" {
     const plane = Plane.init(testPlaneConstants);
     const newPlane = plane.rise().timePassed(1.0);
     try std.testing.expectEqual(10.0, newPlane.velocity[0]);
+}
+
+test "plane crashes if not enough speed during takeoff roll" {
+    const plane = Plane.init(testPlaneConstants);
+    const newPlane = plane.rise().timePassed(0.1).rise();
+    try std.testing.expectEqual(PlaneState.CRASH, newPlane.state);
 }
 
 // #plane initial state is STILL
