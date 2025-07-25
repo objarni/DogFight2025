@@ -44,6 +44,11 @@ pub const Plane = struct {
             return newState;
         }
         if (self.state == .TAKEOFF_ROLL) {
+            if(self.velocity[0] >= self.planeConstants.takeoffSpeed) {
+                var newState = self;
+                newState.state = .FLYING;
+                return newState;
+            }
             var newState = self;
             newState.state = .CRASH;
             return newState;
@@ -113,6 +118,16 @@ test "plane crashes if not enough speed during takeoff roll" {
     const plane = Plane.init(testPlaneConstants);
     const newPlane = plane.rise().timePassed(0.1).rise();
     try std.testing.expectEqual(PlaneState.CRASH, newPlane.state);
+}
+
+test "plane flies if enough speed during takeoff roll" {
+    const plane = Plane.init(testPlaneConstants);
+    var newPlane = plane.rise().timePassed(0.1);
+    while(newPlane.velocity[0] < testPlaneConstants.minTakeOffSpeed) {
+        newPlane = newPlane.timePassed(0.1);
+    }
+    newPlane = newPlane.rise();
+    try std.testing.expectEqual(PlaneState.FLYING, newPlane.state);
 }
 
 // #plane initial state is STILL
