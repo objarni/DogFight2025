@@ -130,7 +130,10 @@ pub const Command = union(enum) {
     playPropellerAudio: PropellerAudio,
 };
 
-pub const SoundEffect = enum { boom, crash, };
+pub const SoundEffect = enum {
+    boom,
+    crash,
+};
 
 pub const PropellerAudio = struct {
     plane: u1, // 0 for plane 1, 1 for plane 2
