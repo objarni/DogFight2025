@@ -67,8 +67,11 @@ pub const Plane = struct {
             return newState;
         }
         if (self.state == .TAKEOFF_ROLL) {
-            var newState = self;
-            newState.state = .CRASH;
+            const newState = block: {
+                var temp = self;
+                temp.state = .CRASH;
+                break :block temp;
+            };
             return newState;
         }
         return self;
