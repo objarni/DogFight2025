@@ -22,12 +22,14 @@ pub fn run() !void {
     //
     const res = Resources{
         .boomSound = rl.LoadSound("assets/boom.wav"),
+        .crashSound = rl.LoadSound("assets/Crash.mp3"),
         .planeTex = rl.LoadTexture("assets/plane.png"),
         .cloudTex = rl.LoadTexture("assets/CloudBig.png"),
         .propellerAudio1 = rl.LoadMusicStream("assets/PropellerPlane.mp3"),
     };
     defer {
         rl.UnloadSound(res.boomSound);
+        rl.UnloadSound(res.crashSound);
         rl.UnloadTexture(res.planeTex);
         rl.UnloadTexture(res.cloudTex);
         rl.UnloadMusicStream(res.propellerAudio1);
@@ -125,6 +127,7 @@ fn drawMenu(menu: screen.MenuState) void {
 
 const Resources = struct {
     boomSound: rl.Sound,
+    crashSound: rl.Sound,
     planeTex: rl.Texture2D,
     cloudTex: rl.Texture2D,
     propellerAudio1: rl.Music,
