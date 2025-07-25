@@ -67,12 +67,7 @@ pub const Plane = struct {
             return newState;
         }
         if (self.state == .TAKEOFF_ROLL) {
-            const newState = block: {
-                var temp = self;
-                temp.state = .CRASH;
-                break :block temp;
-            };
-            return newState;
+            return sameExcept(self, "state", PlaneState.CRASH);
         }
         return self;
     }
@@ -97,6 +92,12 @@ const testPlaneConstants = PlaneConstants{
     .takeoffSpeed = 50.0,
     .groundAccelerationPerS = 10.0,
 };
+
+pub inline fn sameExcept(anystruct: anytype, comptime field: []const u8, o: anytype) @TypeOf(anystruct) {
+  var new = anystruct;
+  @field(new, field) = o;
+  return new;
+}
 
 test {
     const plane = Plane.init(testPlaneConstants);
