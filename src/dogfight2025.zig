@@ -47,7 +47,8 @@ pub fn run() !void {
     var drawAverage: i128 = 0;
     var drawAverageCount: u32 = 0;
 
-    const ally: std.mem.Allocator = std.heap.page_allocator;
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    var ally = gpa.allocator();
 
     var allMsgs: std.ArrayList(screen.Msg) = .init(ally);
     defer ally.free(allMsgs.items);
@@ -92,6 +93,9 @@ pub fn run() !void {
 
         rl.EndDrawing();
     }
+
+    const leaked = gpa.detectLeaks();
+    std.debug.print("Leaked allocations: {any}\n", .{leaked});
 }
 
 fn collectMessages(allMsgs: *std.ArrayList(screen.Msg)) void {
