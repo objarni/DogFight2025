@@ -86,7 +86,7 @@ pub fn run() !void {
         for (allMsgs.items) |msg| {
             const result = try screen.updateScreen(ally, currentScreen, msg);
             currentScreen = result.screen;
-            executeCommands(result.commands.items, res);
+            executeCommands(result.commands.items, res, &currentScreen);
             result.commands.deinit();
         }
         allMsgs.clearAndFree();
@@ -165,6 +165,7 @@ fn drawGame(
 fn executeCommands(
     cmds: []const screen.Command,
     res: Resources,
+    currentScreen: *screen.Screen,
 ) void {
     for (cmds) |command| {
         switch (command) {
@@ -192,6 +193,17 @@ fn executeCommands(
                 } else {
                     if (rl.IsMusicStreamPlaying(res.propellerAudio1))
                         rl.StopMusicStream(res.propellerAudio1);
+                }
+            },
+            .switchSubScreen => |subScreen| {
+                std.debug.print("Switching to sub-screen: {}\n", .{subScreen});
+                switch (subScreen) {
+                    .menu => |_| {
+                        currentScreen.* = screen.Screen { .menu = screen.MenuState.init() };
+                    },
+                    .game => |_| {
+                        currentScreen.* = screen.Screen { .game = screen.GameState.init() };
+                    },
                 }
             },
         }

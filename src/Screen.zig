@@ -3,7 +3,7 @@ pub const Screen = union(enum) {
     game: GameState,
 
     pub fn init() Screen {
-        return Screen{ .menu = MenuState{} };
+        return Screen{ .menu = .init() };
     }
 };
 
@@ -12,6 +12,10 @@ const window_height: u16 = 540;
 
 pub const MenuState = struct {
     blink: bool = false,
+
+    pub fn init() MenuState {
+        return MenuState{};
+    }
 };
 
 const v2 = @import("v.zig");
@@ -25,7 +29,7 @@ pub const GameState = struct {
     clouds: [2]V,
     plane1: Plane,
 
-    fn init() GameState {
+    pub fn init() GameState {
         return GameState{
             .clouds = .{ v(555.0, 305.0), v(100.0, 100.0) },
             .plane1 = Plane.init(.{
@@ -136,6 +140,12 @@ pub const UpdateResult = struct {
 pub const Command = union(enum) {
     playSoundEffect: SoundEffect,
     playPropellerAudio: PropellerAudio,
+    switchSubScreen: SubScreen,
+};
+
+pub const SubScreen = enum {
+    menu,
+    game,
 };
 
 pub const SoundEffect = enum {
