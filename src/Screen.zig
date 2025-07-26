@@ -176,14 +176,6 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: Screen, msg: Msg) !UpdateRe
                     const boomCmd = Command{
                         .playSoundEffect = SoundEffect.boom,
                     };
-                    const propellerCmd = Command{
-                        .playPropellerAudio = PropellerAudio{
-                            .plane = 0,
-                            .on = true,
-                            .pan = 0.5,
-                            .pitch = 1.0,
-                        },
-                    };
                     switch (input) {
                         .GeneralAction => {
                             return UpdateResult.init(
@@ -191,7 +183,6 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: Screen, msg: Msg) !UpdateRe
                                 Screen{ .game = GameState.init() },
                                 &.{
                                     boomCmd,
-                                    propellerCmd,
                                 },
                             ) catch |err| {
                                 std.debug.panic("Failed to create UpdateResult: {}", .{err});
