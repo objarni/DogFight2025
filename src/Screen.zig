@@ -296,7 +296,7 @@ test "both clouds move left by, but the lower cloud moves faster" {
     }
 }
 
-// TODO: updateScreen should be member, and get a pointer to Screen
+// TODO: to avoid copies, updateScreen could be member, and get a pointer to var Screen
 // TODO: wrap clouds around the screen
 // TODO: display airplanes left (10 to start with)
 // TODO: add planes
