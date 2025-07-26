@@ -36,6 +36,10 @@ pub const GameState = struct {
         };
     }
 
+    fn handleMessage(self: *GameState, ally: std.mem.Allocator, msg: Msg) !?UpdateResult {
+        return GameState.handleMsg(ally, self.*, msg);
+    }
+
     fn handleMsg(ally: std.mem.Allocator, state: GameState, msg: Msg) !?UpdateResult {
         return switch (msg) {
             .timePassed => |time| {
@@ -86,7 +90,7 @@ pub const GameState = struct {
                 var newState = state;
                 switch (input) {
                     .Plane1Rise => newState.plane1 = newState.plane1.rise(),
-                    .Plane2Rise => {}, // TODO: Implement second plane
+                    .Plane2Rise => {}, // NOTE:Implement second plane
                     else => {},
                 }
                 return try UpdateResult.init(ally, Screen{ .game = newState }, &.{});
@@ -283,9 +287,9 @@ test "both clouds move left by, but the lower cloud moves faster" {
 }
 
 // TODO: GameState.handleMsg could be 'member' rather than static
-// TODO handleMsg to get pointer to state?
-// TODO wrap clouds around the screen
-// TODO display airplanes left (10 to start with)
-// TODO add planes
-// TODO Break out update logic for menu into separate function
-// TODO add SwitchScreen command, and refactor screen update logic to use it (and dogfight logic too of course)
+// TODO: handleMsg to get pointer to state?
+// TODO: wrap clouds around the screen
+// TODO: display airplanes left (10 to start with)
+// TODO: add planes
+// TODO: Break out update logic for menu into separate function
+// TODO: add SwitchScreen command, and refactor screen update logic to use it (and dogfight logic too of course)
