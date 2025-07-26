@@ -268,12 +268,11 @@ test "press space blinks every 0.5 second on menu screen" {
 }
 
 test "both clouds move left by, but the lower cloud moves faster" {
-    const gameState: GameState = GameState.init();
+    var gameState: GameState = GameState.init();
     const highCloudX: f32 = gameState.clouds[0][0];
     const lowCloudX: f32 = gameState.clouds[1][0];
-    const result: ?UpdateResult = try GameState.handleMsg(
+    const result: ?UpdateResult = try gameState.handleMessage(
         std.testing.allocator,
-        gameState,
         Msg{ .timePassed = TimePassed{ .totalTime = 1.0, .deltaTime = 1.0 } },
     );
     if(result) |newScreen| {
