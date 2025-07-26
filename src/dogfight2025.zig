@@ -86,6 +86,7 @@ pub fn run() !void {
             const result = try screen.updateScreen(ally, currentScreen, msg);
             currentScreen = result.screen;
             executeCommands(result.commands.items, res);
+            result.commands.deinit();
         }
         allMsgs.clearAndFree();
 
