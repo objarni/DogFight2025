@@ -1,6 +1,6 @@
 const std = @import("std");
 
-const v2 = @import("v.zig");
+const v2 = @import("V.zig");
 const V = v2.V;
 const v = v2.v;
 

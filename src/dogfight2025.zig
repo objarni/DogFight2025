@@ -21,9 +21,9 @@ pub fn run() !void {
     // rl.ToggleFullscreen();
     //
     const res = Resources{
-        .boomSound = rl.LoadSound("assets/boom.wav"),
+        .boomSound = rl.LoadSound("assets/Boom.wav"),
         .crashSound = rl.LoadSound("assets/Crash.mp3"),
-        .planeTex = rl.LoadTexture("assets/plane.png"),
+        .planeTex = rl.LoadTexture("assets/Plane.png"),
         .cloudTex = rl.LoadTexture("assets/CloudBig.png"),
         .propellerAudio1 = rl.LoadMusicStream("assets/PropellerPlane.mp3"),
     };
