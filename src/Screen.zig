@@ -180,9 +180,10 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: Screen, msg: Msg) !UpdateRe
                         .GeneralAction => {
                             return UpdateResult.init(
                                 ally,
-                                Screen{ .game = GameState.init() },
+                                screen,
                                 &.{
                                     boomCmd,
+                                    Command{ .switchSubScreen = SubScreen.game },
                                 },
                             ) catch |err| {
                                 std.debug.panic("Failed to create UpdateResult: {}", .{err});
@@ -277,7 +278,7 @@ test "both clouds move left by, but the lower cloud moves faster" {
         std.testing.allocator,
         Msg{ .timePassed = TimePassed{ .totalTime = 1.0, .deltaTime = 1.0 } },
     );
-    if(result) |newScreen| {
+    if (result) |newScreen| {
         defer newScreen.deinit();
         try std.testing.expectApproxEqAbs(highCloudX - 5.0, newScreen.screen.game.clouds[0][0], 0.1);
         try std.testing.expectApproxEqAbs(lowCloudX - 8.9, newScreen.screen.game.clouds[1][0], 0.1);
