@@ -84,7 +84,11 @@ pub fn run() !void {
 
         collectMessages(&allMsgs);
         for (allMsgs.items) |msg| {
-            const result = try screen.updateScreen(ally, currentScreen, msg);
+            const result = try screen.updateScreen(
+                ally,
+                &currentScreen,
+                msg,
+            );
             currentScreen = result.screen;
             executeCommands(result.commands.items, res, &currentScreen);
             result.commands.deinit();
@@ -170,7 +174,7 @@ fn executeCommands(
     for (cmds) |command| {
         switch (command) {
             .playSoundEffect => |sfx| {
-                switch(sfx) {
+                switch (sfx) {
                     .boom => {
                         rl.PlaySound(res.boomSound);
                         std.debug.print("Playing boom sound effect\n", .{});
@@ -199,10 +203,10 @@ fn executeCommands(
                 std.debug.print("Switching to sub-screen: {}\n", .{subScreen});
                 switch (subScreen) {
                     .menu => |_| {
-                        currentScreen.* = screen.Screen { .menu = screen.MenuState.init() };
+                        currentScreen.* = screen.Screen{ .menu = screen.MenuState.init() };
                     },
                     .game => |_| {
-                        currentScreen.* = screen.Screen { .game = screen.GameState.init() };
+                        currentScreen.* = screen.Screen{ .game = screen.GameState.init() };
                     },
                 }
             },
