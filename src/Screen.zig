@@ -203,7 +203,8 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: Screen, msg: Msg) !UpdateRe
             }
         },
         .game => |state| {
-            const maybeResult = try GameState.handleMsg(ally, state, msg);
+            var newState = state;
+            const maybeResult = try newState.handleMessage(ally, msg);
             if (maybeResult) |result| return result;
         },
     }
