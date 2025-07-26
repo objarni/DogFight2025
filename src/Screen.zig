@@ -264,19 +264,25 @@ test "press space blinks every 0.5 second on menu screen" {
 }
 
 test "both clouds move left by, but the lower cloud moves faster" {
-    const initialScreen: Screen = Screen{ .game = GameState.init() };
-    const highCloudX: f32 = initialScreen.game.clouds[0][0];
-    const lowCloudX: f32 = initialScreen.game.clouds[1][0];
-    const updatedScreen: UpdateResult = try updateScreen(
+    const gameState: GameState = GameState.init();
+    const highCloudX: f32 = gameState.clouds[0][0];
+    const lowCloudX: f32 = gameState.clouds[1][0];
+    const result: ?UpdateResult = try GameState.handleMsg(
         std.testing.allocator,
-        initialScreen,
+        gameState,
         Msg{ .timePassed = TimePassed{ .totalTime = 1.0, .deltaTime = 1.0 } },
     );
-    defer updatedScreen.deinit();
-    try std.testing.expectApproxEqAbs(highCloudX - 5.0, updatedScreen.screen.game.clouds[0][0], 0.1);
-    try std.testing.expectApproxEqAbs(lowCloudX - 8.9, updatedScreen.screen.game.clouds[1][0], 0.1);
+    if(result) |newScreen| {
+        defer newScreen.deinit();
+        try std.testing.expectApproxEqAbs(highCloudX - 5.0, newScreen.screen.game.clouds[0][0], 0.1);
+        try std.testing.expectApproxEqAbs(lowCloudX - 8.9, newScreen.screen.game.clouds[1][0], 0.1);
+    } else {
+        std.debug.print("Expected a result from GameState.handleMsg, but got null\n", .{});
+        try std.testing.expect(false);
+    }
 }
 
+// TODO: GameState.handleMsg could be 'member' rather than static
 // TODO wrap clouds around the screen
 // TODO display airplanes left (10 to start with)
 // TODO add planes
