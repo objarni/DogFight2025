@@ -123,6 +123,10 @@ pub const UpdateResult = struct {
             .commands = try arrayListOf(Command, ally, cmds),
         };
     }
+
+    fn deinit(self: UpdateResult) void {
+        self.commands.deinit();
+    }
 };
 
 pub const Command = union(enum) {
@@ -221,11 +225,13 @@ test "hitting action button should switch to game and plays Boom sound" {
         oldScreen,
         Msg{ .inputClicked = Inputs.GeneralAction },
     );
+    defer actual.deinit();
     const expected = try UpdateResult.init(
         std.testing.allocator,
         Screen{ .game = GameState.init() },
         &.{Command{ .playSoundEffect = SoundEffect.boom }},
     );
+    defer expected.deinit();
     try std.testing.expectEqual(expected, actual);
 }
 
@@ -236,12 +242,14 @@ test "press space blinks every 0.5 second on menu screen" {
         initialScreen,
         Msg{ .timePassed = .{ .totalTime = 0.40, .deltaTime = 0.40 } },
     );
+    defer menuScreenNoTextExpected.deinit();
     try std.testing.expectEqual(menuScreenNoTextExpected.screen.menu.blink, false);
     const menuScreenTextExpected: UpdateResult = try updateScreen(
         std.testing.allocator,
         menuScreenNoTextExpected.screen,
         Msg{ .timePassed = .{ .totalTime = 0.75, .deltaTime = 0.35 } },
     );
+    defer menuScreenTextExpected.deinit();
     try std.testing.expectEqual(menuScreenTextExpected.screen.menu.blink, true);
 }
 
@@ -254,6 +262,7 @@ test "both clouds move left by, but the lower cloud moves faster" {
         initialScreen,
         Msg{ .timePassed = TimePassed{ .totalTime = 1.0, .deltaTime = 1.0 } },
     );
+    defer updatedScreen.deinit();
     try std.testing.expectApproxEqAbs(highCloudX - 5.0, updatedScreen.screen.game.clouds[0][0], 0.1);
     try std.testing.expectApproxEqAbs(lowCloudX - 8.9, updatedScreen.screen.game.clouds[1][0], 0.1);
 }
