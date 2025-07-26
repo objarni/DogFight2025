@@ -229,10 +229,20 @@ test "hitting action button should switch to game and plays Boom sound" {
     const expected = try UpdateResult.init(
         std.testing.allocator,
         Screen{ .game = GameState.init() },
-        &.{Command{ .playSoundEffect = SoundEffect.boom }},
+        &.{
+            Command{ .playSoundEffect = SoundEffect.boom }, Command{
+                .playPropellerAudio = PropellerAudio{
+                    .plane = 0,
+                    .on = true,
+                    .pan = 0.5,
+                    .pitch = 1.0,
+                },
+            },
+        },
     );
     defer expected.deinit();
-    try std.testing.expectEqual(expected, actual);
+    try std.testing.expectEqual(expected.screen, actual.screen);
+    try std.testing.expectEqualSlices(Command, expected.commands.items, actual.commands.items);
 }
 
 test "press space blinks every 0.5 second on menu screen" {
