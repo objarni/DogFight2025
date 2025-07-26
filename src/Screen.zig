@@ -286,8 +286,6 @@ test "both clouds move left by, but the lower cloud moves faster" {
     }
 }
 
-// TODO: GameState.handleMsg could be 'member' rather than static
-// TODO: handleMsg to get pointer to state?
 // TODO: wrap clouds around the screen
 // TODO: display airplanes left (10 to start with)
 // TODO: add planes
