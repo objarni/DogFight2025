@@ -301,4 +301,3 @@ test "both clouds move left by, but the lower cloud moves faster" {
 // TODO: display airplanes left (10 to start with)
 // TODO: add planes
 // TODO: Break out update logic for menu into separate function
-// TODO: add SwitchScreen command, and refactor screen update logic to use it (and dogfight logic too of course)
