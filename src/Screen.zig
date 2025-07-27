@@ -47,15 +47,6 @@ pub const GameState = struct {
     fn handleMsg(ally: std.mem.Allocator, state: GameState, msg: Msg) !?UpdateResult {
         return switch (msg) {
             .timePassed => |time| {
-                // std.debug.print("plane position: {d}, {d}\n", .{
-                //     state.plane1.position[0],
-                //     state.plane1.position[1],
-                // });
-                // std.debug.print("plane velocity: {d}, {d}\n", .{
-                //     state.plane1.velocity[0],
-                //     state.plane1.velocity[1],
-                // });
-
                 // Pitch of propeller audio should be based on plane speed
                 // but with minimum 0.5 and maximum 2.0
                 const propellerPitch: f32 = @max(0.5, @min(2.0, state.plane1.velocity[0] / 50.0));
@@ -63,11 +54,6 @@ pub const GameState = struct {
                 // but with minimum 0.0 and maximum 1.0
                 const propellerPan: f32 = @max(0.0, @min(1.0, state.plane1.position[0] / window_width));
                 const propellerOn = state.plane1.state != PlaneState.STILL;
-                // std.debug.print("propeller pan: {d}, pitch: {d}, on: {}\n", .{
-                //     propellerPan,
-                //     propellerPitch,
-                //     propellerOn,
-                // });
 
                 const propellerCmd = Command{
                     .playPropellerAudio = PropellerAudio{
