@@ -30,7 +30,13 @@ fn printExplosionState(
 ) ![]const u8 {
     const result = try std.fmt.allocPrint(
         allocator,
-        "t={d}\nouterPosition={d},{d}\nouterDiameter={d}\ninnerPosition={d},{d}\ninnerDiameter={d}\n",
+        \\t={d}
+        \\outerPosition={d},{d}
+        \\outerDiameter={d}
+        \\innerPosition={d},{d}
+        \\innerDiameter={d}
+        \\
+        ,
         .{
             explosion.ageSeconds,
             explosion.outerPosition[0],
