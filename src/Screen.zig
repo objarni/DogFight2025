@@ -44,16 +44,16 @@ pub const GameState = struct {
         return GameState.handleMsg(ally, self, msg);
     }
 
-    fn handleMsg(ally: std.mem.Allocator, state: *GameState, msg: Msg) !?UpdateResult {
+    fn handleMsg(ally: std.mem.Allocator, self: *GameState, msg: Msg) !?UpdateResult {
         return switch (msg) {
             .timePassed => |time| {
                 // Pitch of propeller audio should be based on plane speed
                 // but with minimum 0.5 and maximum 2.0
-                const propellerPitch: f32 = @max(0.5, @min(2.0, state.plane1.velocity[0] / 50.0));
+                const propellerPitch: f32 = @max(0.5, @min(2.0, self.plane1.velocity[0] / 50.0));
                 // Panning of propeller audio should be based on plane position
                 // but with minimum 0.0 and maximum 1.0
-                const propellerPan: f32 = @max(0.0, @min(1.0, state.plane1.position[0] / window_width));
-                const propellerOn = state.plane1.state != PlaneState.STILL;
+                const propellerPan: f32 = @max(0.0, @min(1.0, self.plane1.position[0] / window_width));
+                const propellerOn = self.plane1.state != PlaneState.STILL;
 
                 const propellerCmd = Command{
                     .playPropellerAudio = PropellerAudio{
@@ -65,29 +65,29 @@ pub const GameState = struct {
                 };
 
                 const deltaX: f32 = time.deltaTime;
-                state.clouds[0][0] -= deltaX * 5.0;
-                state.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
-                state.plane1 = state.plane1.timePassed(time.deltaTime);
+                self.clouds[0][0] -= deltaX * 5.0;
+                self.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
+                self.plane1 = self.plane1.timePassed(time.deltaTime);
 
                 return try UpdateResult.init(
                     ally,
-                    Screen{ .game = state.* },
+                    Screen{ .game = self.* },
                     &.{propellerCmd},
                 );
             },
             .inputClicked => |input| {
-                const plane1oldState = state.plane1.state;
+                const plane1oldState = self.plane1.state;
                 switch (input) {
-                    .Plane1Rise => state.plane1 = state.plane1.rise(),
+                    .Plane1Rise => self.plane1 = self.plane1.rise(),
                     .Plane2Rise => {}, // TODO: Implement second plane
                     else => {},
                 }
-                if(state.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
-                    return try UpdateResult.init(ally, Screen{ .game = state.* }, &.{
+                if(self.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
+                    return try UpdateResult.init(ally, Screen{ .game = self.* }, &.{
                         Command{ .playSoundEffect = SoundEffect.crash },
                     });
                 }
-                return try UpdateResult.init(ally, Screen{ .game = state.* }, &.{});
+                return try UpdateResult.init(ally, Screen{ .game = self.* }, &.{});
             },
         };
     }
