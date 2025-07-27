@@ -41,10 +41,10 @@ pub const GameState = struct {
     }
 
     fn handleMessage(self: *GameState, ally: std.mem.Allocator, msg: Msg) !?UpdateResult {
-        return GameState.handleMsg(ally, self.*, msg);
+        return GameState.handleMsg(ally, self, msg);
     }
 
-    fn handleMsg(ally: std.mem.Allocator, state: GameState, msg: Msg) !?UpdateResult {
+    fn handleMsg(ally: std.mem.Allocator, state: *GameState, msg: Msg) !?UpdateResult {
         return switch (msg) {
             .timePassed => |time| {
                 // Pitch of propeller audio should be based on plane speed
@@ -72,7 +72,7 @@ pub const GameState = struct {
 
                 return try UpdateResult.init(
                     ally,
-                    Screen{ .game = newState },
+                    Screen{ .game = newState.* },
                     &.{propellerCmd},
                 );
             },
@@ -85,11 +85,11 @@ pub const GameState = struct {
                     else => {},
                 }
                 if(newState.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
-                    return try UpdateResult.init(ally, Screen{ .game = newState }, &.{
+                    return try UpdateResult.init(ally, Screen{ .game = newState.* }, &.{
                         Command{ .playSoundEffect = SoundEffect.crash },
                     });
                 }
-                return try UpdateResult.init(ally, Screen{ .game = newState }, &.{});
+                return try UpdateResult.init(ally, Screen{ .game = newState.* }, &.{});
             },
         };
     }
