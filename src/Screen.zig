@@ -65,31 +65,29 @@ pub const GameState = struct {
                 };
 
                 const deltaX: f32 = time.deltaTime;
-                var newState = state;
-                newState.clouds[0][0] -= deltaX * 5.0;
-                newState.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
-                newState.plane1 = newState.plane1.timePassed(time.deltaTime);
+                state.clouds[0][0] -= deltaX * 5.0;
+                state.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
+                state.plane1 = state.plane1.timePassed(time.deltaTime);
 
                 return try UpdateResult.init(
                     ally,
-                    Screen{ .game = newState.* },
+                    Screen{ .game = state.* },
                     &.{propellerCmd},
                 );
             },
             .inputClicked => |input| {
-                var newState = state;
-                const plane1oldState = newState.plane1.state;
+                const plane1oldState = state.plane1.state;
                 switch (input) {
-                    .Plane1Rise => newState.plane1 = newState.plane1.rise(),
+                    .Plane1Rise => state.plane1 = state.plane1.rise(),
                     .Plane2Rise => {}, // TODO: Implement second plane
                     else => {},
                 }
-                if(newState.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
-                    return try UpdateResult.init(ally, Screen{ .game = newState.* }, &.{
+                if(state.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
+                    return try UpdateResult.init(ally, Screen{ .game = state.* }, &.{
                         Command{ .playSoundEffect = SoundEffect.crash },
                     });
                 }
-                return try UpdateResult.init(ally, Screen{ .game = newState.* }, &.{});
+                return try UpdateResult.init(ally, Screen{ .game = state.* }, &.{});
             },
         };
     }
