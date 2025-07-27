@@ -78,10 +78,16 @@ pub const GameState = struct {
             },
             .inputClicked => |input| {
                 var newState = state;
+                const plane1oldState = newState.plane1.state;
                 switch (input) {
                     .Plane1Rise => newState.plane1 = newState.plane1.rise(),
-                    .Plane2Rise => {}, // NOTE:Implement second plane
+                    .Plane2Rise => {}, // TODO: Implement second plane
                     else => {},
+                }
+                if(newState.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
+                    return try UpdateResult.init(ally, Screen{ .game = newState }, &.{
+                        Command{ .playSoundEffect = SoundEffect.crash },
+                    });
                 }
                 return try UpdateResult.init(ally, Screen{ .game = newState }, &.{});
             },
