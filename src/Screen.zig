@@ -41,10 +41,6 @@ pub const GameState = struct {
     }
 
     fn handleMessage(self: *GameState, ally: std.mem.Allocator, msg: Msg) !?UpdateResult {
-        return GameState.handleMsg(ally, self, msg);
-    }
-
-    fn handleMsg(ally: std.mem.Allocator, self: *GameState, msg: Msg) !?UpdateResult {
         return switch (msg) {
             .timePassed => |time| {
                 // Pitch of propeller audio should be based on plane speed
