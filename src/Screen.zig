@@ -204,7 +204,7 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: *Screen, msg: Msg) !UpdateR
                     if (newE.ageSeconds >= newE.lifetimeSeconds) {
                         // Reset explosion after it has finished
                         newE = Explosion.init(
-                            2.0 * rndFrac() + 0.1,
+                            1.0 * rndFrac() + 0.1,
                             v(
                                 window_width * rndFrac(),
                                 window_height * rndFrac(),
@@ -212,6 +212,14 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: *Screen, msg: Msg) !UpdateR
                             100.0 * rndFrac(),
                             0.0,
                             std.math.pi * 2 * rndFrac(),
+                        );
+                        return UpdateResult.init(
+                            ally,
+                            Screen{ .menu = MenuState{
+                                .blink = blink,
+                                .e = newE,
+                            } },
+                            &.{Command{ .playSoundEffect = SoundEffect.boom }},
                         );
                     }
                     return UpdateResult.init(
