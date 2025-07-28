@@ -250,7 +250,7 @@ const std = @import("std");
 
 test "game starts in menu" {
     const actual: Screen = .init();
-    const expected: Screen = .{ .menu = MenuState{} };
+    const expected: Screen = .{ .menu = MenuState.init() };
     try std.testing.expectEqual(expected, actual);
 }
 
