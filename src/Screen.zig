@@ -20,11 +20,11 @@ pub const MenuState = struct {
         return MenuState{
             .blink = false,
             .e = Explosion.init(
-                5.0, // lifetime in seconds
-                v(480.0, 270.0), // center of the screen
-                100.0, // outer diameter
-                50.0, // inner diameter
-                std.math.pi / 4.0, // initial inner position polar angle
+                2.0,
+                v(180.0, 270.0),
+                100.0,
+                50.0,
+                std.math.pi / 4.0,
             ),
         };
     }

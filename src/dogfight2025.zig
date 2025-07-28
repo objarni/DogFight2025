@@ -127,11 +127,29 @@ fn centerText(text: []const u8, y: u16, fontSize: u16, color: rl.Color) void {
 }
 
 fn drawMenu(menu: screen.MenuState) void {
-    rl.ClearBackground(rl.YELLOW);
+    rl.ClearBackground(rl.DARKBROWN);
     const textSize = 40;
     centerText("Dogfight 2025", 180, textSize, rl.GREEN);
     if (menu.blink)
         centerText("Press SPACE to START!", 220, 20, rl.LIGHTGRAY);
+    rl.DrawCircle(
+        @intFromFloat(menu.e.outerPosition[0]),
+        @intFromFloat(menu.e.outerPosition[1]),
+        menu.e.outerDiameter / 2 + 1,
+        rl.RED,
+    );
+    rl.DrawCircle(
+        @intFromFloat(menu.e.outerPosition[0]),
+        @intFromFloat(menu.e.outerPosition[1]),
+        menu.e.outerDiameter / 2,
+        rl.YELLOW,
+    );
+    rl.DrawCircle(
+        @intFromFloat(menu.e.innerPosition[0]),
+        @intFromFloat(menu.e.innerPosition[1]),
+        menu.e.innerDiameter / 2,
+        rl.DARKBROWN,
+    );
 }
 
 const Resources = struct {
