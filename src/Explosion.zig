@@ -15,7 +15,7 @@ const V = @import("V.zig").V;
 const v = @import("V.zig").v;
 const lerp = @import("V.zig").lerp;
 
-const Explosion = struct {
+pub const Explosion = struct {
     outerPosition: V,
     outerDiameter: f32,
     initialInnerPosition: V,
@@ -24,7 +24,7 @@ const Explosion = struct {
     lifetimeSeconds: f32,
     ageSeconds: f32,
 
-    fn init(
+    pub fn init(
         lifetimeSeconds: f32,
         outerPosition: V,
         outerDiameter: f32,
@@ -47,7 +47,7 @@ const Explosion = struct {
         };
     }
 
-    fn timePassed(self: *Explosion, seconds: f32) void {
+    pub fn timePassed(self: *Explosion, seconds: f32) void {
         self.ageSeconds += seconds;
         if (self.ageSeconds >= self.lifetimeSeconds) {
             self.ageSeconds = self.lifetimeSeconds;

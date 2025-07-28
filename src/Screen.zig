@@ -7,14 +7,26 @@ pub const Screen = union(enum) {
     }
 };
 
+const Explosion = @import("Explosion.zig").Explosion;
+
 const window_width: u16 = 960;
 const window_height: u16 = 540;
 
 pub const MenuState = struct {
     blink: bool = false,
+    e: Explosion,
 
     pub fn init() MenuState {
-        return MenuState{};
+        return MenuState{
+            .blink = false,
+            .e = Explosion.init(
+                5.0, // lifetime in seconds
+                v(480.0, 270.0), // center of the screen
+                100.0, // outer diameter
+                50.0, // inner diameter
+                std.math.pi / 4.0, // initial inner position polar angle
+            ),
+        };
     }
 };
 
@@ -78,7 +90,7 @@ pub const GameState = struct {
                     .Plane2Rise => {}, // TODO: Implement second plane
                     else => {},
                 }
-                if(self.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
+                if (self.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
                     return try UpdateResult.init(ally, Screen{ .game = self.* }, &.{
                         Command{ .playSoundEffect = SoundEffect.crash },
                     });
@@ -156,7 +168,7 @@ fn arrayListOf(comptime T: type, ally: std.mem.Allocator, items: []const T) !std
 
 pub fn updateScreen(ally: std.mem.Allocator, screen: *Screen, msg: Msg) !UpdateResult {
     switch (screen.*) {
-        .menu => |_| {
+        .menu => |menu| {
             switch (msg) {
                 .inputClicked => |input| {
                     const boomCmd = Command{
@@ -182,9 +194,14 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: *Screen, msg: Msg) !UpdateR
                     const numPeriods: f32 = time.totalTime / 0.5;
                     const intNumPeriods: u32 = @intFromFloat(numPeriods);
                     const blink: bool = intNumPeriods % 2 == 1;
+                    var newE = menu.e;
+                    newE.timePassed(time.deltaTime);
                     return UpdateResult.init(
                         ally,
-                        Screen{ .menu = MenuState{ .blink = blink } },
+                        Screen{ .menu = MenuState{
+                            .blink = blink,
+                            .e = newE,
+                        } },
                         &.{},
                     );
                 },
