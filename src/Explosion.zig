@@ -13,10 +13,12 @@ const std = @import("std");
 //    rl.DrawCircle(200, 200, 50, rl.RED);
 const V = @import("V.zig").V;
 const v = @import("V.zig").v;
+const lerp = @import("V.zig").lerp;
 
 const Explosion = struct {
     outerPosition: V,
     outerDiameter: f32,
+    initialInnerPosition: V,
     innerPosition: V,
     innerDiameter: f32,
     lifetimeSeconds: f32,
@@ -41,6 +43,7 @@ const Explosion = struct {
             .innerDiameter = innerDiameter,
             .lifetimeSeconds = lifetimeSeconds,
             .ageSeconds = 0.0,
+            .initialInnerPosition = innerPosition,
         };
     }
 
@@ -49,10 +52,11 @@ const Explosion = struct {
         if (self.ageSeconds >= self.lifetimeSeconds) {
             self.ageSeconds = self.lifetimeSeconds;
         }
-        self.innerDiameter = self.outerDiameter * (self.ageSeconds / self.lifetimeSeconds);
+        const frac = self.ageSeconds / self.lifetimeSeconds;
+        self.innerDiameter = self.outerDiameter * frac;
+        self.innerPosition = lerp(self.initialInnerPosition, self.outerPosition, frac);
     }
 };
-
 
 fn printExplosionState(
     allocator: std.mem.Allocator,
@@ -106,6 +110,7 @@ test "explosion state printer" {
         .innerDiameter = 0,
         .lifetimeSeconds = 1.0,
         .ageSeconds = 0.0,
+        .initialInnerPosition = v(0, 50),
     };
     const actual: []const u8 = try printExplosionState(ally, explosion);
     defer ally.free(actual);
@@ -136,7 +141,6 @@ test "explosion init function" {
 }
 
 test "the life of an explosion 2" {
-    if (true) return;
     const expectedStorybook: []const u8 =
         \\Explosion at 50,50 of size 100, lifetime 1 second:
         \\
@@ -152,11 +156,13 @@ test "the life of an explosion 2" {
         \\innerPosition=25,50
         \\innerDiameter=50
         \\
-        \\t=1.0
+        \\t=1
         \\outerPosition=50,50
         \\outerDiameter=100
         \\innerPosition=50,50
         \\innerDiameter=100
+        \\
+        \\
     ;
     const ally = std.testing.allocator;
     var buffer = std.ArrayList(u8).init(ally);
@@ -170,6 +176,7 @@ test "the life of an explosion 2" {
         .innerDiameter = 0,
         .lifetimeSeconds = 1.0,
         .ageSeconds = 0.0,
+        .initialInnerPosition = v(0, 50),
     };
     try writeExplosionString(&buffer, explosion);
     explosion.timePassed(0.5);
