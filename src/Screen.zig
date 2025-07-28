@@ -166,6 +166,11 @@ fn arrayListOf(comptime T: type, ally: std.mem.Allocator, items: []const T) !std
     return list;
 }
 
+fn rndFrac() f32 {
+    const random = std.crypto.random;
+    return random.float(f32);
+}
+
 pub fn updateScreen(ally: std.mem.Allocator, screen: *Screen, msg: Msg) !UpdateResult {
     switch (screen.*) {
         .menu => |menu| {
@@ -196,6 +201,19 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: *Screen, msg: Msg) !UpdateR
                     const blink: bool = intNumPeriods % 2 == 1;
                     var newE = menu.e;
                     newE.timePassed(time.deltaTime);
+                    if (newE.ageSeconds >= newE.lifetimeSeconds) {
+                        // Reset explosion after it has finished
+                        newE = Explosion.init(
+                            2.0 * rndFrac() + 0.1,
+                            v(
+                                window_width * rndFrac(),
+                                window_height * rndFrac(),
+                            ),
+                            100.0 * rndFrac(),
+                            0.0,
+                            std.math.pi * 2 * rndFrac(),
+                        );
+                    }
                     return UpdateResult.init(
                         ally,
                         Screen{ .menu = MenuState{
