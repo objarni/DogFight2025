@@ -174,10 +174,7 @@ test "explosion init function" {
         \\
     ;
 
-    const result: []const u8 = try buffer.toOwnedSlice();
-    defer ally.free(result);
-
-    try std.testing.expectEqualStrings(expected, result);
+    try std.testing.expectEqualStrings(expected, buffer.items);
 }
 
 test "the life of an explosion 2" {
