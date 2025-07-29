@@ -104,9 +104,27 @@ fn printExplosionState(
 
 fn writeExplosionString(buffer: *std.ArrayList(u8), explosion: Explosion) !void {
     var writer = buffer.writer();
-    const explosionString = try printExplosionState(buffer.allocator, explosion);
-    defer buffer.allocator.free(explosionString);
-    _ = try writer.writeAll(explosionString);
+    try writer.print(
+        \\t={d}
+        \\outerPosition={d:.0},{d:.0}
+        \\outerDiameter={d:.0}
+        \\innerPosition={d:.0},{d:.0}
+        \\innerDiameter={d:.0}
+        \\alive={s}
+        \\
+        \\
+    ,
+        .{
+            explosion.ageSeconds,
+            explosion.outerPosition[0],
+            explosion.outerPosition[1],
+            explosion.outerDiameter,
+            explosion.innerPosition[0],
+            explosion.innerPosition[1],
+            explosion.innerDiameter,
+            if (explosion.alive) "true" else "false",
+        },
+    );
 }
 
 test "explosion state printer" {
@@ -140,8 +158,11 @@ test "explosion init function" {
         100,
         std.math.pi / 4.0, // 45 degrees in radians
     );
-    const actual: []const u8 = try printExplosionState(ally, explosion);
-    defer ally.free(actual);
+
+    var buffer = std.ArrayList(u8).init(ally);
+    defer buffer.deinit();
+    try writeExplosionString(&buffer, explosion);
+
     const expected =
         \\t=0
         \\outerPosition=50,50
@@ -152,7 +173,11 @@ test "explosion init function" {
         \\
         \\
     ;
-    try std.testing.expectEqualStrings(expected, actual);
+
+    const result: []const u8 = try buffer.toOwnedSlice();
+    defer ally.free(result);
+
+    try std.testing.expectEqualStrings(expected, result);
 }
 
 test "the life of an explosion 2" {
