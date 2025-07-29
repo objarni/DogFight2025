@@ -73,35 +73,6 @@ pub const Explosion = struct {
     }
 };
 
-fn printExplosionState(
-    allocator: std.mem.Allocator,
-    explosion: Explosion,
-) ![]const u8 {
-    const result = try std.fmt.allocPrint(
-        allocator,
-        \\t={d}
-        \\outerPosition={d:.0},{d:.0}
-        \\outerDiameter={d:.0}
-        \\innerPosition={d:.0},{d:.0}
-        \\innerDiameter={d:.0}
-        \\alive={s}
-        \\
-        \\
-    ,
-        .{
-            explosion.ageSeconds,
-            explosion.outerPosition[0],
-            explosion.outerPosition[1],
-            explosion.outerDiameter,
-            explosion.innerPosition[0],
-            explosion.innerPosition[1],
-            explosion.innerDiameter,
-            if (explosion.alive) "true" else "false",
-        },
-    );
-    return result;
-}
-
 fn writeExplosionString(buffer: *std.ArrayList(u8), explosion: Explosion) !void {
     var writer = buffer.writer();
     try writer.print(
