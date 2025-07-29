@@ -43,12 +43,12 @@ pub fn run() !void {
         screen_w, screen_h, fb_w, fb_h,
     });
 
-    var currentScreen = screen.Screen.init();
-    var drawAverage: i128 = 0;
-    var drawAverageCount: u32 = 0;
-
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     var ally = gpa.allocator();
+
+    var currentScreen = screen.Screen.init(ally);
+    var drawAverage: i128 = 0;
+    var drawAverageCount: u32 = 0;
 
     var allMsgs: std.ArrayList(screen.Msg) = .init(ally);
     defer ally.free(allMsgs.items);
@@ -90,7 +90,7 @@ pub fn run() !void {
                 msg,
             );
             currentScreen = result.screen;
-            executeCommands(result.commands.items, res, &currentScreen);
+            executeCommands(ally, result.commands.items, res, &currentScreen);
             result.commands.deinit();
         }
         allMsgs.clearAndFree();
@@ -185,6 +185,7 @@ fn drawGame(
 }
 
 fn executeCommands(
+    ally: std.mem.Allocator,
     cmds: []const screen.Command,
     res: Resources,
     currentScreen: *screen.Screen,
@@ -221,10 +222,14 @@ fn executeCommands(
                 std.debug.print("Switching to sub-screen: {}\n", .{subScreen});
                 switch (subScreen) {
                     .menu => |_| {
-                        currentScreen.* = screen.Screen{ .menu = screen.MenuState.init() };
+                        currentScreen.* = screen.Screen{
+                            .menu = screen.MenuState.init(ally),
+                        };
                     },
                     .game => |_| {
-                        currentScreen.* = screen.Screen{ .game = screen.GameState.init() };
+                        currentScreen.* = screen.Screen{
+                            .game = screen.GameState.init(),
+                        };
                     },
                 }
             },

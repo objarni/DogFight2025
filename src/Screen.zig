@@ -2,8 +2,8 @@ pub const Screen = union(enum) {
     menu: MenuState,
     game: GameState,
 
-    pub fn init() Screen {
-        return Screen{ .menu = .init() };
+    pub fn init(ally: std.mem.Allocator) Screen {
+        return Screen{ .menu = .init(ally) };
     }
 };
 
@@ -14,9 +14,10 @@ const window_height: u16 = 540;
 
 pub const MenuState = struct {
     blink: bool = false,
+    es: std.ArrayList(Explosion),
     e: Explosion,
 
-    pub fn init() MenuState {
+    pub fn init(ally: std.mem.Allocator) MenuState {
         return MenuState{
             .blink = false,
             .e = Explosion.init(
@@ -26,6 +27,7 @@ pub const MenuState = struct {
                 50.0,
                 std.math.pi / 4.0,
             ),
+            .es = std.ArrayList(Explosion).init(ally),
         };
     }
 };
@@ -218,6 +220,7 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: *Screen, msg: Msg) !UpdateR
                             Screen{ .menu = MenuState{
                                 .blink = blink,
                                 .e = newE,
+                                .es = menu.es,
                             } },
                             &.{Command{ .playSoundEffect = SoundEffect.crash }},
                         );
@@ -227,6 +230,7 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: *Screen, msg: Msg) !UpdateR
                         Screen{ .menu = MenuState{
                             .blink = blink,
                             .e = newE,
+                            .es = menu.es,
                         } },
                         &.{},
                     );
@@ -249,7 +253,8 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: *Screen, msg: Msg) !UpdateR
 const std = @import("std");
 
 test "game starts in menu" {
-    const actual: Screen = .init();
+    const ally = std.testing.allocator;
+    const actual: Screen = .init(ally);
     const expected: Screen = .{ .menu = MenuState.init() };
     try std.testing.expectEqual(expected, actual);
 }
