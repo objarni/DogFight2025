@@ -29,6 +29,22 @@ pub const MenuState = struct {
             .es = std.ArrayList(Explosion).init(ally),
         };
     }
+
+    pub fn handleMessage(_: *MenuState, ally: std.mem.Allocator, msg: Msg) !std.ArrayList(Command) {
+        var cmds = std.ArrayList(Command).init(ally);
+        switch (msg) {
+            .inputClicked => |input| {
+                if (input == Inputs.GeneralAction) {
+                    try cmds.appendSlice(&.{
+                        Command{ .playSoundEffect = SoundEffect.boom },
+                        Command{ .switchSubScreen = SubScreen.game },
+                    });
+                }
+            },
+            .timePassed => |_| {},
+        }
+        return cmds;
+    }
 };
 
 const v2 = @import("V.zig");
@@ -217,9 +233,7 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: *Screen, msg: Msg) !UpdateR
                         if (!newES.items[i].alive) {
                             std.debug.print("Removing dead explosion at index {}\n", .{i});
                             _ = newES.swapRemove(i);
-                        }
-                        else
-                            i += 1;
+                        } else i += 1;
                     }
                     return UpdateResult.init(
                         ally,
@@ -288,6 +302,29 @@ test "hitting action button should switch to game and plays Boom sound" {
     try std.testing.expectEqualSlices(Command, expected.commands.items, actual.commands.items);
 }
 
+test "MenuState: hitting action button should switch to game and play Boom sound" {
+    const ally = std.testing.allocator;
+    var menuState = MenuState.init(ally);
+    const actual = try menuState.handleMessage(
+        ally,
+        Msg{ .inputClicked = Inputs.GeneralAction },
+    );
+    defer actual.deinit();
+    var expected = std.ArrayList(Command).init(ally);
+    defer expected.deinit();
+    try expected.appendSlice(
+        &.{
+            Command{ .playSoundEffect = SoundEffect.boom },
+            Command{ .switchSubScreen = SubScreen.game },
+        },
+    );
+    try std.testing.expectEqualSlices(
+        Command,
+        expected.items,
+        actual.items,
+    );
+}
+
 test "press space blinks every 0.5 second on menu screen" {
     const ally = std.testing.allocator;
     var initialScreen: Screen = .init(ally);
@@ -332,3 +369,4 @@ test "both clouds move left by, but the lower cloud moves faster" {
 // TODO: Break out update logic for menu into separate function
 // TODO: anime style explosion via two-three spheres
 // TODO: particle system for explosion and debris
+// TODO: Game State and Menu State are getting too big, break them out into separate files
