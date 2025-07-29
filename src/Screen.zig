@@ -215,12 +215,18 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: *Screen, msg: Msg) !UpdateR
                             0.0,
                             std.math.pi * 2 * rndFrac(),
                         );
+                        var newES = menu.es;
+                        for(0..newES.items.len) |ix| {
+                            std.debug.print("Updating explosion {}\n", .{ix});
+                            newES.items[ix].timePassed(time.deltaTime);
+                        }
+                        try newES.append(newE);
                         return UpdateResult.init(
                             ally,
                             Screen{ .menu = MenuState{
                                 .blink = blink,
                                 .e = newE,
-                                .es = menu.es,
+                                .es = newES,
                             } },
                             &.{Command{ .playSoundEffect = SoundEffect.crash }},
                         );
@@ -255,12 +261,13 @@ const std = @import("std");
 test "game starts in menu" {
     const ally = std.testing.allocator;
     const actual: Screen = .init(ally);
-    const expected: Screen = .{ .menu = MenuState.init() };
+    const expected: Screen = .{ .menu = MenuState.init(ally) };
     try std.testing.expectEqual(expected, actual);
 }
 
 test "hitting action button should switch to game and plays Boom sound" {
-    var oldScreen: Screen = .init();
+    const ally = std.testing.allocator;
+    var oldScreen: Screen = .init(ally);
     const actual: UpdateResult = try updateScreen(
         std.testing.allocator,
         &oldScreen,
@@ -280,7 +287,8 @@ test "hitting action button should switch to game and plays Boom sound" {
 }
 
 test "press space blinks every 0.5 second on menu screen" {
-    var initialScreen: Screen = .init();
+    const ally = std.testing.allocator;
+    var initialScreen: Screen = .init(ally);
     var menuScreenNoTextExpected: UpdateResult = try updateScreen(
         std.testing.allocator,
         &initialScreen,

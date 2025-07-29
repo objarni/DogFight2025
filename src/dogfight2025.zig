@@ -134,6 +134,9 @@ fn drawMenu(menu: screen.MenuState) void {
     if (menu.blink)
         centerText("Press SPACE to START!", 220, 20, rl.DARKGRAY);
     drawExplosion(menu.e);
+    for(menu.es.items) |e| {
+        drawExplosion(e);
+    }
 }
 
 fn drawExplosion(e: Explosion) void {
