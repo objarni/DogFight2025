@@ -207,9 +207,20 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: *Screen, msg: Msg) !UpdateR
                     if (newE.ageSeconds >= newE.lifetimeSeconds) {
                         newE = randomExplosion();
                         try newES.append(randomExplosion());
+                        try newES.append(randomExplosion());
                     }
                     for (0..newES.items.len) |ix| {
                         newES.items[ix].timePassed(time.deltaTime);
+                    }
+                    // Remove dead explosions
+                    var i: usize = 0;
+                    while (i < newES.items.len) {
+                        if (!newES.items[i].alive) {
+                            std.debug.print("Removing dead explosion at index {}\n", .{i});
+                            _ = newES.swapRemove(i);
+                        }
+                        else
+                            i += 1;
                     }
                     return UpdateResult.init(
                         ally,
