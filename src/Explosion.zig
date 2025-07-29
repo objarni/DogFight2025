@@ -122,18 +122,14 @@ test "explosion state printer" {
         \\
     ;
     const ally = std.testing.allocator;
-    // TODO: use init function to create explosion
-    const explosion = Explosion{
-        .outerPosition = v(50, 50),
-        .outerDiameter = 100,
-        .innerPosition = v(0, 50),
-        .innerDiameter = 0,
-        .lifetimeSeconds = 1.0,
-        .ageSeconds = 0.0,
-        .initialInnerPosition = v(0, 50),
-        .alive = true,
-    };
-    const actual: []const u8 = try printExplosionState(ally, explosion);
+    const expl: Explosion = .init(
+        1.0,
+        v(50, 50),
+        100,
+        0,
+        std.math.pi,
+    );
+    const actual: []const u8 = try printExplosionState(ally, expl);
     defer ally.free(actual);
     try std.testing.expectEqualStrings(expected, actual);
 }
@@ -208,15 +204,6 @@ test "the life of an explosion 2" {
     defer buffer.deinit();
     const writer = buffer.writer();
     _ = try writer.write("Explosion at 50,50 of size 100, lifetime 1 second:\n\n");
-    // var explosion = Explosion{
-    //     .outerPosition = v(50, 50),
-    //     .outerDiameter = 100,
-    //     .innerPosition = v(0, 50),
-    //     .innerDiameter = 0,
-    //     .lifetimeSeconds = 1.0,
-    //     .ageSeconds = 0.0,
-    //     .initialInnerPosition = v(0, 50),
-    // };
     var explosion: Explosion = .init(
         1.0,
         v(50, 50),
