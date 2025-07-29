@@ -117,11 +117,11 @@ test "explosion state printer" {
         std.math.pi,
     );
 
-    var buffer = std.ArrayList(u8).init(ally);
-    defer buffer.deinit();
-    try writeExplosionString(&buffer, expl);
+    var actual = std.ArrayList(u8).init(ally);
+    defer actual.deinit();
+    try writeExplosionString(&actual, expl);
 
-    try std.testing.expectEqualStrings(expected, buffer.items);
+    try std.testing.expectEqualStrings(expected, actual.items);
 }
 
 test "explosion init function" {
@@ -133,9 +133,9 @@ test "explosion init function" {
         std.math.pi / 4.0, // 45 degrees in radians
     );
 
-    var buffer = std.ArrayList(u8).init(ally);
-    defer buffer.deinit();
-    try writeExplosionString(&buffer, explosion);
+    var actual = std.ArrayList(u8).init(ally);
+    defer actual.deinit();
+    try writeExplosionString(&actual, explosion);
 
     const expected =
         \\t=0
@@ -148,7 +148,7 @@ test "explosion init function" {
         \\
     ;
 
-    try std.testing.expectEqualStrings(expected, buffer.items);
+    try std.testing.expectEqualStrings(expected, actual.items);
 }
 
 test "the life of an explosion 2" {
@@ -193,9 +193,9 @@ test "the life of an explosion 2" {
         \\
     ;
     const ally = std.testing.allocator;
-    var buffer = std.ArrayList(u8).init(ally);
-    defer buffer.deinit();
-    const writer = buffer.writer();
+    var actual = std.ArrayList(u8).init(ally);
+    defer actual.deinit();
+    const writer = actual.writer();
     _ = try writer.write("Explosion at 50,50 of size 100, lifetime 1 second:\n\n");
     var explosion: Explosion = .init(
         1.0,
@@ -203,14 +203,14 @@ test "the life of an explosion 2" {
         100,
         std.math.pi*1.001,
     );
-    try writeExplosionString(&buffer, explosion);
+    try writeExplosionString(&actual, explosion);
     explosion.timePassed(0.25);
-    try writeExplosionString(&buffer, explosion);
+    try writeExplosionString(&actual, explosion);
     explosion.timePassed(0.25);
-    try writeExplosionString(&buffer, explosion);
+    try writeExplosionString(&actual, explosion);
     explosion.timePassed(0.25);
-    try writeExplosionString(&buffer, explosion);
+    try writeExplosionString(&actual, explosion);
     explosion.timePassed(0.25);
-    try writeExplosionString(&buffer, explosion);
-    try std.testing.expectEqualStrings(expectedStorybook, buffer.items);
+    try writeExplosionString(&actual, explosion);
+    try std.testing.expectEqualStrings(expectedStorybook, actual.items);
 }
