@@ -238,7 +238,5 @@ test "the life of an explosion 2" {
     try writeExplosionString(&buffer, explosion);
     explosion.timePassed(0.25);
     try writeExplosionString(&buffer, explosion);
-    const result: []const u8 = try buffer.toOwnedSlice();
-    defer ally.free(result);
-    try std.testing.expectEqualStrings(expectedStorybook, result);
+    try std.testing.expectEqualStrings(expectedStorybook, buffer.items);
 }
