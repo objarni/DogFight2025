@@ -129,9 +129,9 @@ fn centerText(text: []const u8, y: u16, fontSize: u16, color: rl.Color) void {
 fn drawMenu(menu: screen.MenuState) void {
     rl.ClearBackground(rl.SKYBLUE);
     const textSize = 40;
-    centerText("Dogfight 2025", 180, textSize, rl.GREEN);
+    centerText("Dogfight 2025", 180, textSize, rl.DARKGREEN);
     if (menu.blink)
-        centerText("Press SPACE to START!", 220, 20, rl.LIGHTGRAY);
+        centerText("Press SPACE to START!", 220, 20, rl.DARKGRAY);
     rl.DrawCircle(
         @intFromFloat(menu.e.outerPosition[0]),
         @intFromFloat(menu.e.outerPosition[1]),
