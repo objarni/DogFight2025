@@ -29,7 +29,6 @@ pub const Explosion = struct {
         lifetimeSeconds: f32,
         position: V,
         diameter: f32,
-        innerDiameter: f32,
         innerPositionPolar: f32,
     ) Explosion {
         const innerPosition = v(
@@ -41,7 +40,7 @@ pub const Explosion = struct {
             .outerPosition = position,
             .outerDiameter = diameter,
             .innerPosition = innerPosition,
-            .innerDiameter = innerDiameter,
+            .innerDiameter = 0.0,
             .lifetimeSeconds = lifetimeSeconds,
             .ageSeconds = 0.0,
             .initialInnerPosition = innerPosition,
@@ -126,7 +125,6 @@ test "explosion state printer" {
         1.0,
         v(50, 50),
         100,
-        0,
         std.math.pi,
     );
     const actual: []const u8 = try printExplosionState(ally, expl);
@@ -140,7 +138,6 @@ test "explosion init function" {
         1.0,
         v(50, 50),
         100,
-        0,
         std.math.pi / 4.0, // 45 degrees in radians
     );
     const actual: []const u8 = try printExplosionState(ally, explosion);
@@ -208,7 +205,6 @@ test "the life of an explosion 2" {
         1.0,
         v(50, 50),
         100,
-        0,
         std.math.pi*1.001,
     );
     try writeExplosionString(&buffer, explosion);
