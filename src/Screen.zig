@@ -24,7 +24,6 @@ pub const MenuState = struct {
                 2.0,
                 v(180.0, 270.0),
                 100.0,
-                50.0,
                 std.math.pi / 4.0,
             ),
             .es = std.ArrayList(Explosion).init(ally),
@@ -255,7 +254,6 @@ fn randomExplosion() Explosion {
             window_height * rndFrac(),
         ),
         100.0 * rndFrac(),
-        0.0,
         std.math.pi * 2 * rndFrac(),
     );
 }
