@@ -8,6 +8,7 @@ const window_width: u16 = 960;
 const window_height: u16 = 540;
 
 const screen = @import("Screen.zig");
+const Explosion = @import("Explosion.zig").Explosion;
 
 test {
     _ = @import("Screen.zig");
@@ -132,25 +133,30 @@ fn drawMenu(menu: screen.MenuState) void {
     centerText("Dogfight 2025", 180, textSize, rl.DARKGREEN);
     if (menu.blink)
         centerText("Press SPACE to START!", 220, 20, rl.DARKGRAY);
+    drawExplosion(menu.e);
+}
+
+fn drawExplosion(e: Explosion) void {
+    if (!e.alive) return;
+
     rl.DrawCircle(
-        @intFromFloat(menu.e.outerPosition[0]),
-        @intFromFloat(menu.e.outerPosition[1]),
-        menu.e.outerDiameter / 2 + 1,
+        @intFromFloat(e.outerPosition[0]),
+        @intFromFloat(e.outerPosition[1]),
+        e.outerDiameter / 2 + 1,
         rl.ORANGE,
     );
     rl.DrawCircle(
-        @intFromFloat(menu.e.outerPosition[0]),
-        @intFromFloat(menu.e.outerPosition[1]),
-        menu.e.outerDiameter / 2,
+        @intFromFloat(e.outerPosition[0]),
+        @intFromFloat(e.outerPosition[1]),
+        e.outerDiameter / 2,
         rl.YELLOW,
     );
     rl.DrawCircle(
-        @intFromFloat(menu.e.innerPosition[0]),
-        @intFromFloat(menu.e.innerPosition[1]),
-        menu.e.innerDiameter / 2,
+        @intFromFloat(e.innerPosition[0]),
+        @intFromFloat(e.innerPosition[1]),
+        e.innerDiameter / 2,
         rl.SKYBLUE,
-    );
-}
+    );}
 
 const Resources = struct {
     boomSound: rl.Sound,
