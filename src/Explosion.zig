@@ -23,6 +23,7 @@ pub const Explosion = struct {
     innerDiameter: f32,
     lifetimeSeconds: f32,
     ageSeconds: f32,
+    alive: bool,
 
     pub fn init(
         lifetimeSeconds: f32,
@@ -44,6 +45,7 @@ pub const Explosion = struct {
             .lifetimeSeconds = lifetimeSeconds,
             .ageSeconds = 0.0,
             .initialInnerPosition = innerPosition,
+            .alive = true,
         };
     }
 
@@ -51,6 +53,7 @@ pub const Explosion = struct {
         self.ageSeconds += seconds;
         if (self.ageSeconds >= self.lifetimeSeconds) {
             self.ageSeconds = self.lifetimeSeconds;
+            self.alive = false;
         }
         // Detmine if frac age is in 0..0.25, .25..0.75 or .75..1.0 span.
         const frac = self.ageSeconds / self.lifetimeSeconds;
@@ -78,10 +81,10 @@ fn printExplosionState(
     const result = try std.fmt.allocPrint(
         allocator,
         \\t={d}
-        \\outerPosition={d},{d}
-        \\outerDiameter={d}
-        \\innerPosition={d},{d}
-        \\innerDiameter={d}
+        \\outerPosition={d:.0},{d:.0}
+        \\outerDiameter={d:.0}
+        \\innerPosition={d:.0},{d:.0}
+        \\innerDiameter={d:.0}
         \\alive={s}
         \\
         \\
@@ -94,7 +97,7 @@ fn printExplosionState(
             explosion.innerPosition[0],
             explosion.innerPosition[1],
             explosion.innerDiameter,
-            if (explosion.ageSeconds < explosion.lifetimeSeconds) "true" else "false",
+            if (explosion.alive) "true" else "false",
         },
     );
     return result;
@@ -119,6 +122,7 @@ test "explosion state printer" {
         \\
     ;
     const ally = std.testing.allocator;
+    // TODO: use init function to create explosion
     const explosion = Explosion{
         .outerPosition = v(50, 50),
         .outerDiameter = 100,
@@ -127,6 +131,7 @@ test "explosion state printer" {
         .lifetimeSeconds = 1.0,
         .ageSeconds = 0.0,
         .initialInnerPosition = v(0, 50),
+        .alive = true,
     };
     const actual: []const u8 = try printExplosionState(ally, explosion);
     defer ally.free(actual);
@@ -148,7 +153,7 @@ test "explosion init function" {
         \\t=0
         \\outerPosition=50,50
         \\outerDiameter=100
-        \\innerPosition=85.35534,85.35534
+        \\innerPosition=85,85
         \\innerDiameter=0
         \\alive=true
         \\
@@ -203,15 +208,22 @@ test "the life of an explosion 2" {
     defer buffer.deinit();
     const writer = buffer.writer();
     _ = try writer.write("Explosion at 50,50 of size 100, lifetime 1 second:\n\n");
-    var explosion = Explosion{
-        .outerPosition = v(50, 50),
-        .outerDiameter = 100,
-        .innerPosition = v(0, 50),
-        .innerDiameter = 0,
-        .lifetimeSeconds = 1.0,
-        .ageSeconds = 0.0,
-        .initialInnerPosition = v(0, 50),
-    };
+    // var explosion = Explosion{
+    //     .outerPosition = v(50, 50),
+    //     .outerDiameter = 100,
+    //     .innerPosition = v(0, 50),
+    //     .innerDiameter = 0,
+    //     .lifetimeSeconds = 1.0,
+    //     .ageSeconds = 0.0,
+    //     .initialInnerPosition = v(0, 50),
+    // };
+    var explosion: Explosion = .init(
+        1.0,
+        v(50, 50),
+        100,
+        0,
+        std.math.pi*1.001,
+    );
     try writeExplosionString(&buffer, explosion);
     explosion.timePassed(0.25);
     try writeExplosionString(&buffer, explosion);
