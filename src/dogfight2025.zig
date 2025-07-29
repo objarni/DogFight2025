@@ -127,7 +127,7 @@ fn centerText(text: []const u8, y: u16, fontSize: u16, color: rl.Color) void {
 }
 
 fn drawMenu(menu: screen.MenuState) void {
-    rl.ClearBackground(rl.DARKBROWN);
+    rl.ClearBackground(rl.SKYBLUE);
     const textSize = 40;
     centerText("Dogfight 2025", 180, textSize, rl.GREEN);
     if (menu.blink)
@@ -136,7 +136,7 @@ fn drawMenu(menu: screen.MenuState) void {
         @intFromFloat(menu.e.outerPosition[0]),
         @intFromFloat(menu.e.outerPosition[1]),
         menu.e.outerDiameter / 2 + 1,
-        rl.RED,
+        rl.ORANGE,
     );
     rl.DrawCircle(
         @intFromFloat(menu.e.outerPosition[0]),
@@ -148,7 +148,7 @@ fn drawMenu(menu: screen.MenuState) void {
         @intFromFloat(menu.e.innerPosition[0]),
         @intFromFloat(menu.e.innerPosition[1]),
         menu.e.innerDiameter / 2,
-        rl.DARKBROWN,
+        rl.SKYBLUE,
     );
 }
 
