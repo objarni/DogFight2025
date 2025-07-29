@@ -145,9 +145,12 @@ test "explosion state printer" {
         100,
         std.math.pi,
     );
-    const actual: []const u8 = try printExplosionState(ally, expl);
-    defer ally.free(actual);
-    try std.testing.expectEqualStrings(expected, actual);
+
+    var buffer = std.ArrayList(u8).init(ally);
+    defer buffer.deinit();
+    try writeExplosionString(&buffer, expl);
+
+    try std.testing.expectEqualStrings(expected, buffer.items);
 }
 
 test "explosion init function" {
