@@ -27,19 +27,19 @@ pub const Explosion = struct {
 
     pub fn init(
         lifetimeSeconds: f32,
-        outerPosition: V,
-        outerDiameter: f32,
+        position: V,
+        diameter: f32,
         innerDiameter: f32,
         innerPositionPolar: f32,
     ) Explosion {
         const innerPosition = v(
-            outerPosition[0] + outerDiameter / 2 * std.math.cos(innerPositionPolar),
-            outerPosition[1] + outerDiameter / 2 * std.math.sin(innerPositionPolar),
+            position[0] + diameter / 2 * std.math.cos(innerPositionPolar),
+            position[1] + diameter / 2 * std.math.sin(innerPositionPolar),
         );
 
         return Explosion{
-            .outerPosition = outerPosition,
-            .outerDiameter = outerDiameter,
+            .outerPosition = position,
+            .outerDiameter = diameter,
             .innerPosition = innerPosition,
             .innerDiameter = innerDiameter,
             .lifetimeSeconds = lifetimeSeconds,
