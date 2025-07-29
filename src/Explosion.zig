@@ -52,9 +52,22 @@ pub const Explosion = struct {
         if (self.ageSeconds >= self.lifetimeSeconds) {
             self.ageSeconds = self.lifetimeSeconds;
         }
+        // Detmine if frac age is in 0..0.25, .25..0.75 or .75..1.0 span.
         const frac = self.ageSeconds / self.lifetimeSeconds;
-        self.innerDiameter = self.outerDiameter * frac;
-        self.innerPosition = lerp(self.initialInnerPosition, self.outerPosition, frac);
+        if (frac < 0.25) {
+            // The inner sphere is not moving yet.
+            self.innerDiameter = 0;
+            self.innerPosition = self.initialInnerPosition;
+        } else if (frac < 0.75) {
+            // The inner sphere is growing.
+            const innerFrac = (frac - 0.25) / 0.5; // Normalize to 0..1
+            self.innerDiameter = self.outerDiameter * innerFrac;
+            self.innerPosition = lerp(self.initialInnerPosition, self.outerPosition, innerFrac);
+        } else {
+            // The inner sphere has reached the outer sphere.
+            self.innerDiameter = self.outerDiameter;
+            self.innerPosition = lerp(self.outerPosition, self.outerPosition, frac);
+        }
     }
 };
 
@@ -69,6 +82,7 @@ fn printExplosionState(
         \\outerDiameter={d}
         \\innerPosition={d},{d}
         \\innerDiameter={d}
+        \\alive={s}
         \\
         \\
     ,
@@ -80,6 +94,7 @@ fn printExplosionState(
             explosion.innerPosition[0],
             explosion.innerPosition[1],
             explosion.innerDiameter,
+            if (explosion.ageSeconds < explosion.lifetimeSeconds) "true" else "false",
         },
     );
     return result;
@@ -99,6 +114,7 @@ test "explosion state printer" {
         \\outerDiameter=100
         \\innerPosition=0,50
         \\innerDiameter=0
+        \\alive=true
         \\
         \\
     ;
@@ -134,6 +150,7 @@ test "explosion init function" {
         \\outerDiameter=100
         \\innerPosition=85.35534,85.35534
         \\innerDiameter=0
+        \\alive=true
         \\
         \\
     ;
@@ -149,18 +166,35 @@ test "the life of an explosion 2" {
         \\outerDiameter=100
         \\innerPosition=0,50
         \\innerDiameter=0
+        \\alive=true
+        \\
+        \\t=0.25
+        \\outerPosition=50,50
+        \\outerDiameter=100
+        \\innerPosition=0,50
+        \\innerDiameter=0
+        \\alive=true
         \\
         \\t=0.5
         \\outerPosition=50,50
         \\outerDiameter=100
         \\innerPosition=25,50
         \\innerDiameter=50
+        \\alive=true
+        \\
+        \\t=0.75
+        \\outerPosition=50,50
+        \\outerDiameter=100
+        \\innerPosition=50,50
+        \\innerDiameter=100
+        \\alive=true
         \\
         \\t=1
         \\outerPosition=50,50
         \\outerDiameter=100
         \\innerPosition=50,50
         \\innerDiameter=100
+        \\alive=false
         \\
         \\
     ;
@@ -179,9 +213,13 @@ test "the life of an explosion 2" {
         .initialInnerPosition = v(0, 50),
     };
     try writeExplosionString(&buffer, explosion);
-    explosion.timePassed(0.5);
+    explosion.timePassed(0.25);
     try writeExplosionString(&buffer, explosion);
-    explosion.timePassed(0.5);
+    explosion.timePassed(0.25);
+    try writeExplosionString(&buffer, explosion);
+    explosion.timePassed(0.25);
+    try writeExplosionString(&buffer, explosion);
+    explosion.timePassed(0.25);
     try writeExplosionString(&buffer, explosion);
     const result: []const u8 = try buffer.toOwnedSlice();
     defer ally.free(result);
