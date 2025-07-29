@@ -203,40 +203,20 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: *Screen, msg: Msg) !UpdateR
                     const blink: bool = intNumPeriods % 2 == 1;
                     var newE = menu.e;
                     newE.timePassed(time.deltaTime);
+                    var newES = menu.es;
                     if (newE.ageSeconds >= newE.lifetimeSeconds) {
-                        // Reset explosion after it has finished
-                        newE = Explosion.init(
-                            3.0 * rndFrac() + 0.5,
-                            v(
-                                window_width * rndFrac(),
-                                window_height * rndFrac(),
-                            ),
-                            100.0 * rndFrac(),
-                            0.0,
-                            std.math.pi * 2 * rndFrac(),
-                        );
-                        var newES = menu.es;
-                        for(0..newES.items.len) |ix| {
-                            std.debug.print("Updating explosion {}\n", .{ix});
-                            newES.items[ix].timePassed(time.deltaTime);
-                        }
-                        try newES.append(newE);
-                        return UpdateResult.init(
-                            ally,
-                            Screen{ .menu = MenuState{
-                                .blink = blink,
-                                .e = newE,
-                                .es = newES,
-                            } },
-                            &.{Command{ .playSoundEffect = SoundEffect.crash }},
-                        );
+                        newE = randomExplosion();
+                        try newES.append(randomExplosion());
+                    }
+                    for (0..newES.items.len) |ix| {
+                        newES.items[ix].timePassed(time.deltaTime);
                     }
                     return UpdateResult.init(
                         ally,
                         Screen{ .menu = MenuState{
                             .blink = blink,
                             .e = newE,
-                            .es = menu.es,
+                            .es = newES,
                         } },
                         &.{},
                     );
@@ -253,6 +233,19 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: *Screen, msg: Msg) !UpdateR
         ally,
         screen.*,
         &.{},
+    );
+}
+
+fn randomExplosion() Explosion {
+    return Explosion.init(
+        3.0 * rndFrac() + 0.5,
+        v(
+            window_width * rndFrac(),
+            window_height * rndFrac(),
+        ),
+        100.0 * rndFrac(),
+        0.0,
+        std.math.pi * 2 * rndFrac(),
     );
 }
 
