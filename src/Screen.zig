@@ -1,4 +1,3 @@
-
 const std = @import("std");
 
 const v2 = @import("V.zig");
@@ -36,7 +35,6 @@ pub const Screen = union(enum) {
         }
     }
 };
-
 
 pub const MenuState = struct {
     blink: bool = false,
@@ -100,7 +98,22 @@ pub const MenuState = struct {
     }
 };
 
+fn randomExplosion() Explosion {
+    return Explosion.init(
+        3.0 * rndFrac() + 0.5,
+        v(
+            window_width * rndFrac(),
+            window_height * rndFrac(),
+        ),
+        100.0 * rndFrac(),
+        std.math.pi * 2 * rndFrac(),
+    );
+}
 
+fn rndFrac() f32 {
+    const random = std.crypto.random;
+    return random.float(f32);
+}
 
 test "MenuState: hitting action button should switch to game and play Boom sound" {
     const ally = std.testing.allocator;
@@ -140,7 +153,6 @@ test "MenuState: press space blinks every 0.5 second on menu screen" {
 
     try std.testing.expectEqual(menuState.blink, true);
 }
-
 
 pub const GameState = struct {
     clouds: [2]V,
@@ -206,7 +218,6 @@ pub const GameState = struct {
     }
 };
 
-
 test "GameState: both clouds move left by, but the lower cloud moves faster" {
     var gameState: GameState = GameState.init();
     const highCloudX: f32 = gameState.clouds[0][0];
@@ -249,11 +260,6 @@ fn arrayListOf(comptime T: type, ally: std.mem.Allocator, items: []const T) !std
     return list;
 }
 
-fn rndFrac() f32 {
-    const random = std.crypto.random;
-    return random.float(f32);
-}
-
 pub fn updateScreen(ally: std.mem.Allocator, screen: *Screen, msg: Msg) !UpdateResult {
     switch (screen.*) {
         .menu => |menu| {
@@ -279,25 +285,12 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: *Screen, msg: Msg) !UpdateR
     );
 }
 
-fn randomExplosion() Explosion {
-    return Explosion.init(
-        3.0 * rndFrac() + 0.5,
-        v(
-            window_width * rndFrac(),
-            window_height * rndFrac(),
-        ),
-        100.0 * rndFrac(),
-        std.math.pi * 2 * rndFrac(),
-    );
-}
-
 test "game starts in menu" {
     const ally = std.testing.allocator;
     const actual: Screen = .init(ally);
     const expected: Screen = .{ .menu = MenuState.init(ally) };
     try std.testing.expectEqual(expected, actual);
 }
-
 
 // TODO: to avoid copies, updateScreen could be member, and get a pointer to var Screen
 // TODO: wrap clouds around the screen
