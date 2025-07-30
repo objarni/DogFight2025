@@ -5,7 +5,7 @@ const v2 = @import("V.zig");
 const V = v2.V;
 const v = v2.v;
 
-const basics = @import("Basics.zig");
+const basics = @import("basics.zig");
 const Command = basics.Command;
 const SoundEffect = basics.SoundEffect;
 const PropellerAudio = basics.PropellerAudio;
