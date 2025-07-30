@@ -30,7 +30,7 @@ pub const MenuState = struct {
         };
     }
 
-    pub fn handleMessage(_: *MenuState, ally: std.mem.Allocator, msg: Msg) !std.ArrayList(Command) {
+    pub fn handleMessage(menu: *MenuState, ally: std.mem.Allocator, msg: Msg) !std.ArrayList(Command) {
         var cmds = std.ArrayList(Command).init(ally);
         switch (msg) {
             .inputClicked => |input| {
@@ -41,7 +41,31 @@ pub const MenuState = struct {
                     });
                 }
             },
-            .timePassed => |_| {},
+            .timePassed => |time| {
+                const numPeriods: f32 = time.totalTime / 0.5;
+                const intNumPeriods: u32 = @intFromFloat(numPeriods);
+                const blink: bool = intNumPeriods % 2 == 1;
+                menu.blink = blink;
+                var newE = menu.e;
+                newE.timePassed(time.deltaTime);
+                var newES = menu.es;
+                if (newE.ageSeconds >= newE.lifetimeSeconds) {
+                    newE = randomExplosion();
+                    try newES.append(randomExplosion());
+                    try newES.append(randomExplosion());
+                }
+                for (0..newES.items.len) |ix| {
+                    newES.items[ix].timePassed(time.deltaTime);
+                }
+                // Remove dead explosions
+                var i: usize = 0;
+                while (i < newES.items.len) {
+                    if (!newES.items[i].alive) {
+                        std.debug.print("Removing dead explosion at index {}\n", .{i});
+                        _ = newES.swapRemove(i);
+                    } else i += 1;
+                }
+            },
         }
         return cmds;
     }
@@ -342,6 +366,22 @@ test "press space blinks every 0.5 second on menu screen" {
     );
     defer menuScreenTextExpected.deinit();
     try std.testing.expectEqual(menuScreenTextExpected.screen.menu.blink, true);
+}
+
+test "MenuState: press space blinks every 0.5 second on menu screen" {
+    const ally = std.testing.allocator;
+
+    // No text expected
+    var menuState: MenuState = .init(ally);
+    const msg = Msg{ .timePassed = .{ .totalTime = 0.40, .deltaTime = 0.40 } };
+    _ = try menuState.handleMessage(ally, msg);
+    try std.testing.expectEqual(menuState.blink, false);
+
+    // Text expected
+    const msg2 = Msg{ .timePassed = .{ .totalTime = 0.75, .deltaTime = 0.35 } };
+    _ = try menuState.handleMessage(ally, msg2);
+
+    try std.testing.expectEqual(menuState.blink, true);
 }
 
 test "both clouds move left by, but the lower cloud moves faster" {
