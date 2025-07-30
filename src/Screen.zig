@@ -36,6 +36,13 @@ pub const Screen = union(enum) {
             .game => |_| {}, // GameState does not need deinit
         }
     }
+
+    pub fn handleMessage(self: *Screen, ally: std.mem.Allocator, msg: Msg) ![]Command {
+        var result = try updateScreen(ally, self, msg);
+        defer result.deinit();
+        self.* = result.screen;
+        return result.commands.toOwnedSlice();
+    }
 };
 
 pub const GameState = struct {

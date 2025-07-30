@@ -86,14 +86,19 @@ pub fn run() !void {
 
         collectMessages(&allMsgs);
         for (allMsgs.items) |msg| {
-            const result = try screen.updateScreen(
+            const cmds = try currentScreen.handleMessage(
                 ally,
-                &currentScreen,
                 msg,
             );
-            currentScreen = result.screen;
-            executeCommands(ally, result.commands.items, res, &currentScreen);
-            result.commands.deinit();
+            defer ally.free(cmds);
+            // const result = try screen.updateScreen(
+            //     ally,
+            //     &currentScreen,
+            //     msg,
+            // );
+            // currentScreen = result.screen;
+            executeCommands(ally, cmds, res, &currentScreen);
+            // result.commands.deinit();
         }
         allMsgs.clearAndFree();
 
