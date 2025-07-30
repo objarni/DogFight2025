@@ -425,6 +425,5 @@ test "both clouds move left by, but the lower cloud moves faster" {
 // TODO: display airplanes left (10 to start with)
 // TODO: add planes
 // TODO: Break out update logic for menu into separate function
-// TODO: anime style explosion via two-three spheres
 // TODO: particle system for explosion and debris
 // TODO: Game State and Menu State are getting too big, break them out into separate files
