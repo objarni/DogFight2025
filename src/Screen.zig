@@ -101,6 +101,47 @@ pub const MenuState = struct {
 };
 
 
+
+test "MenuState: hitting action button should switch to game and play Boom sound" {
+    const ally = std.testing.allocator;
+    var menuState = MenuState.init(ally);
+    const actual = try menuState.handleMessage(
+        ally,
+        Msg{ .inputClicked = Inputs.GeneralAction },
+    );
+    defer actual.deinit();
+    var expected = std.ArrayList(Command).init(ally);
+    defer expected.deinit();
+    try expected.appendSlice(
+        &.{
+            Command{ .playSoundEffect = SoundEffect.boom },
+            Command{ .switchSubScreen = SubScreen.game },
+        },
+    );
+    try std.testing.expectEqualSlices(
+        Command,
+        expected.items,
+        actual.items,
+    );
+}
+
+test "MenuState: press space blinks every 0.5 second on menu screen" {
+    const ally = std.testing.allocator;
+
+    // No text expected
+    var menuState: MenuState = .init(ally);
+    const msg = Msg{ .timePassed = .{ .totalTime = 0.40, .deltaTime = 0.40 } };
+    _ = try menuState.handleMessage(ally, msg);
+    try std.testing.expectEqual(menuState.blink, false);
+
+    // Text expected
+    const msg2 = Msg{ .timePassed = .{ .totalTime = 0.75, .deltaTime = 0.35 } };
+    _ = try menuState.handleMessage(ally, msg2);
+
+    try std.testing.expectEqual(menuState.blink, true);
+}
+
+
 pub const GameState = struct {
     clouds: [2]V,
     plane1: Plane,
@@ -164,6 +205,25 @@ pub const GameState = struct {
         };
     }
 };
+
+
+test "GameState: both clouds move left by, but the lower cloud moves faster" {
+    var gameState: GameState = GameState.init();
+    const highCloudX: f32 = gameState.clouds[0][0];
+    const lowCloudX: f32 = gameState.clouds[1][0];
+    const result: ?UpdateResult = try gameState.handleMessage(
+        std.testing.allocator,
+        Msg{ .timePassed = TimePassed{ .totalTime = 1.0, .deltaTime = 1.0 } },
+    );
+    if (result) |newScreen| {
+        defer newScreen.deinit();
+        try std.testing.expectApproxEqAbs(highCloudX - 5.0, newScreen.screen.game.clouds[0][0], 0.1);
+        try std.testing.expectApproxEqAbs(lowCloudX - 8.9, newScreen.screen.game.clouds[1][0], 0.1);
+    } else {
+        std.debug.print("Expected a result from GameState.handleMsg, but got null\n", .{});
+        try std.testing.expect(false);
+    }
+}
 
 pub const UpdateResult = struct {
     screen: Screen,
@@ -238,62 +298,6 @@ test "game starts in menu" {
     try std.testing.expectEqual(expected, actual);
 }
 
-test "MenuState: hitting action button should switch to game and play Boom sound" {
-    const ally = std.testing.allocator;
-    var menuState = MenuState.init(ally);
-    const actual = try menuState.handleMessage(
-        ally,
-        Msg{ .inputClicked = Inputs.GeneralAction },
-    );
-    defer actual.deinit();
-    var expected = std.ArrayList(Command).init(ally);
-    defer expected.deinit();
-    try expected.appendSlice(
-        &.{
-            Command{ .playSoundEffect = SoundEffect.boom },
-            Command{ .switchSubScreen = SubScreen.game },
-        },
-    );
-    try std.testing.expectEqualSlices(
-        Command,
-        expected.items,
-        actual.items,
-    );
-}
-
-test "MenuState: press space blinks every 0.5 second on menu screen" {
-    const ally = std.testing.allocator;
-
-    // No text expected
-    var menuState: MenuState = .init(ally);
-    const msg = Msg{ .timePassed = .{ .totalTime = 0.40, .deltaTime = 0.40 } };
-    _ = try menuState.handleMessage(ally, msg);
-    try std.testing.expectEqual(menuState.blink, false);
-
-    // Text expected
-    const msg2 = Msg{ .timePassed = .{ .totalTime = 0.75, .deltaTime = 0.35 } };
-    _ = try menuState.handleMessage(ally, msg2);
-
-    try std.testing.expectEqual(menuState.blink, true);
-}
-
-test "GameState: both clouds move left by, but the lower cloud moves faster" {
-    var gameState: GameState = GameState.init();
-    const highCloudX: f32 = gameState.clouds[0][0];
-    const lowCloudX: f32 = gameState.clouds[1][0];
-    const result: ?UpdateResult = try gameState.handleMessage(
-        std.testing.allocator,
-        Msg{ .timePassed = TimePassed{ .totalTime = 1.0, .deltaTime = 1.0 } },
-    );
-    if (result) |newScreen| {
-        defer newScreen.deinit();
-        try std.testing.expectApproxEqAbs(highCloudX - 5.0, newScreen.screen.game.clouds[0][0], 0.1);
-        try std.testing.expectApproxEqAbs(lowCloudX - 8.9, newScreen.screen.game.clouds[1][0], 0.1);
-    } else {
-        std.debug.print("Expected a result from GameState.handleMsg, but got null\n", .{});
-        try std.testing.expect(false);
-    }
-}
 
 // TODO: to avoid copies, updateScreen could be member, and get a pointer to var Screen
 // TODO: wrap clouds around the screen
