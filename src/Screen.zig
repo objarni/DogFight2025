@@ -233,61 +233,6 @@ pub fn updateScreen(ally: std.mem.Allocator, screen: *Screen, msg: Msg) !UpdateR
                 Screen{ .menu = menuCopy },
                 cmds.items,
             );
-            // switch (msg) {
-            //     .inputClicked => |input| {
-            //         const boomCmd = Command{
-            //             .playSoundEffect = SoundEffect.boom,
-            //         };
-            //         switch (input) {
-            //             .GeneralAction => {
-            //                 return UpdateResult.init(
-            //                     ally,
-            //                     screen.*,
-            //                     &.{
-            //                         boomCmd,
-            //                         Command{ .switchSubScreen = SubScreen.game },
-            //                     },
-            //                 ) catch |err| {
-            //                     std.debug.panic("Failed to create UpdateResult: {}", .{err});
-            //                 };
-            //             },
-            //             else => {},
-            //         }
-            //     },
-            //     .timePassed => |time| {
-            //         const numPeriods: f32 = time.totalTime / 0.5;
-            //         const intNumPeriods: u32 = @intFromFloat(numPeriods);
-            //         const blink: bool = intNumPeriods % 2 == 1;
-            //         var newE = menu.e;
-            //         newE.timePassed(time.deltaTime);
-            //         var newES = menu.es;
-            //         if (newE.ageSeconds >= newE.lifetimeSeconds) {
-            //             newE = randomExplosion();
-            //             try newES.append(randomExplosion());
-            //             try newES.append(randomExplosion());
-            //         }
-            //         for (0..newES.items.len) |ix| {
-            //             newES.items[ix].timePassed(time.deltaTime);
-            //         }
-            //         // Remove dead explosions
-            //         var i: usize = 0;
-            //         while (i < newES.items.len) {
-            //             if (!newES.items[i].alive) {
-            //                 std.debug.print("Removing dead explosion at index {}\n", .{i});
-            //                 _ = newES.swapRemove(i);
-            //             } else i += 1;
-            //         }
-            //         return UpdateResult.init(
-            //             ally,
-            //             Screen{ .menu = MenuState{
-            //                 .blink = blink,
-            //                 .e = newE,
-            //                 .es = newES,
-            //             } },
-            //             &.{},
-            //         );
-            //     },
-            // }
         },
         .game => |state| {
             var newState = state;
@@ -323,27 +268,6 @@ test "game starts in menu" {
     try std.testing.expectEqual(expected, actual);
 }
 
-test "hitting action button should switch to game and plays Boom sound" {
-    const ally = std.testing.allocator;
-    var oldScreen: Screen = .init(ally);
-    const actual: UpdateResult = try updateScreen(
-        std.testing.allocator,
-        &oldScreen,
-        Msg{ .inputClicked = Inputs.GeneralAction },
-    );
-    defer actual.deinit();
-    const expected = try UpdateResult.init(
-        std.testing.allocator,
-        Screen{ .game = GameState.init() },
-        &.{
-            Command{ .playSoundEffect = SoundEffect.boom },
-            Command{ .switchSubScreen = SubScreen.game },
-        },
-    );
-    defer expected.deinit();
-    try std.testing.expectEqualSlices(Command, expected.commands.items, actual.commands.items);
-}
-
 test "MenuState: hitting action button should switch to game and play Boom sound" {
     const ally = std.testing.allocator;
     var menuState = MenuState.init(ally);
@@ -365,25 +289,6 @@ test "MenuState: hitting action button should switch to game and play Boom sound
         expected.items,
         actual.items,
     );
-}
-
-test "press space blinks every 0.5 second on menu screen" {
-    const ally = std.testing.allocator;
-    var initialScreen: Screen = .init(ally);
-    var menuScreenNoTextExpected: UpdateResult = try updateScreen(
-        std.testing.allocator,
-        &initialScreen,
-        Msg{ .timePassed = .{ .totalTime = 0.40, .deltaTime = 0.40 } },
-    );
-    defer menuScreenNoTextExpected.deinit();
-    try std.testing.expectEqual(menuScreenNoTextExpected.screen.menu.blink, false);
-    const menuScreenTextExpected: UpdateResult = try updateScreen(
-        std.testing.allocator,
-        &menuScreenNoTextExpected.screen,
-        Msg{ .timePassed = .{ .totalTime = 0.75, .deltaTime = 0.35 } },
-    );
-    defer menuScreenTextExpected.deinit();
-    try std.testing.expectEqual(menuScreenTextExpected.screen.menu.blink, true);
 }
 
 test "MenuState: press space blinks every 0.5 second on menu screen" {
