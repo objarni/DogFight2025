@@ -5,6 +5,13 @@ pub const Screen = union(enum) {
     pub fn init(ally: std.mem.Allocator) Screen {
         return Screen{ .menu = .init(ally) };
     }
+
+    pub fn deinit(self: Screen) void {
+        switch (self) {
+            .menu => |menu| menu.deinit(),
+            .game => |_| {}, // GameState does not need deinit
+        }
+    }
 };
 
 const Explosion = @import("Explosion.zig").Explosion;

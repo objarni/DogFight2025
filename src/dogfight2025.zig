@@ -47,7 +47,8 @@ pub fn run() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     var ally = gpa.allocator();
 
-    var currentScreen = screen.Screen.init(ally);
+    var currentScreen : screen.Screen = .init(ally);
+    defer currentScreen.deinit();
     var drawAverage: i128 = 0;
     var drawAverageCount: u32 = 0;
 
@@ -230,14 +231,7 @@ fn executeCommands(
             },
             .switchSubScreen => |subScreen| {
                 std.debug.print("Switching to sub-screen: {}\n", .{subScreen});
-                switch(currentScreen.*) {
-                    .menu => |m| {
-                        m.deinit();
-                    },
-                    .game => |_| {
-                        // g.deinit();
-                    },
-                }
+                currentScreen.deinit();
                 switch (subScreen) {
                     .menu => |_| {
                         currentScreen.* = screen.Screen{
