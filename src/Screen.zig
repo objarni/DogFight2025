@@ -1,5 +1,11 @@
+
+const std = @import("std");
+
+const v2 = @import("V.zig");
+const V = v2.V;
+const v = v2.v;
+
 const basics = @import("Basics.zig");
-const Explosion = @import("Explosion.zig").Explosion;
 const Command = basics.Command;
 const SoundEffect = basics.SoundEffect;
 const PropellerAudio = basics.PropellerAudio;
@@ -8,12 +14,9 @@ const Msg = basics.Msg;
 const Inputs = basics.Inputs;
 const TimePassed = basics.TimePassed;
 
-const v2 = @import("V.zig");
-const V = v2.V;
-const v = v2.v;
-
 const Plane = @import("Plane.zig").Plane;
 const PlaneState = @import("Plane.zig").PlaneState;
+const Explosion = @import("Explosion.zig").Explosion;
 
 const window_width: u16 = 960;
 const window_height: u16 = 540;
@@ -227,8 +230,6 @@ fn randomExplosion() Explosion {
         std.math.pi * 2 * rndFrac(),
     );
 }
-
-const std = @import("std");
 
 test "game starts in menu" {
     const ally = std.testing.allocator;
