@@ -5,13 +5,13 @@ const V = v2.V;
 const v = v2.v;
 
 const basics = @import("basics.zig");
-const Command = basics.Command;
+pub const Command = basics.Command;
 const SoundEffect = basics.SoundEffect;
 const PropellerAudio = basics.PropellerAudio;
 const SubScreen = basics.SubScreen;
-const Msg = basics.Msg;
-const Inputs = basics.Inputs;
-const TimePassed = basics.TimePassed;
+pub const Msg = basics.Msg;
+pub const Inputs = basics.Inputs;
+pub const TimePassed = basics.TimePassed;
 const window_width: u16 = basics.window_width;
 const window_height: u16 = basics.window_height;
 
@@ -20,7 +20,7 @@ const Plane = plane.Plane;
 const PlaneState = plane.PlaneState;
 const Explosion = @import("Explosion.zig").Explosion;
 
-const MenuState = @import("MenuState.zig").MenuState;
+pub const MenuState = @import("MenuState.zig").MenuState;
 
 pub const Screen = union(enum) {
     menu: MenuState,
