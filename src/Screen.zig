@@ -180,6 +180,6 @@ test "game starts in menu" {
 // TODO: wrap clouds around the screen
 // TODO: display airplanes left (10 to start with)
 // TODO: add planes
-// TODO: Break out update logic for menu into separate function
 // TODO: particle system for explosion and debris
-// TODO: Game State and Menu State are getting too big, break them out into separate files
+// TODO: Move Game state to its own file
+// TODO: Get rid of UpdateResult, just return list of commands from states
