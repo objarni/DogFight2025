@@ -30,7 +30,7 @@ pub const MenuState = struct {
         };
     }
 
-    pub fn handleMessage(menu: *MenuState, ally: std.mem.Allocator, msg: Msg) !std.ArrayList(Command) {
+    pub fn handleMessage(self: *MenuState, ally: std.mem.Allocator, msg: Msg) !std.ArrayList(Command) {
         var cmds = std.ArrayList(Command).init(ally);
         switch (msg) {
             .inputClicked => |input| {
@@ -45,24 +45,23 @@ pub const MenuState = struct {
                 const numPeriods: f32 = time.totalTime / 0.5;
                 const intNumPeriods: u32 = @intFromFloat(numPeriods);
                 const blink: bool = intNumPeriods % 2 == 1;
-                menu.blink = blink;
-                var newE = menu.e;
+                self.blink = blink;
+                var newE = self.e;
                 newE.timePassed(time.deltaTime);
-                var newES = menu.es;
                 if (newE.ageSeconds >= newE.lifetimeSeconds) {
                     newE = randomExplosion();
-                    try newES.append(randomExplosion());
-                    try newES.append(randomExplosion());
+                    try self.es.append(randomExplosion());
+                    try self.es.append(randomExplosion());
                 }
-                for (0..newES.items.len) |ix| {
-                    newES.items[ix].timePassed(time.deltaTime);
+                for (0..self.es.items.len) |ix| {
+                    self.es.items[ix].timePassed(time.deltaTime);
                 }
                 // Remove dead explosions
                 var i: usize = 0;
-                while (i < newES.items.len) {
-                    if (!newES.items[i].alive) {
+                while (i < self.es.items.len) {
+                    if (!self.es.items[i].alive) {
                         std.debug.print("Removing dead explosion at index {}\n", .{i});
-                        _ = newES.swapRemove(i);
+                        _ = self.es.swapRemove(i);
                     } else i += 1;
                 }
             },
