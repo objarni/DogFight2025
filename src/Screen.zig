@@ -1,3 +1,23 @@
+const basics = @import("Basics.zig");
+const Explosion = @import("Explosion.zig").Explosion;
+const Command = basics.Command;
+const SoundEffect = basics.SoundEffect;
+const PropellerAudio = basics.PropellerAudio;
+const SubScreen = basics.SubScreen;
+const Msg = basics.Msg;
+const Inputs = basics.Inputs;
+const TimePassed = basics.TimePassed;
+
+const v2 = @import("V.zig");
+const V = v2.V;
+const v = v2.v;
+
+const Plane = @import("Plane.zig").Plane;
+const PlaneState = @import("Plane.zig").PlaneState;
+
+const window_width: u16 = 960;
+const window_height: u16 = 540;
+
 pub const Screen = union(enum) {
     menu: MenuState,
     game: GameState,
@@ -14,10 +34,6 @@ pub const Screen = union(enum) {
     }
 };
 
-const Explosion = @import("Explosion.zig").Explosion;
-
-const window_width: u16 = 960;
-const window_height: u16 = 540;
 
 pub const MenuState = struct {
     blink: bool = false,
@@ -81,12 +97,6 @@ pub const MenuState = struct {
     }
 };
 
-const v2 = @import("V.zig");
-const V = v2.V;
-const v = v2.v;
-
-const Plane = @import("Plane.zig").Plane;
-const PlaneState = @import("Plane.zig").PlaneState;
 
 pub const GameState = struct {
     clouds: [2]V,
@@ -152,24 +162,6 @@ pub const GameState = struct {
     }
 };
 
-pub const TimePassed = struct {
-    deltaTime: f32,
-    totalTime: f32,
-};
-
-pub const Msg = union(enum) {
-    inputClicked: Inputs,
-    timePassed: TimePassed,
-};
-
-pub const Inputs = enum {
-    Plane1Rise,
-    Plane1Dive,
-    Plane2Rise,
-    Plane2Dive,
-    GeneralAction, // This is starting game, pausing/unpausing, switching from game over to menu etc
-};
-
 pub const UpdateResult = struct {
     screen: Screen,
     commands: std.ArrayList(Command),
@@ -184,29 +176,6 @@ pub const UpdateResult = struct {
     fn deinit(self: UpdateResult) void {
         self.commands.deinit();
     }
-};
-
-pub const Command = union(enum) {
-    playSoundEffect: SoundEffect,
-    playPropellerAudio: PropellerAudio,
-    switchSubScreen: SubScreen,
-};
-
-pub const SubScreen = enum {
-    menu,
-    game,
-};
-
-pub const SoundEffect = enum {
-    boom,
-    crash,
-};
-
-pub const PropellerAudio = struct {
-    plane: u1, // 0 for plane 1, 1 for plane 2
-    on: bool, // true if sound is on, false if muted
-    pan: f32, // 0.0 to 1.0, where 0.0 is left, 1.0 is right
-    pitch: f32, // 1.0 is normal, 0.5 is half speed, 2.0 is double speed
 };
 
 fn arrayListOf(comptime T: type, ally: std.mem.Allocator, items: []const T) !std.ArrayList(T) {
