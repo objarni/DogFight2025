@@ -134,7 +134,7 @@ fn drawMenu(menu: screen.MenuState) void {
     if (menu.blink)
         centerText("Press SPACE to START!", 220, 20, rl.DARKGRAY);
     drawExplosion(menu.e);
-    for(menu.es.items) |e| {
+    for (menu.es.items) |e| {
         drawExplosion(e);
     }
 }
@@ -159,7 +159,8 @@ fn drawExplosion(e: Explosion) void {
         @intFromFloat(e.innerPosition[1]),
         e.innerDiameter / 2,
         rl.SKYBLUE,
-    );}
+    );
+}
 
 const Resources = struct {
     boomSound: rl.Sound,
@@ -229,6 +230,14 @@ fn executeCommands(
             },
             .switchSubScreen => |subScreen| {
                 std.debug.print("Switching to sub-screen: {}\n", .{subScreen});
+                switch(currentScreen.*) {
+                    .menu => |m| {
+                        m.deinit();
+                    },
+                    .game => |_| {
+                        // g.deinit();
+                    },
+                }
                 switch (subScreen) {
                     .menu => |_| {
                         currentScreen.* = screen.Screen{
