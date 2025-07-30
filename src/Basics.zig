@@ -40,3 +40,6 @@ pub const PropellerAudio = struct {
     pan: f32, // 0.0 to 1.0, where 0.0 is left, 1.0 is right
     pitch: f32, // 1.0 is normal, 0.5 is half speed, 2.0 is double speed
 };
+
+pub const window_width: u16 = 960;
+pub const window_height: u16 = 540;

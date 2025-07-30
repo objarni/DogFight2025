@@ -13,13 +13,13 @@ const SubScreen = basics.SubScreen;
 const Msg = basics.Msg;
 const Inputs = basics.Inputs;
 const TimePassed = basics.TimePassed;
+const window_width: u16 = basics.window_width;
+const window_height: u16 = basics.window_height;
 
-const Plane = @import("Plane.zig").Plane;
-const PlaneState = @import("Plane.zig").PlaneState;
+const plane = @import("Plane.zig");
+const Plane = plane.Plane;
+const PlaneState = plane.PlaneState;
 const Explosion = @import("Explosion.zig").Explosion;
-
-const window_width: u16 = 960;
-const window_height: u16 = 540;
 
 pub const Screen = union(enum) {
     menu: MenuState,
