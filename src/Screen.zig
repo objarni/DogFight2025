@@ -46,10 +46,9 @@ pub const MenuState = struct {
                 const intNumPeriods: u32 = @intFromFloat(numPeriods);
                 const blink: bool = intNumPeriods % 2 == 1;
                 self.blink = blink;
-                var newE = self.e;
-                newE.timePassed(time.deltaTime);
-                if (newE.ageSeconds >= newE.lifetimeSeconds) {
-                    newE = randomExplosion();
+                self.e.timePassed(time.deltaTime);
+                if (!self.e.alive) {
+                    self.e = randomExplosion();
                     try self.es.append(randomExplosion());
                     try self.es.append(randomExplosion());
                 }
