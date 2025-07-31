@@ -45,7 +45,7 @@ pub fn main() !void {
     }
 }
 
-const dogfight2025 = @import("dogfight2025.zig");
+const dogfight2025 = @import("dogfight/dogfight2025.zig");
 
 fn DogFight2025() !void {
     try dogfight2025.run();
@@ -365,5 +365,5 @@ test "training" {
 }
 
 test "dogfight2025" {
-    _ = @import("dogfight2025.zig");
+    _ = @import("dogfight/dogfight2025.zig");
 }
