@@ -63,11 +63,7 @@ pub const GameState = struct {
     fn handleMessage(self: *GameState, ally: std.mem.Allocator, msg: Msg) !?UpdateResult {
         return switch (msg) {
             .timePassed => |time| {
-                // Pitch of propeller audio should be based on plane speed
-                // but with minimum 0.5 and maximum 2.0
                 const propellerPitch: f32 = @max(0.5, @min(2.0, self.plane1.velocity[0] / 50.0));
-                // Panning of propeller audio should be based on plane position
-                // but with minimum 0.0 and maximum 1.0
                 const propellerPan: f32 = @max(0.0, @min(1.0, self.plane1.position[0] / window_width));
                 const propellerOn = self.plane1.state != PlaneState.STILL;
 
