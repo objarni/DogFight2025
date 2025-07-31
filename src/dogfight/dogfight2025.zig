@@ -91,14 +91,7 @@ pub fn run() !void {
                 msg,
             );
             defer ally.free(cmds);
-            // const result = try screen.updateScreen(
-            //     ally,
-            //     &currentScreen,
-            //     msg,
-            // );
-            // currentScreen = result.screen;
             executeCommands(ally, cmds, res, &currentScreen);
-            // result.commands.deinit();
         }
         allMsgs.clearAndFree();
 
@@ -226,9 +219,8 @@ fn executeCommands(
                         rl.PlayMusicStream(res.propellerAudio1);
                     }
                     rl.SetMusicPitch(res.propellerAudio1, audio.pitch);
-                    // std.debug.print("Playing propeller audio with pitch: {}\n", .{audio.pitch});
+                    std.debug.print("Playing propeller audio with pitch: {}\n", .{audio.pitch});
                     rl.SetMusicPan(res.propellerAudio1, audio.pan);
-                    // std.debug.print("Setting propeller audio pan: {}\n", .{audio.pan});
                 } else {
                     if (rl.IsMusicStreamPlaying(res.propellerAudio1))
                         rl.StopMusicStream(res.propellerAudio1);
