@@ -38,37 +38,37 @@ pub const Screen = union(enum) {
     }
 
     pub fn handleMessage(self: *Screen, ally: std.mem.Allocator, msg: Msg) ![]Command {
-        var result = try updateScreen(ally, self, msg);
+        var result = try self.updateScreen(ally, msg);
         defer result.deinit();
         self.* = result.screen;
         return result.commands.toOwnedSlice();
     }
-};
 
-pub fn updateScreen(ally: std.mem.Allocator, screen: *Screen, msg: Msg) !UpdateResult {
-    switch (screen.*) {
-        .menu => |menu| {
-            var menuCopy = menu;
-            const cmds = try menuCopy.handleMessage(ally, msg);
-            defer cmds.deinit();
-            return UpdateResult.init(
-                ally,
-                Screen{ .menu = menuCopy },
-                cmds.items,
-            );
-        },
-        .game => |state| {
-            var newState = state;
-            const maybeResult = try newState.handleMessage(ally, msg);
-            if (maybeResult) |result| return result;
-        },
+    pub fn updateScreen(screen: *Screen, ally: std.mem.Allocator, msg: Msg) !UpdateResult {
+        switch (screen.*) {
+            .menu => |menu| {
+                var menuCopy = menu;
+                const cmds = try menuCopy.handleMessage(ally, msg);
+                defer cmds.deinit();
+                return UpdateResult.init(
+                    ally,
+                    Screen{ .menu = menuCopy },
+                    cmds.items,
+                );
+            },
+            .game => |state| {
+                var newState = state;
+                const maybeResult = try newState.handleMessage(ally, msg);
+                if (maybeResult) |result| return result;
+            },
+        }
+        return UpdateResult.init(
+            ally,
+            screen.*,
+            &.{},
+        );
     }
-    return UpdateResult.init(
-        ally,
-        screen.*,
-        &.{},
-    );
-}
+};
 
 pub const GameState = struct {
     clouds: [2]V,
