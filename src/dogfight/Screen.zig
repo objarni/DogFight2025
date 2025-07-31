@@ -45,6 +45,31 @@ pub const Screen = union(enum) {
     }
 };
 
+pub fn updateScreen(ally: std.mem.Allocator, screen: *Screen, msg: Msg) !UpdateResult {
+    switch (screen.*) {
+        .menu => |menu| {
+            var menuCopy = menu;
+            const cmds = try menuCopy.handleMessage(ally, msg);
+            defer cmds.deinit();
+            return UpdateResult.init(
+                ally,
+                Screen{ .menu = menuCopy },
+                cmds.items,
+            );
+        },
+        .game => |state| {
+            var newState = state;
+            const maybeResult = try newState.handleMessage(ally, msg);
+            if (maybeResult) |result| return result;
+        },
+    }
+    return UpdateResult.init(
+        ally,
+        screen.*,
+        &.{},
+    );
+}
+
 pub const GameState = struct {
     clouds: [2]V,
     plane1: Plane,
@@ -145,31 +170,6 @@ fn arrayListOf(comptime T: type, ally: std.mem.Allocator, items: []const T) !std
         try list.append(item);
     }
     return list;
-}
-
-pub fn updateScreen(ally: std.mem.Allocator, screen: *Screen, msg: Msg) !UpdateResult {
-    switch (screen.*) {
-        .menu => |menu| {
-            var menuCopy = menu;
-            const cmds = try menuCopy.handleMessage(ally, msg);
-            defer cmds.deinit();
-            return UpdateResult.init(
-                ally,
-                Screen{ .menu = menuCopy },
-                cmds.items,
-            );
-        },
-        .game => |state| {
-            var newState = state;
-            const maybeResult = try newState.handleMessage(ally, msg);
-            if (maybeResult) |result| return result;
-        },
-    }
-    return UpdateResult.init(
-        ally,
-        screen.*,
-        &.{},
-    );
 }
 
 test "game starts in menu" {
