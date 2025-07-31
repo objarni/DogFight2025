@@ -1,6 +1,8 @@
 # Zig artifacts
 .zig-cache/
 zig-out/
+.DS_Store
+assets/.DS_Store
 
 # IDE specific
 .idea/
