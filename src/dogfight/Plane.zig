@@ -8,7 +8,7 @@ const PlaneConstants = struct {
     initialPos: V,
     takeoffSpeed: f32,
     groundAccelerationPerS: f32,
-    minTakeOffSpeed: f32 = 50.0,
+    minTakeOffSpeed: f32 = 25.0,
     towerDistance: f32 = 100.0,
 };
 
@@ -45,7 +45,7 @@ pub const Plane = struct {
             return newState;
         }
         if (self.state == .TAKEOFF_ROLL) {
-            if(self.velocity[0] >= self.planeConstants.takeoffSpeed) {
+            if (@abs(self.position[0] - self.planeConstants.towerDistance) < self.planeConstants.towerDistance / 2) {
                 var newState = self;
                 newState.state = .FLYING;
                 return newState;
@@ -77,6 +77,9 @@ pub const Plane = struct {
         if (self.state == .TAKEOFF_ROLL) {
             const newVelocity = self.velocity + v(self.planeConstants.groundAccelerationPerS * seconds, 0);
             const newPosition = self.position + v(newVelocity[0] * seconds, 0);
+            if (@abs(newPosition[0] - self.planeConstants.initialPos[0]) >= self.planeConstants.towerDistance) {
+                return sameExcept(self, "state", PlaneState.CRASH);
+            }
             return Plane{
                 .position = newPosition,
                 .velocity = newVelocity,
@@ -95,9 +98,9 @@ const testPlaneConstants = PlaneConstants{
 };
 
 pub inline fn sameExcept(anystruct: anytype, comptime field: []const u8, o: anytype) @TypeOf(anystruct) {
-  var new = anystruct;
-  @field(new, field) = o;
-  return new;
+    var new = anystruct;
+    @field(new, field) = o;
+    return new;
 }
 
 test "initialization of plane" {
@@ -130,32 +133,48 @@ test "plane crashes if not enough speed during takeoff roll" {
     try std.testing.expectEqual(PlaneState.CRASH, newPlane.state);
 }
 
-test "plane flies if enough speed during takeoff roll" {
-    const plane = Plane.init(testPlaneConstants);
-    var newPlane = plane.rise().timePassed(0.1);
-    while(newPlane.velocity[0] < testPlaneConstants.minTakeOffSpeed) {
-        newPlane = newPlane.timePassed(0.1);
-    }
-    newPlane = newPlane.rise();
-    try std.testing.expectEqual(PlaneState.FLYING, newPlane.state);
-}
-
 test "plane crashes on dive - even with enough speed during takeoff roll" {
     const plane = Plane.init(testPlaneConstants);
     var newPlane = plane.rise().timePassed(0.1);
-    while(newPlane.velocity[0] < testPlaneConstants.minTakeOffSpeed) {
+    var i: i16 = 0;
+    while (newPlane.velocity[0] < testPlaneConstants.minTakeOffSpeed) {
         newPlane = newPlane.timePassed(0.1);
+        i += 1;
+        if (i > 100) {
+            break; // Prevent infinite loop in case of an error
+        }
     }
     newPlane = newPlane.dive();
     try std.testing.expectEqual(PlaneState.CRASH, newPlane.state);
 }
 
-// test "plane crashes when hitting tower during takeoff roll" {
-//     const plane = Plane.init(testPlaneConstants);
-//     var newPlane = plane.rise().timePassed(0.1);
-//     while(newPlane.velocity[0] < testPlaneConstants.minTakeOffSpeed) {
-//         newPlane = newPlane.timePassed(0.1);
-//     }
-//     newPlane = newPlane.dive();
-//     try std.testing.expectEqual(PlaneState.CRASH, newPlane.state);
-// }
+test "plane crashes when hitting tower during takeoff roll" {
+    const plane = Plane.init(testPlaneConstants);
+    var newPlane = plane.rise();
+    var i: i32 = 0;
+    try std.testing.expectEqual(PlaneState.TAKEOFF_ROLL, newPlane.state);
+    while (@abs(newPlane.position[0] - testPlaneConstants.initialPos[0]) <= testPlaneConstants.towerDistance) {
+        newPlane = newPlane.timePassed(0.1);
+        i += 1;
+        if (i > 100) {
+            break; // Prevent infinite loop in case of an error
+        }
+    }
+    try std.testing.expectEqual(PlaneState.CRASH, newPlane.state);
+}
+
+test "plane flies if far enough from initial position during takeoff roll" {
+    const plane = Plane.init(testPlaneConstants);
+    var newPlane = plane.rise().timePassed(0.1);
+    var i: i16 = 0;
+    while (@abs(newPlane.position[0] - testPlaneConstants.initialPos[0]) < testPlaneConstants.towerDistance / 2) {
+        newPlane = newPlane.timePassed(0.1);
+        i += 1;
+        if (i > 100) {
+            break; // Prevent infinite loop in case of an error
+        }
+    }
+    newPlane = newPlane.rise();
+    std.debug.print("state: {}\n", .{newPlane.state});
+    try std.testing.expectEqual(PlaneState.FLYING, newPlane.state);
+}
