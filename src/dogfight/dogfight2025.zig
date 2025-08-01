@@ -176,7 +176,7 @@ fn drawGame(
     state: screen.GameState,
     res: Resources,
 ) void {
-    rl.ClearBackground(rl.RAYWHITE);
+    rl.ClearBackground(rl.SKYBLUE);
 
     rl.DrawCircle(200, 200, 50, rl.RED);
 
@@ -189,6 +189,8 @@ fn drawGame(
         @intFromFloat(state.plane1.position[1]),
         rl.WHITE,
     );
+
+    rl.DrawTexture(res.background, 0, window_height-res.background.height, rl.WHITE);
 
     for (state.clouds) |cloud| {
         const color = if (cloud[1] < 300) rl.LIGHTGRAY else rl.GRAY;
