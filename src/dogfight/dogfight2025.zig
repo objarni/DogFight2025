@@ -225,7 +225,6 @@ fn executeCommands(
                         rl.PlayMusicStream(res.propeller);
                     }
                     rl.SetMusicPitch(res.propeller, audio.pitch);
-                    std.debug.print("Playing propeller audio with pitch: {}\n", .{audio.pitch});
                     rl.SetMusicPan(res.propeller, audio.pan);
                 } else {
                     if (rl.IsMusicStreamPlaying(res.propeller))
