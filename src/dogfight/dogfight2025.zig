@@ -167,8 +167,10 @@ fn drawExplosion(e: Explosion) void {
 const Resources = struct {
     boom: rl.Sound,
     crash: rl.Sound,
+    game_over: rl.Sound,
     plane: rl.Texture2D,
     cloud: rl.Texture2D,
+    background: rl.Texture2D,
     propeller: rl.Music,
 };
 
@@ -214,6 +216,10 @@ fn executeCommands(
                         rl.PlaySound(res.crash);
                         std.debug.print("Playing crash sound effect\n", .{});
                     },
+                    .game_over => {
+                        rl.PlaySound(res.game_over);
+                        std.debug.print("Playing game over sound effect\n", .{});
+                    }
                 }
             },
             .playPropellerAudio => |audio| {
