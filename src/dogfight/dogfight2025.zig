@@ -34,6 +34,7 @@ pub fn run() !void {
         rl.UnloadSound(res.crashSound);
         rl.UnloadTexture(res.planeTex);
         rl.UnloadTexture(res.cloudTex);
+        rl.UnloadTexture(res.backgroundTex);
         rl.UnloadMusicStream(res.propellerAudio1);
     }
 
