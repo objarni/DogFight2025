@@ -24,6 +24,7 @@ pub fn run() !void {
     const res = Resources{
         .boom = rl.LoadSound("assets/Boom.wav"),
         .crash = rl.LoadSound("assets/Crash.mp3"),
+        .game_over = rl.LoadSound("assets/GameOver.mp3"),
         .plane = rl.LoadTexture("assets/Plane.png"),
         .cloud = rl.LoadTexture("assets/CloudBig.png"),
         .propeller = rl.LoadMusicStream("assets/PropellerPlane.mp3"),
@@ -166,6 +167,7 @@ fn drawExplosion(e: Explosion) void {
 const Resources = struct {
     boom: rl.Sound,
     crash: rl.Sound,
+    game_over: rl.Sound,
     plane: rl.Texture2D,
     cloud: rl.Texture2D,
     background: rl.Texture2D,
@@ -178,7 +180,7 @@ fn drawGame(
 ) void {
     rl.ClearBackground(rl.SKYBLUE);
 
-    rl.DrawCircle(window_width-50, window_height-100, 50, rl.RED);
+    rl.DrawCircle(window_width - 50, window_height - 100, 50, rl.RED);
     rl.DrawTexture(res.background, 0, window_height - res.background.height, rl.WHITE);
 
     rl.DrawTexture(
@@ -208,14 +210,16 @@ fn executeCommands(
     for (cmds) |command| {
         switch (command) {
             .playSoundEffect => |sfx| {
+                std.debug.print("Playing sound effect {}\n", sfx);
                 switch (sfx) {
                     .boom => {
                         rl.PlaySound(res.boom);
-                        std.debug.print("Playing boom sound effect\n", .{});
                     },
                     .crash => {
                         rl.PlaySound(res.crash);
-                        std.debug.print("Playing crash sound effect\n", .{});
+                    },
+                    .game_over => {
+                        rl.PlaySound(res.game_over);
                     },
                 }
             },

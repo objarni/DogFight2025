@@ -1,4 +1,3 @@
-
 pub const TimePassed = struct {
     deltaTime: f32,
     totalTime: f32,
@@ -17,7 +16,6 @@ pub const Inputs = enum {
     GeneralAction, // This is starting game, pausing/unpausing, switching from game over to menu etc
 };
 
-
 pub const Command = union(enum) {
     playSoundEffect: SoundEffect,
     playPropellerAudio: PropellerAudio,
@@ -32,6 +30,7 @@ pub const SubScreen = enum {
 pub const SoundEffect = enum {
     boom,
     crash,
+    game_over,
 };
 
 pub const PropellerAudio = struct {
