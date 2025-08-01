@@ -178,12 +178,10 @@ fn drawGame(
     state: screen.GameState,
     res: Resources,
 ) void {
-    rl.ClearBackground(rl.RAYWHITE);
+    rl.ClearBackground(rl.SKYBLUE);
 
-    rl.DrawCircle(200, 200, 50, rl.RED);
-
-    rl.DrawTexture(res.plane, 50, 50, rl.WHITE);
-    rl.DrawTexture(res.plane, 150, 50, rl.GREEN);
+    rl.DrawCircle(window_width-50, window_height-100, 50, rl.RED);
+    rl.DrawTexture(res.background, 0, window_height - res.background.height, rl.WHITE);
 
     rl.DrawTexture(
         res.plane,
