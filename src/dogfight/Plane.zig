@@ -9,6 +9,7 @@ const PlaneConstants = struct {
     takeoffSpeed: f32,
     groundAccelerationPerS: f32,
     minTakeOffSpeed: f32 = 50.0,
+    towerDistance: f32 = 100.0,
 };
 
 pub const PlaneState = enum {
@@ -88,7 +89,7 @@ pub const Plane = struct {
 };
 
 const testPlaneConstants = PlaneConstants{
-    .initialPos = v(50, 200),
+    .initialPos = v(0, 200),
     .takeoffSpeed = 50.0,
     .groundAccelerationPerS = 10.0,
 };
@@ -99,13 +100,13 @@ pub inline fn sameExcept(anystruct: anytype, comptime field: []const u8, o: anyt
   return new;
 }
 
-test {
+test "initialization of plane" {
     const plane = Plane.init(testPlaneConstants);
-    const expected = Plane{ .position = v(50, 200), .velocity = v(0, 0), .state = .STILL, .planeConstants = testPlaneConstants };
+    const expected = Plane{ .position = testPlaneConstants.initialPos, .velocity = v(0, 0), .state = .STILL, .planeConstants = testPlaneConstants };
     try std.testing.expectEqual(expected, plane);
 }
 
-test {
+test "plane starts takeoff roll from still state on rise command" {
     const plane = Plane.init(testPlaneConstants);
     const newPlane = plane.rise();
     try std.testing.expectEqual(PlaneState.TAKEOFF_ROLL, newPlane.state);
@@ -148,3 +149,13 @@ test "plane crashes on dive - even with enough speed during takeoff roll" {
     newPlane = newPlane.dive();
     try std.testing.expectEqual(PlaneState.CRASH, newPlane.state);
 }
+
+// test "plane crashes when hitting tower during takeoff roll" {
+//     const plane = Plane.init(testPlaneConstants);
+//     var newPlane = plane.rise().timePassed(0.1);
+//     while(newPlane.velocity[0] < testPlaneConstants.minTakeOffSpeed) {
+//         newPlane = newPlane.timePassed(0.1);
+//     }
+//     newPlane = newPlane.dive();
+//     try std.testing.expectEqual(PlaneState.CRASH, newPlane.state);
+// }
