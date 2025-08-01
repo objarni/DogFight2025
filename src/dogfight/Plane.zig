@@ -8,7 +8,6 @@ const PlaneConstants = struct {
     initialPos: V,
     takeoffSpeed: f32,
     groundAccelerationPerS: f32,
-    minTakeOffSpeed: f32 = 25.0,
     towerDistance: f32 = 100.0,
 };
 
@@ -133,11 +132,11 @@ test "plane crashes if not enough speed during takeoff roll" {
     try std.testing.expectEqual(PlaneState.CRASH, newPlane.state);
 }
 
-test "plane crashes on dive - even with enough speed during takeoff roll" {
+test "plane crashes on dive - even when it has accelerated far enough" {
     const plane = Plane.init(testPlaneConstants);
     var newPlane = plane.rise().timePassed(0.1);
     var i: i16 = 0;
-    while (newPlane.velocity[0] < testPlaneConstants.minTakeOffSpeed) {
+    while (newPlane.position[0] < testPlaneConstants.towerDistance / 2) {
         newPlane = newPlane.timePassed(0.1);
         i += 1;
         if (i > 100) {
