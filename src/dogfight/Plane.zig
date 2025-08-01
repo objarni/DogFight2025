@@ -112,7 +112,7 @@ test "plane starts takeoff roll from still state on rise command" {
     try std.testing.expectEqual(PlaneState.TAKEOFF_ROLL, newPlane.state);
 }
 
-test {
+test "plane starts takeoff roll from still state on dive command" {
     const plane = Plane.init(testPlaneConstants);
     const newPlane = plane.dive();
     try std.testing.expectEqual(PlaneState.TAKEOFF_ROLL, newPlane.state);
