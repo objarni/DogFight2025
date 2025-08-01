@@ -27,6 +27,7 @@ pub fn run() !void {
         .planeTex = rl.LoadTexture("assets/Plane.png"),
         .cloudTex = rl.LoadTexture("assets/CloudBig.png"),
         .propellerAudio1 = rl.LoadMusicStream("assets/PropellerPlane.mp3"),
+        .backgroundTex = rl.LoadTexture("assets/Background.png"),
     };
     defer {
         rl.UnloadSound(res.boomSound);
@@ -166,6 +167,7 @@ const Resources = struct {
     crashSound: rl.Sound,
     planeTex: rl.Texture2D,
     cloudTex: rl.Texture2D,
+    backgroundTex: rl.Texture2D,
     propellerAudio1: rl.Music,
 };
 
