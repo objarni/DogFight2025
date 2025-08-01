@@ -148,9 +148,3 @@ test "plane crashes on dive - even with enough speed during takeoff roll" {
     newPlane = newPlane.dive();
     try std.testing.expectEqual(PlaneState.CRASH, newPlane.state);
 }
-
-// #plane initial state is STILL
-// #when hitting rise/dive from STILL, goes to TAKEOFF_ROLL
-// if hitting rise/dive before enough speed in TAKEOFF_ROLL, goes to CRASH
-// if hitting rise when enough speed in TAKEOFF_ROLL, goes to FLYING
-// if hitting dive when enough speed in TAKEOFF_ROLL, goes to CRASH

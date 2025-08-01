@@ -205,10 +205,10 @@ fn executeCommands(
     for (cmds) |command| {
         switch (command) {
             .playSoundEffect => |sfx| {
+                std.debug.print("Playing sound effect: {}\n", .{sfx});
                 switch (sfx) {
                     .boom => {
                         rl.PlaySound(res.boom);
-                        std.debug.print("Playing boom sound effect\n", .{});
                     },
                     .crash => {
                         rl.PlaySound(res.crash);
