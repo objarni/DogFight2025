@@ -49,7 +49,7 @@ pub fn run() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     var ally = gpa.allocator();
 
-    var currentScreen : screen.Screen = .init(ally);
+    var currentScreen: screen.Screen = .init(ally);
     defer currentScreen.deinit();
     var drawAverage: i128 = 0;
     var drawAverageCount: u32 = 0;
@@ -178,10 +178,8 @@ fn drawGame(
 ) void {
     rl.ClearBackground(rl.SKYBLUE);
 
-    rl.DrawCircle(200, 200, 50, rl.RED);
-
-    rl.DrawTexture(res.plane, 50, 50, rl.WHITE);
-    rl.DrawTexture(res.plane, 150, 50, rl.GREEN);
+    rl.DrawCircle(window_width-50, window_height-100, 50, rl.RED);
+    rl.DrawTexture(res.background, 0, window_height - res.background.height, rl.WHITE);
 
     rl.DrawTexture(
         res.plane,
@@ -190,7 +188,10 @@ fn drawGame(
         rl.WHITE,
     );
 
-    rl.DrawTexture(res.background, 0, window_height-res.background.height, rl.WHITE);
+    //
+    // rl.DrawTexture(res.plane, 50, 50, rl.WHITE);
+    // rl.DrawTexture(res.plane, 150, 50, rl.GREEN);
+    //
 
     for (state.clouds) |cloud| {
         const color = if (cloud[1] < 300) rl.LIGHTGRAY else rl.GRAY;
