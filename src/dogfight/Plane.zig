@@ -159,6 +159,5 @@ test "plane flies if far enough from initial position during takeoff roll" {
         }
     }
     plane.rise();
-    std.debug.print("state: {}\n", .{plane.state});
     try std.testing.expectEqual(PlaneState.FLYING, plane.state);
 }
