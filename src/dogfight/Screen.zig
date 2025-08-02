@@ -104,7 +104,7 @@ pub const GameState = struct {
                 const deltaX: f32 = time.deltaTime;
                 self.clouds[0][0] -= deltaX * 5.0;
                 self.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
-                self.plane1.timePassedP(time.deltaTime);
+                self.plane1.timePassed(time.deltaTime);
 
                 return try UpdateResult.init(
                     ally,
@@ -115,7 +115,7 @@ pub const GameState = struct {
             .inputClicked => |input| {
                 const plane1oldState = self.plane1.state;
                 switch (input) {
-                    .Plane1Rise => self.plane1.riseP(),
+                    .Plane1Rise => self.plane1.rise(),
                     .Plane2Rise => {}, // TODO: Implement second plane
                     else => {},
                 }
