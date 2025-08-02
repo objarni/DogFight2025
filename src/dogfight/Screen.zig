@@ -139,30 +139,6 @@ test "GameState: both clouds move left by, but the lower cloud moves faster" {
     );
 }
 
-pub const UpdateResult = struct {
-    screen: Screen,
-    commands: std.ArrayList(Command),
-
-    fn init(ally: std.mem.Allocator, screen: Screen, cmds: []const Command) !UpdateResult {
-        return UpdateResult{
-            .screen = screen,
-            .commands = try arrayListOf(Command, ally, cmds),
-        };
-    }
-
-    fn deinit(self: UpdateResult) void {
-        self.commands.deinit();
-    }
-};
-
-fn arrayListOf(comptime T: type, ally: std.mem.Allocator, items: []const T) !std.ArrayList(T) {
-    var list = std.ArrayList(T).init(ally);
-    for (items) |item| {
-        try list.append(item);
-    }
-    return list;
-}
-
 test "game starts in menu" {
     const ally = std.testing.allocator;
     const actual: Screen = .init(ally);
