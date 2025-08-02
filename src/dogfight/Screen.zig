@@ -115,7 +115,7 @@ pub const GameState = struct {
             .inputClicked => |input| {
                 const plane1oldState = self.plane1.state;
                 switch (input) {
-                    .Plane1Rise => self.plane1 = self.plane1.rise(),
+                    .Plane1Rise => self.plane1.riseP(),
                     .Plane2Rise => {}, // TODO: Implement second plane
                     else => {},
                 }

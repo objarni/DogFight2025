@@ -33,29 +33,6 @@ pub const Plane = struct {
         };
     }
 
-    pub fn rise(self: Plane) Plane {
-        if (self.state == .STILL) {
-            const newState: Plane = .{
-                .state = .TAKEOFF_ROLL,
-                .position = self.position,
-                .velocity = self.velocity,
-                .planeConstants = self.planeConstants,
-            };
-            return newState;
-        }
-        if (self.state == .TAKEOFF_ROLL) {
-            if (@abs(self.position[0] - self.planeConstants.towerDistance) < self.planeConstants.towerDistance / 2) {
-                var newState = self;
-                newState.state = .FLYING;
-                return newState;
-            }
-            var newState = self;
-            newState.state = .CRASH;
-            return newState;
-        }
-        return self;
-    }
-
     pub fn riseP(self: *Plane) void {
         if (self.state == .STILL) {
             self.state = .TAKEOFF_ROLL;
