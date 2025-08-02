@@ -186,7 +186,7 @@ test "plane crashes on dive - even when it has accelerated far enough" {
             break; // Prevent infinite loop in case of an error
         }
     }
-    plane = plane.dive();
+    plane.diveP();
     try std.testing.expectEqual(PlaneState.CRASH, plane.state);
 }
 
