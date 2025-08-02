@@ -87,6 +87,18 @@ pub const Plane = struct {
         return self;
     }
 
+    pub fn diveP(self: *Plane) void {
+        if (self.state == .STILL) {
+            self.state = .TAKEOFF_ROLL;
+            return;
+        }
+        if (self.state == .TAKEOFF_ROLL) {
+            self.state = PlaneState.CRASH;
+            return;
+        }
+        return;
+    }
+
     pub fn timePassed(self: Plane, seconds: f32) Plane {
         if (self.state == .TAKEOFF_ROLL) {
             const newVelocity = self.velocity + v(self.planeConstants.groundAccelerationPerS * seconds, 0);
