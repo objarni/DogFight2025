@@ -111,50 +111,6 @@ pub const GameState = struct {
         }
         return 0;
     }
-
-    fn handleMessage(self: *GameState, ally: std.mem.Allocator, msg: Msg) !?UpdateResult {
-        return switch (msg) {
-            .timePassed => |time| {
-                const propellerPitch: f32 = @max(0.5, @min(2.0, self.plane1.velocity[0] / 50.0));
-                const propellerPan: f32 = @max(0.0, @min(1.0, self.plane1.position[0] / window_width));
-                const propellerOn = self.plane1.state != PlaneState.STILL;
-
-                const propellerCmd = Command{
-                    .playPropellerAudio = PropellerAudio{
-                        .plane = 0, // 0 for plane 1
-                        .on = propellerOn,
-                        .pan = propellerPan,
-                        .pitch = propellerPitch,
-                    },
-                };
-
-                const deltaX: f32 = time.deltaTime;
-                self.clouds[0][0] -= deltaX * 5.0;
-                self.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
-                self.plane1.timePassed(time.deltaTime);
-
-                return try UpdateResult.init(
-                    ally,
-                    Screen{ .game = self.* },
-                    &.{propellerCmd},
-                );
-            },
-            .inputClicked => |input| {
-                const plane1oldState = self.plane1.state;
-                switch (input) {
-                    .Plane1Rise => self.plane1.rise(),
-                    .Plane2Rise => {}, // TODO: Implement second plane
-                    else => {},
-                }
-                if (self.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
-                    return try UpdateResult.init(ally, Screen{ .game = self.* }, &.{
-                        Command{ .playSoundEffect = SoundEffect.crash },
-                    });
-                }
-                return try UpdateResult.init(ally, Screen{ .game = self.* }, &.{});
-            },
-        };
-    }
 };
 
 test "GameState: both clouds move left by, but the lower cloud moves faster" {
