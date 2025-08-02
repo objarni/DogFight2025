@@ -73,7 +73,6 @@ pub const MenuState = struct {
         return cmds;
     }
 
-
     pub fn handleMsg(self: *MenuState, msg: Msg, effects: []Command) !u8 {
         switch (msg) {
             .inputClicked => |input| {
@@ -128,36 +127,20 @@ fn rndFrac() f32 {
     return random.float(f32);
 }
 
-test "MenuState: hitting action button should switch to game and play Boom sound" {
-    const ally = std.testing.allocator;
-    var menuState = MenuState.init(ally);
-    const actual = try menuState.handleMessage(
-        ally,
-        Msg{ .inputClicked = Inputs.GeneralAction },
-    );
-    defer actual.deinit();
-    var expected = std.ArrayList(Command).init(ally);
-    defer expected.deinit();
-    try expected.appendSlice(
-        &.{
-            Command{ .playSoundEffect = SoundEffect.boom },
-            Command{ .switchSubScreen = SubScreen.game },
-        },
-    );
-    try std.testing.expectEqualSlices(
-        Command,
-        expected.items,
-        actual.items,
-    );
-}
-
 test "MenuState.handleMsg: hitting action button should switch to game and play Boom sound" {
     const ally = std.testing.allocator;
     var menuState = MenuState.init(ally);
-    var actual: [10]Command = undefined;
+    var actual: [2]Command = .{
+        Command{
+            .playSoundEffect = SoundEffect.boom,
+        },
+        Command{
+            .playSoundEffect = SoundEffect.boom,
+        },
+    };
     const actualCount = try menuState.handleMsg(
         Msg{ .inputClicked = Inputs.GeneralAction },
-        &actual,
+        actual[0..2],
     );
     const expected: [2]Command = .{
         Command{ .playSoundEffect = SoundEffect.boom },
@@ -171,18 +154,29 @@ test "MenuState.handleMsg: hitting action button should switch to game and play 
     );
 }
 
-test "MenuState: press space blinks every 0.5 second on menu screen" {
+test "MenuState.handleMsg: press space blinks every 0.5 second on menu screen" {
     const ally = std.testing.allocator;
 
     // No text expected
     var menuState: MenuState = .init(ally);
-    const msg = Msg{ .timePassed = .{ .totalTime = 0.40, .deltaTime = 0.40 } };
-    _ = try menuState.handleMessage(ally, msg);
+    const msg = Msg{
+        .timePassed = .{
+            .totalTime = 0.40,
+            .deltaTime = 0.40,
+        },
+    };
+    const effects: [0]Command = .{};
+    _ = try menuState.handleMsg(msg, &effects);
     try std.testing.expectEqual(menuState.blink, false);
 
-    // Text expected
-    const msg2 = Msg{ .timePassed = .{ .totalTime = 0.75, .deltaTime = 0.35 } };
-    _ = try menuState.handleMessage(ally, msg2);
+    // Test expected
+    const msg2 = Msg{
+        .timePassed = .{
+            .totalTime = 0.75,
+            .deltaTime = 0.35,
+        },
+    };
+    _ = try menuState.handleMsg(msg2, &effects);
 
     try std.testing.expectEqual(menuState.blink, true);
 }
