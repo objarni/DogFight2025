@@ -18,7 +18,6 @@ pub const PlaneState = enum {
     CRASH,
 };
 
-
 pub const Plane = struct {
     position: V,
     velocity: V,
@@ -104,6 +103,21 @@ pub const Plane = struct {
         }
         return self;
     }
+
+    pub fn timePassedP(self: *Plane, seconds: f32) void {
+        if (self.state == .TAKEOFF_ROLL) {
+            const newVelocity = self.velocity + v(self.planeConstants.groundAccelerationPerS * seconds, 0);
+            const newPosition = self.position + v(newVelocity[0] * seconds, 0);
+            if (@abs(newPosition[0] - self.planeConstants.initialPos[0]) >= self.planeConstants.towerDistance) {
+                self.state = PlaneState.CRASH;
+                return;
+            }
+            self.position = newPosition;
+            self.velocity = newVelocity;
+            return;
+        }
+        return;
+    }
 };
 
 const testPlaneConstants = PlaneConstants{
@@ -181,11 +195,10 @@ test "plane crashes when hitting tower during takeoff roll" {
 test "plane flies if far enough from initial position during takeoff roll" {
     var plane = Plane.init(testPlaneConstants);
     plane.riseP();
-    const newPlane = plane.timePassed(0.1);
-    plane = newPlane;
+    plane.timePassedP(0.1);
     var i: i16 = 0;
     while (@abs(plane.position[0] - testPlaneConstants.initialPos[0]) < testPlaneConstants.towerDistance / 2) {
-        plane = plane.timePassed(0.1);
+        plane.timePassedP(0.1);
         i += 1;
         if (i > 100) {
             break; // Prevent infinite loop in case of an error
