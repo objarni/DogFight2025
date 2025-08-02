@@ -44,7 +44,7 @@ pub const Screen = union(enum) {
         return result.commands.toOwnedSlice();
     }
 
-    pub fn updateScreen(screen: *Screen, ally: std.mem.Allocator, msg: Msg) !UpdateResult {
+    fn updateScreen(screen: *Screen, ally: std.mem.Allocator, msg: Msg) !UpdateResult {
         switch (screen.*) {
             .menu => |menu| {
                 var menuCopy = menu;
