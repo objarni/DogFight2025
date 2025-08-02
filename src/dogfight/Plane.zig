@@ -72,9 +72,7 @@ pub const Plane = struct {
             }
             self.position = newPosition;
             self.velocity = newVelocity;
-            return;
         }
-        return;
     }
 };
 
