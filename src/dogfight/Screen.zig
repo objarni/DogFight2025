@@ -37,7 +37,21 @@ pub const Screen = union(enum) {
         }
     }
 
-    pub fn handleMessage(self: *Screen, ally: std.mem.Allocator, msg: Msg) ![]Command {
+    pub fn handleMsg(self: *Screen, ally: std.mem.Allocator, msg: Msg, effects: []Command) !u4 {
+        const result = try self.handleMessage(ally, msg);
+        defer result.deinit();
+        self.* = result.screen;
+        for(0..result.commands.len) |ix| {
+            effects[ix] = result.commands.items[ix];
+        }
+        return @intCast(result.commands.items.len);
+    }
+
+    pub fn handleMessage(
+        self: *Screen,
+        ally: std.mem.Allocator,
+        msg: Msg,
+    ) ![]Command {
         var result = try self.updateScreen(ally, msg);
         defer result.deinit();
         self.* = result.screen;
