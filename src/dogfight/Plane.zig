@@ -163,9 +163,10 @@ test "plane starts takeoff roll from still state on dive command" {
 }
 
 test "plane acceleration on ground during takeoff roll" {
-    const plane = Plane.init(testPlaneConstants);
-    const newPlane = plane.rise().timePassed(1.0);
-    try std.testing.expectEqual(10.0, newPlane.velocity[0]);
+    var plane = Plane.init(testPlaneConstants);
+    plane.riseP();
+    plane.timePassedP(1.0);
+    try std.testing.expectEqual(10.0, plane.velocity[0]);
 }
 
 test "plane crashes if not enough speed during takeoff roll" {
