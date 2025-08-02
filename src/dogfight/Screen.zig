@@ -38,10 +38,10 @@ pub const Screen = union(enum) {
     }
 
     pub fn handleMsg(self: *Screen, ally: std.mem.Allocator, msg: Msg, effects: []Command) !u4 {
-        const cmds : []Command = try self.handleMessage(ally, msg);
+        const cmds: []Command = try self.handleMessage(ally, msg);
         defer ally.free(cmds);
         const numberOfCommands: u4 = @intCast(cmds.len);
-        for(0..numberOfCommands) |ix| {
+        for (0..numberOfCommands) |ix| {
             effects[ix] = cmds[ix];
         }
         return numberOfCommands;
@@ -190,18 +190,26 @@ test "GameState: both clouds move left by, but the lower cloud moves faster" {
     var gameState: GameState = GameState.init();
     const highCloudX: f32 = gameState.clouds[0][0];
     const lowCloudX: f32 = gameState.clouds[1][0];
-    const result: ?UpdateResult = try gameState.handleMessage(
-        std.testing.allocator,
-        Msg{ .timePassed = TimePassed{ .totalTime = 1.0, .deltaTime = 1.0 } },
+    var effects: [10]Command = undefined;
+    _ = gameState.handleMsg(
+        Msg{
+            .timePassed = TimePassed{
+                .totalTime = 1.0,
+                .deltaTime = 1.0,
+            },
+        },
+        &effects,
     );
-    if (result) |newScreen| {
-        defer newScreen.deinit();
-        try std.testing.expectApproxEqAbs(highCloudX - 5.0, newScreen.screen.game.clouds[0][0], 0.1);
-        try std.testing.expectApproxEqAbs(lowCloudX - 8.9, newScreen.screen.game.clouds[1][0], 0.1);
-    } else {
-        std.debug.print("Expected a result from GameState.handleMsg, but got null\n", .{});
-        try std.testing.expect(false);
-    }
+    try std.testing.expectApproxEqAbs(
+        highCloudX - 5.0,
+        gameState.clouds[0][0],
+        0.1,
+    );
+    try std.testing.expectApproxEqAbs(
+        lowCloudX - 8.9,
+        gameState.clouds[1][0],
+        0.1,
+    );
 }
 
 pub const UpdateResult = struct {
