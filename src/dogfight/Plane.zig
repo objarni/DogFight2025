@@ -18,6 +18,7 @@ pub const PlaneState = enum {
     CRASH,
 };
 
+
 pub const Plane = struct {
     position: V,
     velocity: V,
@@ -54,6 +55,21 @@ pub const Plane = struct {
             return newState;
         }
         return self;
+    }
+
+    pub fn riseP(self: *Plane) void {
+        if (self.state == .STILL) {
+            self.state = .TAKEOFF_ROLL;
+            return;
+        }
+        if (self.state == .TAKEOFF_ROLL) {
+            if (@abs(self.position[0] - self.planeConstants.towerDistance) < self.planeConstants.towerDistance / 2) {
+                self.state = .FLYING;
+                return;
+            }
+            self.state = .CRASH;
+            return;
+        }
     }
 
     pub fn dive(self: Plane) Plane {
@@ -163,17 +179,19 @@ test "plane crashes when hitting tower during takeoff roll" {
 }
 
 test "plane flies if far enough from initial position during takeoff roll" {
-    const plane = Plane.init(testPlaneConstants);
-    var newPlane = plane.rise().timePassed(0.1);
+    var plane = Plane.init(testPlaneConstants);
+    plane.riseP();
+    const newPlane = plane.timePassed(0.1);
+    plane = newPlane;
     var i: i16 = 0;
-    while (@abs(newPlane.position[0] - testPlaneConstants.initialPos[0]) < testPlaneConstants.towerDistance / 2) {
-        newPlane = newPlane.timePassed(0.1);
+    while (@abs(plane.position[0] - testPlaneConstants.initialPos[0]) < testPlaneConstants.towerDistance / 2) {
+        plane = plane.timePassed(0.1);
         i += 1;
         if (i > 100) {
             break; // Prevent infinite loop in case of an error
         }
     }
-    newPlane = newPlane.rise();
-    std.debug.print("state: {}\n", .{newPlane.state});
-    try std.testing.expectEqual(PlaneState.FLYING, newPlane.state);
+    plane.riseP();
+    std.debug.print("state: {}\n", .{plane.state});
+    try std.testing.expectEqual(PlaneState.FLYING, plane.state);
 }
