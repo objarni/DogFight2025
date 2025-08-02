@@ -72,6 +72,43 @@ pub const MenuState = struct {
         }
         return cmds;
     }
+
+
+    pub fn handleMsg(self: *MenuState, msg: Msg, effects: []Command) !u8 {
+        switch (msg) {
+            .inputClicked => |input| {
+                if (input == Inputs.GeneralAction) {
+                    effects[0] = Command{ .playSoundEffect = SoundEffect.boom };
+                    effects[1] = Command{ .switchSubScreen = SubScreen.game };
+                    return 2;
+                }
+            },
+            .timePassed => |time| {
+                const numPeriods: f32 = time.totalTime / 0.5;
+                const intNumPeriods: u32 = @intFromFloat(numPeriods);
+                const blink: bool = intNumPeriods % 2 == 1;
+                self.blink = blink;
+                self.e.timePassed(time.deltaTime);
+                if (!self.e.alive) {
+                    self.e = randomExplosion();
+                    try self.es.append(randomExplosion());
+                    try self.es.append(randomExplosion());
+                }
+                for (0..self.es.items.len) |ix| {
+                    self.es.items[ix].timePassed(time.deltaTime);
+                }
+                // Remove dead explosions
+                var i: usize = 0;
+                while (i < self.es.items.len) {
+                    if (!self.es.items[i].alive) {
+                        std.debug.print("Removing dead explosion at index {}\n", .{i});
+                        _ = self.es.swapRemove(i);
+                    } else i += 1;
+                }
+            },
+        }
+        return 0;
+    }
 };
 
 fn randomExplosion() Explosion {
@@ -111,6 +148,26 @@ test "MenuState: hitting action button should switch to game and play Boom sound
         Command,
         expected.items,
         actual.items,
+    );
+}
+
+test "MenuState.handleMsg: hitting action button should switch to game and play Boom sound" {
+    const ally = std.testing.allocator;
+    var menuState = MenuState.init(ally);
+    var actual: [10]Command = undefined;
+    const actualCount = try menuState.handleMsg(
+        Msg{ .inputClicked = Inputs.GeneralAction },
+        &actual,
+    );
+    const expected: [2]Command = .{
+        Command{ .playSoundEffect = SoundEffect.boom },
+        Command{ .switchSubScreen = SubScreen.game },
+    };
+    try std.testing.expectEqual(2, actualCount);
+    try std.testing.expectEqualSlices(
+        Command,
+        &expected,
+        actual[0..actualCount],
     );
 }
 
