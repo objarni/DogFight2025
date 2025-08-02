@@ -169,9 +169,11 @@ test "plane acceleration on ground during takeoff roll" {
 }
 
 test "plane crashes if not enough speed during takeoff roll" {
-    const plane = Plane.init(testPlaneConstants);
-    const newPlane = plane.rise().timePassed(0.1).rise();
-    try std.testing.expectEqual(PlaneState.CRASH, newPlane.state);
+    var plane = Plane.init(testPlaneConstants);
+    plane.riseP();
+    plane.timePassedP(0.1);
+    plane.riseP();
+    try std.testing.expectEqual(PlaneState.CRASH, plane.state);
 }
 
 test "plane crashes on dive - even when it has accelerated far enough" {
