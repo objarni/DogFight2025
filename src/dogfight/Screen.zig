@@ -52,49 +52,6 @@ pub const Screen = union(enum) {
                 return numberOfCommands;
             },
         }
-        // const cmds: []Command = try self.handleMessage(ally, msg);
-        // defer ally.free(cmds);
-        // const numberOfCommands: u4 = @intCast(cmds.len);
-        // for (0..numberOfCommands) |ix| {
-        //     effects[ix] = cmds[ix];
-        // }
-        // return numberOfCommands;
-    }
-
-    pub fn handleMessage(
-        self: *Screen,
-        ally: std.mem.Allocator,
-        msg: Msg,
-    ) ![]Command {
-        var result = try self.updateScreen(ally, msg);
-        defer result.deinit();
-        self.* = result.screen;
-        return result.commands.toOwnedSlice();
-    }
-
-    fn updateScreen(screen: *Screen, ally: std.mem.Allocator, msg: Msg) !UpdateResult {
-        switch (screen.*) {
-            .menu => |menu| {
-                var menuCopy = menu;
-                const cmds = try menuCopy.handleMessage(ally, msg);
-                defer cmds.deinit();
-                return UpdateResult.init(
-                    ally,
-                    Screen{ .menu = menuCopy },
-                    cmds.items,
-                );
-            },
-            .game => |state| {
-                var newState = state;
-                const maybeResult = try newState.handleMessage(ally, msg);
-                if (maybeResult) |result| return result;
-            },
-        }
-        return UpdateResult.init(
-            ally,
-            screen.*,
-            &.{},
-        );
     }
 };
 
