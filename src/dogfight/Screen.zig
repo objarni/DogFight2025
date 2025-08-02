@@ -104,7 +104,7 @@ pub const GameState = struct {
                 const deltaX: f32 = time.deltaTime;
                 self.clouds[0][0] -= deltaX * 5.0;
                 self.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
-                self.plane1 = self.plane1.timePassed(time.deltaTime);
+                self.plane1.timePassedP(time.deltaTime);
 
                 return try UpdateResult.init(
                     ally,
