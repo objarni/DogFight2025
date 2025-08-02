@@ -82,12 +82,6 @@ const testPlaneConstants = PlaneConstants{
     .groundAccelerationPerS = 10.0,
 };
 
-pub inline fn sameExcept(anystruct: anytype, comptime field: []const u8, o: anytype) @TypeOf(anystruct) {
-    var new = anystruct;
-    @field(new, field) = o;
-    return new;
-}
-
 test "initialization of plane" {
     const plane = Plane.init(testPlaneConstants);
     const expected = Plane{ .position = testPlaneConstants.initialPos, .velocity = v(0, 0), .state = .STILL, .planeConstants = testPlaneConstants };
