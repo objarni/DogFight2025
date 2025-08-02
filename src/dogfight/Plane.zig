@@ -151,15 +151,15 @@ test "initialization of plane" {
 }
 
 test "plane starts takeoff roll from still state on rise command" {
-    const plane = Plane.init(testPlaneConstants);
-    const newPlane = plane.rise();
-    try std.testing.expectEqual(PlaneState.TAKEOFF_ROLL, newPlane.state);
+    var plane = Plane.init(testPlaneConstants);
+    plane.riseP();
+    try std.testing.expectEqual(PlaneState.TAKEOFF_ROLL, plane.state);
 }
 
 test "plane starts takeoff roll from still state on dive command" {
-    const plane = Plane.init(testPlaneConstants);
-    const newPlane = plane.dive();
-    try std.testing.expectEqual(PlaneState.TAKEOFF_ROLL, newPlane.state);
+    var plane = Plane.init(testPlaneConstants);
+    plane.diveP();
+    try std.testing.expectEqual(PlaneState.TAKEOFF_ROLL, plane.state);
 }
 
 test "plane acceleration on ground during takeoff roll" {
