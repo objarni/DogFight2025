@@ -48,7 +48,6 @@ pub const Plane = struct {
             },
             else => {},
         }
-        return;
     }
 
     pub fn dive(self: *Plane) void {
@@ -61,7 +60,6 @@ pub const Plane = struct {
             },
             else => {},
         }
-        return;
     }
 
     pub fn timePassed(self: *Plane, seconds: f32) void {
