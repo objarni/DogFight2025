@@ -163,18 +163,19 @@ test "plane crashes if not enough speed during takeoff roll" {
 }
 
 test "plane crashes on dive - even when it has accelerated far enough" {
-    const plane = Plane.init(testPlaneConstants);
-    var newPlane = plane.rise().timePassed(0.1);
+    var plane = Plane.init(testPlaneConstants);
+    plane.riseP();
+    plane.timePassedP(0.1);
     var i: i16 = 0;
-    while (newPlane.position[0] < testPlaneConstants.towerDistance / 2) {
-        newPlane = newPlane.timePassed(0.1);
+    while (plane.position[0] < testPlaneConstants.towerDistance / 2) {
+        plane.timePassedP(0.1);
         i += 1;
         if (i > 100) {
             break; // Prevent infinite loop in case of an error
         }
     }
-    newPlane = newPlane.dive();
-    try std.testing.expectEqual(PlaneState.CRASH, newPlane.state);
+    plane = plane.dive();
+    try std.testing.expectEqual(PlaneState.CRASH, plane.state);
 }
 
 test "plane crashes when hitting tower during takeoff roll" {
