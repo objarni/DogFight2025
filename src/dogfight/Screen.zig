@@ -99,6 +99,48 @@ pub const GameState = struct {
         };
     }
 
+    fn handleMsg(self: *GameState, msg: Msg, effects: []Command) u8 {
+        switch (msg) {
+            .timePassed => |time| {
+
+                // Move plane
+                const propellerPitch: f32 = @max(0.5, @min(2.0, self.plane1.velocity[0] / 50.0));
+                const propellerPan: f32 = @max(0.0, @min(1.0, self.plane1.position[0] / window_width));
+                const propellerOn = self.plane1.state != PlaneState.STILL;
+                const propellerCmd = Command{
+                    .playPropellerAudio = PropellerAudio{
+                        .plane = 0, // 0 for plane 1
+                        .on = propellerOn,
+                        .pan = propellerPan,
+                        .pitch = propellerPitch,
+                    },
+                };
+                effects[0] = propellerCmd;
+                self.plane1.timePassed(time.deltaTime);
+
+                // Move clouds
+                const deltaX: f32 = time.deltaTime;
+                self.clouds[0][0] -= deltaX * 5.0;
+                self.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
+
+                return 1;
+            },
+            .inputClicked => |input| {
+                const plane1oldState = self.plane1.state;
+                switch (input) {
+                    .Plane1Rise => self.plane1.rise(),
+                    .Plane2Rise => {}, // TODO: Implement second plane
+                    else => {},
+                }
+                if (self.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
+                    effects[0] = Command{ .playSoundEffect = SoundEffect.crash };
+                    return 1;
+                }
+            },
+        }
+        return 0;
+    }
+
     fn handleMessage(self: *GameState, ally: std.mem.Allocator, msg: Msg) !?UpdateResult {
         return switch (msg) {
             .timePassed => |time| {
