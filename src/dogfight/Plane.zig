@@ -71,22 +71,6 @@ pub const Plane = struct {
         }
     }
 
-    pub fn dive(self: Plane) Plane {
-        if (self.state == .STILL) {
-            const newState: Plane = .{
-                .state = .TAKEOFF_ROLL,
-                .position = self.position,
-                .velocity = self.velocity,
-                .planeConstants = self.planeConstants,
-            };
-            return newState;
-        }
-        if (self.state == .TAKEOFF_ROLL) {
-            return sameExcept(self, "state", PlaneState.CRASH);
-        }
-        return self;
-    }
-
     pub fn diveP(self: *Plane) void {
         if (self.state == .STILL) {
             self.state = .TAKEOFF_ROLL;
