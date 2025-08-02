@@ -38,13 +38,13 @@ pub const Screen = union(enum) {
     }
 
     pub fn handleMsg(self: *Screen, ally: std.mem.Allocator, msg: Msg, effects: []Command) !u4 {
-        const result = try self.handleMessage(ally, msg);
-        defer result.deinit();
-        self.* = result.screen;
-        for(0..result.commands.len) |ix| {
-            effects[ix] = result.commands.items[ix];
+        const cmds : []Command = try self.handleMessage(ally, msg);
+        defer ally.free(cmds);
+        const numberOfCommands: u4 = @intCast(cmds.len);
+        for(0..numberOfCommands) |ix| {
+            effects[ix] = cmds[ix];
         }
-        return @intCast(result.commands.items.len);
+        return numberOfCommands;
     }
 
     pub fn handleMessage(

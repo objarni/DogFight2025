@@ -56,8 +56,12 @@ pub fn run() !void {
     var drawAverageCount: u32 = 0;
 
     var allMsgs: std.ArrayList(screen.Msg) = .init(ally);
-    defer ally.free(allMsgs.items);
+    defer allMsgs.deinit();
     try allMsgs.ensureTotalCapacity(10);
+
+    var allCommands: std.ArrayList(screen.Command) = .init(ally);
+    defer ally.free(allCommands.items);
+    try allCommands.ensureTotalCapacity(10);
 
     while (!rl.WindowShouldClose()) {
         // if (!rl.IsMusicStreamPlaying(res.propellerAudio1))
@@ -87,16 +91,20 @@ pub fn run() !void {
         // Update music streams
         rl.UpdateMusicStream(res.propeller);
 
+        allMsgs.clearRetainingCapacity();
         collectMessages(&allMsgs);
+        // std.debug.print("Collected messages: {d}\n", .{allMsgs.items.len});
         for (allMsgs.items) |msg| {
-            const cmds = try currentScreen.handleMessage(
+            var cmdsFromHandlingMsg: [10]screen.Command = undefined;
+            const commandCount = try currentScreen.handleMsg(
                 ally,
                 msg,
+                &cmdsFromHandlingMsg,
             );
-            defer ally.free(cmds);
+            // std.debug.print("Commands from handling message: {d}\n", .{commandCount});
+            const cmds = cmdsFromHandlingMsg[0..@intCast(commandCount)];
             executeCommands(ally, cmds, res, &currentScreen);
         }
-        allMsgs.clearAndFree();
 
         rl.EndDrawing();
     }
