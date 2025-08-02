@@ -37,14 +37,28 @@ pub const Screen = union(enum) {
         }
     }
 
-    pub fn handleMsg(self: *Screen, ally: std.mem.Allocator, msg: Msg, effects: []Command) !u4 {
-        const cmds: []Command = try self.handleMessage(ally, msg);
-        defer ally.free(cmds);
-        const numberOfCommands: u4 = @intCast(cmds.len);
-        for (0..numberOfCommands) |ix| {
-            effects[ix] = cmds[ix];
+    pub fn handleMsg(self: *Screen, _: std.mem.Allocator, msg: Msg, effects: []Command) !u4 {
+        switch (self.*) {
+            .menu => |menu| {
+                var menuCopy = menu;
+                const numberOfCommands: u4 = @as(u4, @intCast(try menuCopy.handleMsg(msg, effects)));
+                self.menu = menuCopy; // Update the menu state
+                return numberOfCommands;
+            },
+            .game => |state| {
+                var gameCopy = state;
+                const numberOfCommands: u4 = @intCast(gameCopy.handleMsg(msg, effects));
+                self.game = gameCopy; // Update the game state
+                return numberOfCommands;
+            },
         }
-        return numberOfCommands;
+        // const cmds: []Command = try self.handleMessage(ally, msg);
+        // defer ally.free(cmds);
+        // const numberOfCommands: u4 = @intCast(cmds.len);
+        // for (0..numberOfCommands) |ix| {
+        //     effects[ix] = cmds[ix];
+        // }
+        // return numberOfCommands;
     }
 
     pub fn handleMessage(

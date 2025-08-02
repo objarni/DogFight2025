@@ -35,45 +35,7 @@ pub const MenuState = struct {
         self.es.deinit();
     }
 
-    pub fn handleMessage(self: *MenuState, ally: std.mem.Allocator, msg: Msg) !std.ArrayList(Command) {
-        var cmds = std.ArrayList(Command).init(ally);
-        switch (msg) {
-            .inputClicked => |input| {
-                if (input == Inputs.GeneralAction) {
-                    try cmds.appendSlice(&.{
-                        Command{ .playSoundEffect = SoundEffect.boom },
-                        Command{ .switchSubScreen = SubScreen.game },
-                    });
-                }
-            },
-            .timePassed => |time| {
-                const numPeriods: f32 = time.totalTime / 0.5;
-                const intNumPeriods: u32 = @intFromFloat(numPeriods);
-                const blink: bool = intNumPeriods % 2 == 1;
-                self.blink = blink;
-                self.e.timePassed(time.deltaTime);
-                if (!self.e.alive) {
-                    self.e = randomExplosion();
-                    try self.es.append(randomExplosion());
-                    try self.es.append(randomExplosion());
-                }
-                for (0..self.es.items.len) |ix| {
-                    self.es.items[ix].timePassed(time.deltaTime);
-                }
-                // Remove dead explosions
-                var i: usize = 0;
-                while (i < self.es.items.len) {
-                    if (!self.es.items[i].alive) {
-                        std.debug.print("Removing dead explosion at index {}\n", .{i});
-                        _ = self.es.swapRemove(i);
-                    } else i += 1;
-                }
-            },
-        }
-        return cmds;
-    }
-
-    pub fn handleMsg(self: *MenuState, msg: Msg, effects: []Command) !u8 {
+    pub fn handleMsg(self: *MenuState, msg: Msg, effects: []Command) !u4 {
         switch (msg) {
             .inputClicked => |input| {
                 if (input == Inputs.GeneralAction) {
