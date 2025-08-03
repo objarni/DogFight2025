@@ -9,7 +9,7 @@ const Msg = basics.Msg;
 const Command = basics.Command;
 const Inputs = basics.Inputs;
 const TimePassed = basics.TimePassed;
-const State = basics.Screen;
+const Screen = basics.Screen;
 
 const window_width: u16 = 960;
 const window_height: u16 = 540;
@@ -69,7 +69,7 @@ pub fn run() !void {
 
     var menu: MenuState = .init(ally);
     var game: GameState = .init();
-    var currentState = State.menu;
+    var currentState = Screen.menu;
 
     while (!rl.WindowShouldClose()) {
         // if (!rl.IsMusicStreamPlaying(res.propellerAudio1))
@@ -232,8 +232,8 @@ fn drawGame(
 fn executeCommands(
     cmds: []const Command,
     res: Resources,
-    currentState: State,
-) State {
+    currentState: Screen,
+) Screen {
     for (cmds) |command| {
         switch (command) {
             .playSoundEffect => |sfx| {
@@ -268,10 +268,10 @@ fn executeCommands(
                 std.debug.print("Switching to screen: {}\n", .{screen});
                 switch (screen) {
                     .menu => |_| {
-                        return State.menu;
+                        return Screen.menu;
                     },
                     .game => |_| {
-                        return State.game;
+                        return Screen.game;
                     },
                 }
             },
