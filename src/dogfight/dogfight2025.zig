@@ -197,11 +197,12 @@ fn drawGame(
         .width = @floatFromInt(res.plane.width),
         .height = @floatFromInt(res.plane.height),
     };
+    const plane = state.plane1;
     const planeWidth: f32 = @floatFromInt(res.plane.width);
     const planeHeight: f32 = @floatFromInt(res.plane.height);
     const destR = rl.Rectangle{
-        .x = state.plane1.position[0],
-        .y = state.plane1.position[1],
+        .x = plane.position[0],
+        .y = plane.position[1],
         .width = planeWidth,
         .height = planeHeight,
     };

@@ -20,7 +20,7 @@ pub const PlaneState = enum {
 pub const Plane = struct {
     position: V,
     velocity: V,
-    direction: f32, // Angle in radians, 0 meaning facing right, pi/2 meaning facing up
+    direction: f32, // Angle in degrees, 0 meaning facing right, 45 meaning down-right, etc.
     state: PlaneState,
     planeConstants: PlaneConstants,
 
@@ -42,11 +42,13 @@ pub const Plane = struct {
             .TAKEOFF_ROLL => |_| {
                 if (@abs(self.position[0] - self.planeConstants.towerDistance) < self.planeConstants.towerDistance / 2) {
                     self.state = .FLYING;
-                    self.direction += 0.1;
+                    self.direction = -15;
+                    const radians = std.math.degreesToRadians(self.direction);
+                    const speed = self.velocity[0]; // We are only moving horizontally during takeoff
                     // TODO compute speed and use it to set velocity
                     self.velocity = v(
-                        50,
-                        -50 * std.math.cos(self.direction),
+                        speed * std.math.cos(radians),
+                        speed * std.math.sin(radians),
                     );
                     return;
                 }
