@@ -62,8 +62,3 @@ test "game starts in menu" {
     const expected: Screen = .{ .menu = MenuState.init(ally) };
     try std.testing.expectEqual(expected, actual);
 }
-
-// TODO: wrap clouds around the screen
-// TODO: display airplanes left (10 to start with)
-// TODO: particle system for explosion and debris
-// TODO: switch from slices to FixedBufferAllocator in effects parameters

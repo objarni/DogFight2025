@@ -286,4 +286,7 @@ fn executeCommands(
 
 // TODO: get rid of SubState; it is simply state/screen (move it to basics?)
 // TODO: rename State enum to Screen after Screen the struct is removed?
-//
+// TODO: wrap clouds around the screen
+// TODO: display airplanes left (10 to start with)
+// TODO: particle system for explosion and debris
+// TODO: switch from slices to FixedBufferAllocator in effects parameters
