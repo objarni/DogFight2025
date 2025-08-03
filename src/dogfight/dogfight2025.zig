@@ -54,71 +54,73 @@ pub fn run() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const ally = gpa.allocator();
 
-    {
-        var drawAverage: i128 = 0;
-        var drawAverageCount: u32 = 0;
-
-        var allMsgs: std.ArrayList(Msg) = .init(ally);
-        defer allMsgs.deinit();
-        try allMsgs.ensureTotalCapacity(10);
-
-        var menu: MenuState = .init(ally);
-        defer menu.deinit();
-        var game: GameState = .init();
-        var currentState = Screen.menu;
-
-        while (!rl.WindowShouldClose()) {
-            // if (!rl.IsMusicStreamPlaying(res.propellerAudio1))
-            //     rl.PlayMusicStream(res.propellerAudio1);
-            rl.BeginDrawing();
-
-            // Draw
-            const before: i128 = std.time.nanoTimestamp();
-            switch (currentState) {
-                .menu => |_| {
-                    drawMenu(menu);
-                },
-                .game => |_| {
-                    drawGame(game, res);
-                },
-            }
-            const after: i128 = std.time.nanoTimestamp();
-            drawAverage += after - before;
-            drawAverageCount += 1;
-            if (drawAverageCount == 10000) {
-                const average: i128 = @divTrunc(@divTrunc(drawAverage, drawAverageCount), 1000);
-                std.debug.print("average draw time: {d} ms\n", .{average});
-                drawAverage = 0;
-                drawAverageCount = 0;
-            }
-
-            // Update music streams
-            rl.UpdateMusicStream(res.propeller);
-
-            allMsgs.clearRetainingCapacity();
-            collectMessages(&allMsgs);
-            // std.debug.print("Collected messages: {d}\n", .{allMsgs.items.len});
-            for (allMsgs.items) |msg| {
-                var cmdsFromHandlingMsg: [10]Command = undefined;
-                var cmdsCount: u8 = 0;
-                switch (currentState) {
-                    .menu => |_| {
-                        cmdsCount = try menu.handleMsg(msg, &cmdsFromHandlingMsg);
-                    },
-                    .game => |_| {
-                        cmdsCount = game.handleMsg(msg, &cmdsFromHandlingMsg);
-                    },
-                }
-                const cmds = cmdsFromHandlingMsg[0..@intCast(cmdsCount)];
-                currentState = executeCommands(cmds, res, currentState);
-            }
-
-            rl.EndDrawing();
-        }
-    }
+    try mainLoop(ally, res);
 
     const leaked = gpa.detectLeaks();
     std.debug.print("Leaked allocations: {any}\n", .{leaked});
+}
+
+fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
+    var drawAverage: i128 = 0;
+    var drawAverageCount: u32 = 0;
+
+    var allMsgs: std.ArrayList(Msg) = .init(ally);
+    defer allMsgs.deinit();
+    try allMsgs.ensureTotalCapacity(10);
+
+    var menu: MenuState = .init(ally);
+    defer menu.deinit();
+    var game: GameState = .init();
+    var currentState = Screen.menu;
+
+    while (!rl.WindowShouldClose()) {
+        // if (!rl.IsMusicStreamPlaying(res.propellerAudio1))
+        //     rl.PlayMusicStream(res.propellerAudio1);
+        rl.BeginDrawing();
+
+        // Draw
+        const before: i128 = std.time.nanoTimestamp();
+        switch (currentState) {
+            .menu => |_| {
+                drawMenu(menu);
+            },
+            .game => |_| {
+                drawGame(game, res);
+            },
+        }
+        const after: i128 = std.time.nanoTimestamp();
+        drawAverage += after - before;
+        drawAverageCount += 1;
+        if (drawAverageCount == 10000) {
+            const average: i128 = @divTrunc(@divTrunc(drawAverage, drawAverageCount), 1000);
+            std.debug.print("average draw time: {d} ms\n", .{average});
+            drawAverage = 0;
+            drawAverageCount = 0;
+        }
+
+        // Update music streams
+        rl.UpdateMusicStream(res.propeller);
+
+        allMsgs.clearRetainingCapacity();
+        collectMessages(&allMsgs);
+        // std.debug.print("Collected messages: {d}\n", .{allMsgs.items.len});
+        for (allMsgs.items) |msg| {
+            var cmdsFromHandlingMsg: [10]Command = undefined;
+            var cmdsCount: u8 = 0;
+            switch (currentState) {
+                .menu => |_| {
+                    cmdsCount = try menu.handleMsg(msg, &cmdsFromHandlingMsg);
+                },
+                .game => |_| {
+                    cmdsCount = game.handleMsg(msg, &cmdsFromHandlingMsg);
+                },
+            }
+            const cmds = cmdsFromHandlingMsg[0..@intCast(cmdsCount)];
+            currentState = executeCommands(cmds, res, currentState);
+        }
+
+        rl.EndDrawing();
+    }
 }
 
 fn collectMessages(allMsgs: *std.ArrayList(Msg)) void {
