@@ -9,6 +9,7 @@ const Msg = basics.Msg;
 const Command = basics.Command;
 const Inputs = basics.Inputs;
 const TimePassed = basics.TimePassed;
+const State = basics.Screen;
 
 const window_width: u16 = 960;
 const window_height: u16 = 540;
@@ -18,10 +19,6 @@ const Explosion = @import("Explosion.zig").Explosion;
 const MenuState = @import("MenuState.zig").MenuState;
 const GameState = @import("GameState.zig").GameState;
 
-const State = enum {
-    Menu,
-    Game,
-};
 
 pub fn run() !void {
     rl.SetConfigFlags(rl.FLAG_WINDOW_HIGHDPI);
@@ -72,7 +69,7 @@ pub fn run() !void {
 
     var menu: MenuState = .init(ally);
     var game: GameState = .init();
-    var currentState = State.Menu;
+    var currentState = State.menu;
 
     while (!rl.WindowShouldClose()) {
         // if (!rl.IsMusicStreamPlaying(res.propellerAudio1))
@@ -82,10 +79,10 @@ pub fn run() !void {
         // Draw
         const before: i128 = std.time.nanoTimestamp();
         switch (currentState) {
-            .Menu => |_| {
+            .menu => |_| {
                 drawMenu(menu);
             },
-            .Game => |_| {
+            .game => |_| {
                 drawGame(game, res);
             },
         }
@@ -109,10 +106,10 @@ pub fn run() !void {
             var cmdsFromHandlingMsg: [10]Command = undefined;
             var cmdsCount: u8 = 0;
             switch (currentState) {
-                .Menu => |_| {
+                .menu => |_| {
                     cmdsCount = try menu.handleMsg(msg, &cmdsFromHandlingMsg);
                 },
-                .Game => |_| {
+                .game => |_| {
                     cmdsCount = game.handleMsg(msg, &cmdsFromHandlingMsg);
                 },
             }
@@ -271,10 +268,10 @@ fn executeCommands(
                 std.debug.print("Switching to screen: {}\n", .{screen});
                 switch (screen) {
                     .menu => |_| {
-                        return State.Menu;
+                        return State.menu;
                     },
                     .game => |_| {
-                        return State.Game;
+                        return State.game;
                     },
                 }
             },
