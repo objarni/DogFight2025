@@ -21,6 +21,7 @@ pub const PlaneState = enum {
 pub const Plane = struct {
     position: V,
     velocity: V,
+    direction: f32, // Angle in radians, 0 meaning facing right, pi/2 meaning facing up
     state: PlaneState,
     planeConstants: PlaneConstants,
 
@@ -30,6 +31,7 @@ pub const Plane = struct {
             .velocity = v(0, 0),
             .state = .STILL,
             .planeConstants = constants,
+            .direction = 0.0,
         };
     }
 
@@ -41,6 +43,11 @@ pub const Plane = struct {
             .TAKEOFF_ROLL => |_| {
                 if (@abs(self.position[0] - self.planeConstants.towerDistance) < self.planeConstants.towerDistance / 2) {
                     self.state = .FLYING;
+                    self.direction += 0.1;
+                    self.velocity = v(
+                        self.planeConstants.takeoffSpeed,
+                        -self.planeConstants.takeoffSpeed * std.math.cos(self.direction),
+                    );
                     return;
                 }
                 self.state = .CRASH;
@@ -73,6 +80,11 @@ pub const Plane = struct {
             self.position = newPosition;
             self.velocity = newVelocity;
         }
+        if (self.state == .FLYING) {
+            // Simulate flying behavior, e.g., update position based on velocity
+            self.position = self.position + v(self.velocity[0] * seconds, self.velocity[1] * seconds);
+            // Here you could add more complex flying logic if needed
+        }
     }
 };
 
@@ -84,7 +96,13 @@ const testPlaneConstants = PlaneConstants{
 
 test "initialization of plane" {
     const plane = Plane.init(testPlaneConstants);
-    const expected = Plane{ .position = testPlaneConstants.initialPos, .velocity = v(0, 0), .state = .STILL, .planeConstants = testPlaneConstants };
+    const expected = Plane{
+        .position = testPlaneConstants.initialPos,
+        .velocity = v(0, 0),
+        .state = .STILL,
+        .planeConstants = testPlaneConstants,
+        .direction = 0.0,
+    };
     try std.testing.expectEqual(expected, plane);
 }
 
@@ -159,5 +177,8 @@ test "plane flies if far enough from initial position during takeoff roll" {
         }
     }
     plane.rise();
+    plane.timePassed(0.1);
     try std.testing.expectEqual(PlaneState.FLYING, plane.state);
+    try std.testing.expect(plane.position[1] < testPlaneConstants.initialPos[1]);
+    try std.testing.expect(plane.velocity[1] < 0); // Assuming the plane is flying upwards
 }
