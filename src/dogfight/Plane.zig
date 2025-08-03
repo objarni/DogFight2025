@@ -91,7 +91,7 @@ pub const Plane = struct {
 const testPlaneConstants = PlaneConstants{
     .initialPos = v(0, 200),
     .groundAccelerationPerS = 10.0,
-    .towerDistance = 100.0
+    .towerDistance = 330.0
 };
 
 test "initialization of plane" {
