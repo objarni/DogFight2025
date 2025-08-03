@@ -19,12 +19,23 @@ const MenuState = @import("MenuState.zig").MenuState;
 const GameState = @import("GameState.zig").GameState;
 
 pub fn run() !void {
+    const res = initRaylib();
+    defer deinitRaylib(res);
+
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const ally = gpa.allocator();
+
+    try mainLoop(ally, res);
+
+    const leaked = gpa.detectLeaks();
+    std.debug.print("Leaked allocations: {any}\n", .{leaked});
+}
+
+fn initRaylib() Resources {
     rl.SetConfigFlags(rl.FLAG_WINDOW_HIGHDPI);
     rl.InitWindow(window_width, window_height, "DogFight 2025");
-    defer rl.CloseWindow();
     rl.InitAudioDevice();
-    // rl.ToggleFullscreen();
-    //
+
     const res = Resources{
         .boom = rl.LoadSound("assets/Boom.wav"),
         .crash = rl.LoadSound("assets/Crash.mp3"),
@@ -34,14 +45,6 @@ pub fn run() !void {
         .propeller = rl.LoadMusicStream("assets/PropellerPlane.mp3"),
         .background = rl.LoadTexture("assets/Background.png"),
     };
-    defer {
-        rl.UnloadSound(res.boom);
-        rl.UnloadSound(res.crash);
-        rl.UnloadTexture(res.plane);
-        rl.UnloadTexture(res.cloud);
-        rl.UnloadTexture(res.background);
-        rl.UnloadMusicStream(res.propeller);
-    }
 
     const screen_w = rl.GetScreenWidth();
     const screen_h = rl.GetScreenHeight();
@@ -51,13 +54,19 @@ pub fn run() !void {
         screen_w, screen_h, fb_w, fb_h,
     });
 
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const ally = gpa.allocator();
+    return res;
+}
 
-    try mainLoop(ally, res);
-
-    const leaked = gpa.detectLeaks();
-    std.debug.print("Leaked allocations: {any}\n", .{leaked});
+fn deinitRaylib(res: Resources) void {
+    rl.UnloadSound(res.boom);
+    rl.UnloadSound(res.crash);
+    rl.UnloadSound(res.game_over);
+    rl.UnloadTexture(res.plane);
+    rl.UnloadTexture(res.cloud);
+    rl.UnloadTexture(res.background);
+    rl.UnloadMusicStream(res.propeller);
+    rl.CloseAudioDevice();
+    rl.CloseWindow();
 }
 
 fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
