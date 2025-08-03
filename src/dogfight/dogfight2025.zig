@@ -9,10 +9,17 @@ const window_height: u16 = 540;
 
 const screen = @import("Screen.zig");
 const Explosion = @import("Explosion.zig").Explosion;
+const MenuState = @import("MenuState.zig").MenuState;
+const GameState = @import("GameState.zig").GameState;
 
 test {
     _ = @import("Screen.zig");
 }
+
+const State = enum {
+    Menu,
+    Game,
+};
 
 pub fn run() !void {
     rl.SetConfigFlags(rl.FLAG_WINDOW_HIGHDPI);
@@ -63,6 +70,10 @@ pub fn run() !void {
     defer ally.free(allCommands.items);
     try allCommands.ensureTotalCapacity(10);
 
+    var menu: MenuState = .init(ally);
+    var game: GameState = .init();
+    var currentState = State.Menu;
+
     while (!rl.WindowShouldClose()) {
         // if (!rl.IsMusicStreamPlaying(res.propellerAudio1))
         //     rl.PlayMusicStream(res.propellerAudio1);
@@ -70,12 +81,12 @@ pub fn run() !void {
 
         // Draw
         const before: i128 = std.time.nanoTimestamp();
-        switch (currentScreen) {
-            .menu => |_| {
-                drawMenu(currentScreen.menu);
+        switch (currentState) {
+            .Menu => |_| {
+                drawMenu(menu);
             },
-            .game => |_| {
-                drawGame(currentScreen.game, res);
+            .Game => |_| {
+                drawGame(game, res);
             },
         }
         const after: i128 = std.time.nanoTimestamp();
@@ -96,14 +107,17 @@ pub fn run() !void {
         // std.debug.print("Collected messages: {d}\n", .{allMsgs.items.len});
         for (allMsgs.items) |msg| {
             var cmdsFromHandlingMsg: [10]screen.Command = undefined;
-            const commandCount = try currentScreen.handleMsg(
-                ally,
-                msg,
-                &cmdsFromHandlingMsg,
-            );
-            // std.debug.print("Commands from handling message: {d}\n", .{commandCount});
-            const cmds = cmdsFromHandlingMsg[0..@intCast(commandCount)];
-            executeCommands(ally, cmds, res, &currentScreen);
+            var cmdsCount: u8 = 0;
+            switch (currentState) {
+                .Menu => |_| {
+                    cmdsCount = try menu.handleMsg(msg, &cmdsFromHandlingMsg);
+                },
+                .Game => |_| {
+                    cmdsCount = game.handleMsg(msg, &cmdsFromHandlingMsg);
+                },
+            }
+            const cmds = cmdsFromHandlingMsg[0..@intCast(cmdsCount)];
+            currentState = executeCommands(ally, cmds, res, &currentScreen, currentState);
         }
 
         rl.EndDrawing();
@@ -223,7 +237,8 @@ fn executeCommands(
     cmds: []const screen.Command,
     res: Resources,
     currentScreen: *screen.Screen,
-) void {
+    currentState: State,
+) State {
     for (cmds) |command| {
         switch (command) {
             .playSoundEffect => |sfx| {
@@ -262,14 +277,22 @@ fn executeCommands(
                         currentScreen.* = screen.Screen{
                             .menu = screen.MenuState.init(ally),
                         };
+                        return State.Menu;
                     },
                     .game => |_| {
                         currentScreen.* = screen.Screen{
                             .game = screen.GameState.init(),
                         };
+                        return State.Game;
                     },
                 }
             },
         }
     }
+    return currentState;
 }
+
+
+// TODO: get rid of SubState; it is simply state/screen (move it to basics?)
+// TODO: rename State enum to Screen after Screen the struct is removed?
+//
