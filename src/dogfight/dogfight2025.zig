@@ -62,10 +62,6 @@ pub fn run() !void {
         defer allMsgs.deinit();
         try allMsgs.ensureTotalCapacity(10);
 
-        var allCommands: std.ArrayList(Command) = .init(ally);
-        defer allCommands.deinit();
-        try allCommands.ensureTotalCapacity(10);
-
         var menu: MenuState = .init(ally);
         defer menu.deinit();
         var game: GameState = .init();
