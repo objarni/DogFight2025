@@ -19,10 +19,10 @@ pub const Inputs = enum {
 pub const Command = union(enum) {
     playSoundEffect: SoundEffect,
     playPropellerAudio: PropellerAudio,
-    switchScreen: SubScreen,
+    switchScreen: Screen,
 };
 
-pub const SubScreen = enum {
+pub const Screen = enum {
     menu,
     game,
 };
