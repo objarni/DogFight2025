@@ -267,9 +267,9 @@ fn executeCommands(
                         rl.StopMusicStream(res.propeller);
                 }
             },
-            .switchSubScreen => |subScreen| {
-                std.debug.print("Switching to sub-screen: {}\n", .{subScreen});
-                switch (subScreen) {
+            .switchScreen => |screen| {
+                std.debug.print("Switching to screen: {}\n", .{screen});
+                switch (screen) {
                     .menu => |_| {
                         return State.Menu;
                     },

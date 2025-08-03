@@ -40,7 +40,7 @@ pub const MenuState = struct {
             .inputClicked => |input| {
                 if (input == Inputs.GeneralAction) {
                     effects[0] = Command{ .playSoundEffect = SoundEffect.boom };
-                    effects[1] = Command{ .switchSubScreen = SubScreen.game };
+                    effects[1] = Command{ .switchScreen = SubScreen.game };
                     return 2;
                 }
             },
@@ -106,7 +106,7 @@ test "MenuState.handleMsg: hitting action button should switch to game and play 
     );
     const expected: [2]Command = .{
         Command{ .playSoundEffect = SoundEffect.boom },
-        Command{ .switchSubScreen = SubScreen.game },
+        Command{ .switchScreen = SubScreen.game },
     };
     try std.testing.expectEqual(2, actualCount);
     try std.testing.expectEqualSlices(
