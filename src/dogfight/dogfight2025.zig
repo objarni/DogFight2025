@@ -18,7 +18,6 @@ const Explosion = @import("Explosion.zig").Explosion;
 const MenuState = @import("MenuState.zig").MenuState;
 const GameState = @import("GameState.zig").GameState;
 
-
 pub fn run() !void {
     rl.SetConfigFlags(rl.FLAG_WINDOW_HIGHDPI);
     rl.InitWindow(window_width, window_height, "DogFight 2025");
@@ -74,11 +73,11 @@ pub fn run() !void {
 
         while (!rl.WindowShouldClose()) {
             // if (!rl.IsMusicStreamPlaying(res.propellerAudio1))
-        //     rl.PlayMusicStream(res.propellerAudio1);
-        rl.BeginDrawing();
+            //     rl.PlayMusicStream(res.propellerAudio1);
+            rl.BeginDrawing();
 
             // Draw
-        const before: i128 = std.time.nanoTimestamp();
+            const before: i128 = std.time.nanoTimestamp();
             switch (currentState) {
                 .menu => |_| {
                     drawMenu(menu);
@@ -98,12 +97,12 @@ pub fn run() !void {
             }
 
             // Update music streams
-        rl.UpdateMusicStream(res.propeller);
+            rl.UpdateMusicStream(res.propeller);
 
             allMsgs.clearRetainingCapacity();
             collectMessages(&allMsgs);
             // std.debug.print("Collected messages: {d}\n", .{allMsgs.items.len});
-        for (allMsgs.items) |msg| {
+            for (allMsgs.items) |msg| {
                 var cmdsFromHandlingMsg: [10]Command = undefined;
                 var cmdsCount: u8 = 0;
                 switch (currentState) {
@@ -201,7 +200,7 @@ fn drawGame(
 ) void {
     rl.ClearBackground(rl.SKYBLUE);
 
-    rl.DrawCircle(window_width-50, window_height-100, 50, rl.RED);
+    rl.DrawCircle(window_width - 50, window_height - 100, 50, rl.RED);
     rl.DrawTexture(res.background, 0, window_height - res.background.height, rl.WHITE);
 
     const sourceR = rl.Rectangle{
@@ -251,7 +250,7 @@ fn executeCommands(
                     .game_over => {
                         rl.PlaySound(res.game_over);
                         std.debug.print("Playing game over sound effect\n", .{});
-                    }
+                    },
                 }
             },
             .playPropellerAudio => |audio| {
@@ -281,7 +280,6 @@ fn executeCommands(
     }
     return currentState;
 }
-
 
 // TODO: get rid of SubState; it is simply state/screen (move it to basics?)
 // TODO: rename State enum to Screen after Screen the struct is removed?
