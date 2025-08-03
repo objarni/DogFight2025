@@ -6,9 +6,8 @@ const v = v2.v;
 
 const PlaneConstants = struct {
     initialPos: V,
-    takeoffSpeed: f32,
     groundAccelerationPerS: f32,
-    towerDistance: f32 = 100.0,
+    towerDistance: f32,
 };
 
 pub const PlaneState = enum {
@@ -44,9 +43,10 @@ pub const Plane = struct {
                 if (@abs(self.position[0] - self.planeConstants.towerDistance) < self.planeConstants.towerDistance / 2) {
                     self.state = .FLYING;
                     self.direction += 0.1;
+                    // TODO compute speed and use it to set velocity
                     self.velocity = v(
-                        self.planeConstants.takeoffSpeed,
-                        -self.planeConstants.takeoffSpeed * std.math.cos(self.direction),
+                        50,
+                        -50 * std.math.cos(self.direction),
                     );
                     return;
                 }
@@ -90,8 +90,8 @@ pub const Plane = struct {
 
 const testPlaneConstants = PlaneConstants{
     .initialPos = v(0, 200),
-    .takeoffSpeed = 50.0,
     .groundAccelerationPerS = 10.0,
+    .towerDistance = 100.0
 };
 
 test "initialization of plane" {
