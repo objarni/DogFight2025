@@ -141,7 +141,7 @@ fn collectMessages(allMsgs: *std.ArrayList(Msg)) void {
     };
 }
 
-fn centerText(text: []const u8, y: u16, fontSize: u16, color: rl.Color) void {
+fn drawCenteredText(text: []const u8, y: u16, fontSize: u16, color: rl.Color) void {
     const textWidth: u16 = @intCast(rl.MeasureText(text.ptr, fontSize));
     const xPos: u16 = (window_width - textWidth) / 2;
     rl.DrawText(text.ptr, xPos, y, fontSize, color);
@@ -150,9 +150,9 @@ fn centerText(text: []const u8, y: u16, fontSize: u16, color: rl.Color) void {
 fn drawMenu(menu: MenuState) void {
     rl.ClearBackground(rl.SKYBLUE);
     const textSize = 40;
-    centerText("Dogfight 2025", 180, textSize, rl.DARKGREEN);
+    drawCenteredText("Dogfight 2025", 180, textSize, rl.DARKGREEN);
     if (menu.blink)
-        centerText("Press SPACE to START!", 220, 20, rl.DARKGRAY);
+        drawCenteredText("Press SPACE to START!", 220, 20, rl.DARKGRAY);
     drawExplosion(menu.e);
     for (menu.es.items) |e| {
         drawExplosion(e);
