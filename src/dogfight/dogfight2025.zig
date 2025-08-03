@@ -4,17 +4,19 @@ const rl = @cImport({
     @cInclude("raylib.h");
 });
 
+const basics = @import("basics.zig");
+const Msg = basics.Msg;
+const Command = basics.Command;
+const Inputs = basics.Inputs;
+const TimePassed = basics.TimePassed;
+
 const window_width: u16 = 960;
 const window_height: u16 = 540;
 
-const screen = @import("Screen.zig");
+// const screen = @import("zig");
 const Explosion = @import("Explosion.zig").Explosion;
 const MenuState = @import("MenuState.zig").MenuState;
 const GameState = @import("GameState.zig").GameState;
-
-test {
-    _ = @import("Screen.zig");
-}
 
 const State = enum {
     Menu,
@@ -57,16 +59,14 @@ pub fn run() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     var ally = gpa.allocator();
 
-    var currentScreen : screen.Screen = .init(ally);
-    defer currentScreen.deinit();
     var drawAverage: i128 = 0;
     var drawAverageCount: u32 = 0;
 
-    var allMsgs: std.ArrayList(screen.Msg) = .init(ally);
+    var allMsgs: std.ArrayList(Msg) = .init(ally);
     defer allMsgs.deinit();
     try allMsgs.ensureTotalCapacity(10);
 
-    var allCommands: std.ArrayList(screen.Command) = .init(ally);
+    var allCommands: std.ArrayList(Command) = .init(ally);
     defer ally.free(allCommands.items);
     try allCommands.ensureTotalCapacity(10);
 
@@ -106,7 +106,7 @@ pub fn run() !void {
         collectMessages(&allMsgs);
         // std.debug.print("Collected messages: {d}\n", .{allMsgs.items.len});
         for (allMsgs.items) |msg| {
-            var cmdsFromHandlingMsg: [10]screen.Command = undefined;
+            var cmdsFromHandlingMsg: [10]Command = undefined;
             var cmdsCount: u8 = 0;
             switch (currentState) {
                 .Menu => |_| {
@@ -117,7 +117,7 @@ pub fn run() !void {
                 },
             }
             const cmds = cmdsFromHandlingMsg[0..@intCast(cmdsCount)];
-            currentState = executeCommands(ally, cmds, res, &currentScreen, currentState);
+            currentState = executeCommands(cmds, res, currentState);
         }
 
         rl.EndDrawing();
@@ -127,16 +127,16 @@ pub fn run() !void {
     std.debug.print("Leaked allocations: {any}\n", .{leaked});
 }
 
-fn collectMessages(allMsgs: *std.ArrayList(screen.Msg)) void {
+fn collectMessages(allMsgs: *std.ArrayList(Msg)) void {
     if (rl.IsKeyPressed(rl.KEY_SPACE))
-        allMsgs.append(screen.Msg{ .inputClicked = screen.Inputs.GeneralAction }) catch |err| {
+        allMsgs.append(Msg{ .inputClicked = Inputs.GeneralAction }) catch |err| {
             std.debug.print("Error appending message: {}\n", .{err});
         };
     if (rl.IsKeyPressed(rl.KEY_A))
-        allMsgs.append(screen.Msg{ .inputClicked = screen.Inputs.Plane1Rise }) catch |err| {
+        allMsgs.append(Msg{ .inputClicked = Inputs.Plane1Rise }) catch |err| {
             std.debug.print("Error appending message: {}\n", .{err});
         };
-    const timePassed = screen.Msg{ .timePassed = screen.TimePassed{
+    const timePassed = Msg{ .timePassed = TimePassed{
         .totalTime = @floatCast(rl.GetTime()),
         .deltaTime = @floatCast(rl.GetFrameTime()),
     } };
@@ -151,7 +151,7 @@ fn centerText(text: []const u8, y: u16, fontSize: u16, color: rl.Color) void {
     rl.DrawText(text.ptr, xPos, y, fontSize, color);
 }
 
-fn drawMenu(menu: screen.MenuState) void {
+fn drawMenu(menu: MenuState) void {
     rl.ClearBackground(rl.SKYBLUE);
     const textSize = 40;
     centerText("Dogfight 2025", 180, textSize, rl.DARKGREEN);
@@ -197,7 +197,7 @@ const Resources = struct {
 };
 
 fn drawGame(
-    state: screen.GameState,
+    state: GameState,
     res: Resources,
 ) void {
     rl.ClearBackground(rl.SKYBLUE);
@@ -233,10 +233,8 @@ fn drawGame(
 }
 
 fn executeCommands(
-    ally: std.mem.Allocator,
-    cmds: []const screen.Command,
+    cmds: []const Command,
     res: Resources,
-    currentScreen: *screen.Screen,
     currentState: State,
 ) State {
     for (cmds) |command| {
@@ -271,18 +269,11 @@ fn executeCommands(
             },
             .switchSubScreen => |subScreen| {
                 std.debug.print("Switching to sub-screen: {}\n", .{subScreen});
-                currentScreen.deinit();
                 switch (subScreen) {
                     .menu => |_| {
-                        currentScreen.* = screen.Screen{
-                            .menu = screen.MenuState.init(ally),
-                        };
                         return State.Menu;
                     },
                     .game => |_| {
-                        currentScreen.* = screen.Screen{
-                            .game = screen.GameState.init(),
-                        };
                         return State.Game;
                     },
                 }
