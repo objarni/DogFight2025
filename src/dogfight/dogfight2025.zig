@@ -191,12 +191,25 @@ fn drawGame(
     rl.DrawCircle(window_width-50, window_height-100, 50, rl.RED);
     rl.DrawTexture(res.background, 0, window_height - res.background.height, rl.WHITE);
 
-    rl.DrawTexture(
-        res.plane,
-        @intFromFloat(state.plane1.position[0]),
-        @intFromFloat(state.plane1.position[1]),
-        rl.WHITE,
-    );
+    const sourceR = rl.Rectangle{
+        .x = 0,
+        .y = 0,
+        .width = @floatFromInt(res.plane.width),
+        .height = @floatFromInt(res.plane.height),
+    };
+    const planeWidth: f32 = @floatFromInt(res.plane.width);
+    const planeHeight: f32 = @floatFromInt(res.plane.height);
+    const destR = rl.Rectangle{
+        .x = state.plane1.position[0],
+        .y = state.plane1.position[1],
+        .width = planeWidth,
+        .height = planeHeight,
+    };
+    const anchor = rl.Vector2{
+        .x = planeWidth / 2,
+        .y = planeHeight / 2,
+    };
+    rl.DrawTexturePro(res.plane, sourceR, destR, anchor, state.plane1.direction, rl.WHITE);
 
     for (state.clouds) |cloud| {
         const color = if (cloud[1] < 300) rl.LIGHTGRAY else rl.GRAY;

@@ -26,8 +26,8 @@ pub const GameState = struct {
         return GameState{
             .clouds = .{ v(555.0, 305.0), v(100.0, 100.0) },
             .plane1 = Plane.init(.{
-                .initialPos = v(20.0, window_height - 50),
-                .towerDistance = 330.0,
+                .initialPos = v(20.0, window_height - 30),
+                .towerDistance = 300.0,
                 .groundAccelerationPerS = 10.0,
             }),
         };
