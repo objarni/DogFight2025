@@ -4,6 +4,9 @@ const plane = @import("Plane.zig");
 const Plane = plane.Plane;
 const PlaneState = plane.PlaneState;
 
+const explosion = @import("Explosion.zig");
+const Explosion = explosion.Explosion;
+
 const basics = @import("basics.zig");
 const Command = basics.Command;
 const TimePassed = basics.TimePassed;
@@ -21,6 +24,8 @@ const v = v2.v;
 pub const GameState = struct {
     clouds: [2]V,
     plane1: Plane,
+    explosions: [10]Explosion = undefined, // Array of explosions, max 10
+    numExplosions: u8 = 0,
 
     pub fn init() GameState {
         return GameState{
@@ -57,6 +62,26 @@ pub const GameState = struct {
                 self.clouds[0][0] -= deltaX * 5.0;
                 self.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
 
+                // Update explosions
+                std.debug.print("There are {} explosions\n", .{self.numExplosions});
+                for (&self.explosions) |*e| {
+                    e.ageSeconds -= time.deltaTime;
+                    if (e.ageSeconds <= 0) {
+                        e.alive = false;
+                    } else {
+                        e.timePassed(time.deltaTime);
+                    }
+                }
+                // Remove dead explosions
+                // var i: usize = 0;
+                // while (i < self.numExplosions) {
+                //     if (!self.explosions[i].alive) {
+                //         std.debug.print("Removing dead explosion at index {}\n", .{i});
+                //         self.numExplosions -= 1;
+                //         self.explosions[i] = self.explosions[self.numExplosions];
+                //     } else i += 1;
+                // }
+
                 return 1;
             },
             .inputPressed => |input| {
@@ -69,6 +94,13 @@ pub const GameState = struct {
                 }
                 if (self.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
                     effects[0] = Command{ .playSoundEffect = SoundEffect.crash };
+                    if (self.numExplosions < self.explosions.len) {
+                        self.explosions[self.numExplosions] = explosion.randomExplosionAt(
+                            self.plane1.position[0],
+                            self.plane1.position[1],
+                        );
+                        self.numExplosions += 1;
+                    }
                     return 1;
                 }
             },
@@ -116,4 +148,4 @@ test "GameState: both clouds move left by, but the lower cloud moves faster" {
     );
 }
 
- // TODO: Implement second plane
+// TODO: Implement second plane

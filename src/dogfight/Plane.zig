@@ -39,7 +39,6 @@ pub const Plane = struct {
     }
 
     pub fn rise(self: *Plane, pressed: bool) void {
-        std.debug.print("Rising pressed: {}\n", .{pressed});
         self.risingPressed = pressed;
         switch (self.state) {
             .STILL => |_| {
@@ -70,7 +69,6 @@ pub const Plane = struct {
 
     pub fn dive(self: *Plane, pressed: bool) void {
         self.divingPressed = pressed;
-        std.debug.print("Dive command received: {}\n", .{pressed});
         switch (self.state) {
             .STILL => |_| {
                 self.state = .TAKEOFF_ROLL;
@@ -84,10 +82,6 @@ pub const Plane = struct {
     }
 
     pub fn timePassed(self: *Plane, seconds: f32) void {
-        const spd = @sqrt(self.velocity[0] * self.velocity[0] + self.velocity[1] * self.velocity[1]);
-        std.debug.print("Plane state: {}\n", .{self.state});
-        std.debug.print("Plane spd: {}\n", .{spd});
-        std.debug.print("Plane velocity: ({d}, {d})\n", .{self.velocity[0], self.velocity[1]});
         switch (self.state) {
             .STILL => {
                 if (self.risingPressed) {
@@ -112,7 +106,6 @@ pub const Plane = struct {
                 if (self.divingPressed)
                     self.direction += seconds * 100.0; // Adjust the angle for diving
                 const speed = @sqrt(self.velocity[0] * self.velocity[0] + self.velocity[1] * self.velocity[1]);
-                std.debug.print("Plane speed: {}\n", .{speed});
                 const radians = std.math.degreesToRadians(self.direction);
                 self.velocity = v(
                     speed * std.math.cos(radians),

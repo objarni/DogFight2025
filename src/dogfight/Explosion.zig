@@ -99,7 +99,6 @@ fn writeExplosionString(buffer: *std.ArrayList(u8), explosion: Explosion) !void 
     );
 }
 
-
 pub fn randomExplosion() Explosion {
     return Explosion.init(
         3.0 * rndFrac() + 0.5,
@@ -107,6 +106,15 @@ pub fn randomExplosion() Explosion {
             basics.window_width * rndFrac(),
             basics.window_height * rndFrac(),
         ),
+        100.0 * rndFrac(),
+        std.math.pi * 2 * rndFrac(),
+    );
+}
+
+pub fn randomExplosionAt(x: f32, y: f32) Explosion {
+    return Explosion.init(
+        3.0 * rndFrac() + 0.5,
+        v(x, y),
         100.0 * rndFrac(),
         std.math.pi * 2 * rndFrac(),
     );
@@ -220,7 +228,7 @@ test "the life of an explosion 2" {
         1.0,
         v(50, 50),
         100,
-        std.math.pi*1.001,
+        std.math.pi * 1.001,
     );
     try writeExplosionString(&actual, explosion);
     explosion.timePassed(0.25);

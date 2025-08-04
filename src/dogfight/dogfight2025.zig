@@ -241,6 +241,10 @@ fn drawGame(
         const color = if (cloud[1] < 300) rl.LIGHTGRAY else rl.GRAY;
         rl.DrawTexture(res.cloud, @intFromFloat(cloud[0]), @intFromFloat(cloud[1]), color);
     }
+
+    for (0..state.numExplosions) |ix| {
+        drawExplosion(state.explosions[ix]);
+    }
 }
 
 fn executeCommands(
