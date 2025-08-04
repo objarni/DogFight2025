@@ -1,6 +1,7 @@
 const std = @import("std");
 const Explosion = @import("Explosion.zig").Explosion;
 const basics = @import("basics.zig");
+const randomExplosion = @import("Explosion.zig").randomExplosion;
 const Command = basics.Command;
 const SoundEffect = basics.SoundEffect;
 const SubScreen = basics.Screen;
@@ -74,23 +75,6 @@ pub const MenuState = struct {
         return 0;
     }
 };
-
-fn randomExplosion() Explosion {
-    return Explosion.init(
-        3.0 * rndFrac() + 0.5,
-        v(
-            window_width * rndFrac(),
-            window_height * rndFrac(),
-        ),
-        100.0 * rndFrac(),
-        std.math.pi * 2 * rndFrac(),
-    );
-}
-
-fn rndFrac() f32 {
-    const random = std.crypto.random;
-    return random.float(f32);
-}
 
 test "MenuState.handleMsg: hitting action button should switch to game and play Boom sound" {
     const ally = std.testing.allocator;

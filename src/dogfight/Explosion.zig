@@ -9,6 +9,7 @@
 // And at lifetimeSeconds, the inner sphere is the same size as the outer sphere.
 
 const std = @import("std");
+const basics = @import("basics.zig");
 
 //    rl.DrawCircle(200, 200, 50, rl.RED);
 const V = @import("V.zig").V;
@@ -96,6 +97,24 @@ fn writeExplosionString(buffer: *std.ArrayList(u8), explosion: Explosion) !void 
             if (explosion.alive) "true" else "false",
         },
     );
+}
+
+
+pub fn randomExplosion() Explosion {
+    return Explosion.init(
+        3.0 * rndFrac() + 0.5,
+        v(
+            basics.window_width * rndFrac(),
+            basics.window_height * rndFrac(),
+        ),
+        100.0 * rndFrac(),
+        std.math.pi * 2 * rndFrac(),
+    );
+}
+
+fn rndFrac() f32 {
+    const random = std.crypto.random;
+    return random.float(f32);
 }
 
 test "explosion state printer" {
