@@ -64,7 +64,7 @@ pub const GameState = struct {
                 switch (input) {
                     .Plane1Rise => self.plane1.rise(true),
                     .Plane1Dive => self.plane1.dive(true),
-                    .Plane2Rise => {}, // TODO: Implement second plane
+                    .Plane2Rise => {},
                     else => {},
                 }
                 if (self.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
@@ -77,7 +77,7 @@ pub const GameState = struct {
                 switch (input) {
                     .Plane1Rise => self.plane1.rise(false),
                     .Plane1Dive => self.plane1.dive(false),
-                    .Plane2Rise => {}, // TODO: Implement second plane
+                    .Plane2Rise => {},
                     else => {},
                 }
                 if (self.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
@@ -115,3 +115,5 @@ test "GameState: both clouds move left by, but the lower cloud moves faster" {
         0.1,
     );
 }
+
+ // TODO: Implement second plane
