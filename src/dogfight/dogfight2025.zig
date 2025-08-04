@@ -111,7 +111,7 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
         rl.UpdateMusicStream(res.propeller);
 
         allMsgs.clearRetainingCapacity();
-        collectMessages(&allMsgs);
+        try collectMessages(&allMsgs);
         // std.debug.print("Collected messages: {d}\n", .{allMsgs.items.len});
         for (allMsgs.items) |msg| {
             var cmdsFromHandlingMsg: [10]Command = undefined;
@@ -132,31 +132,25 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
     }
 }
 
-fn collectMessages(allMsgs: *std.ArrayList(Msg)) void {
+fn collectMessages(allMsgs: *std.ArrayList(Msg)) !void {
     if (rl.IsKeyPressed(rl.KEY_SPACE))
-        allMsgs.append(Msg{ .inputClicked = Inputs.GeneralAction }) catch |err| {
-            std.debug.print("Error appending message: {}\n", .{err});
-        };
+        try allMsgs.append(Msg{ .inputPressed = Inputs.GeneralAction });
+
     if (rl.IsKeyPressed(rl.KEY_A))
-        allMsgs.append(Msg{ .inputClicked = Inputs.Plane1Rise }) catch |err| {
-            std.debug.print("Error appending message: {}\n", .{err});
-        };
+        try allMsgs.append(Msg{ .inputPressed = Inputs.Plane1Rise });
     if (rl.IsKeyReleased(rl.KEY_A))
-        allMsgs.append(Msg{ .inputReleased = Inputs.Plane1Rise }) catch |err| {
-            std.debug.print("Error appending message: {}\n", .{err});
-        };
-    if (rl.IsKeyPressed(rl.KEY_D))
-        allMsgs.append(Msg{ .inputClicked = Inputs.Plane1Dive }) catch |err| {
-            std.debug.print("Error appending message: {}\n", .{err});
-        };
-    if (rl.IsKeyReleased(rl.KEY_D))
-        allMsgs.append(Msg{ .inputReleased = Inputs.Plane1Dive }) catch |err| {
-            std.debug.print("Error appending message: {}\n", .{err});
-        };
+        try allMsgs.append(Msg{ .inputReleased = Inputs.Plane1Rise });
+
+    if (rl.IsKeyPressed(rl.KEY_S))
+        try allMsgs.append(Msg{ .inputPressed = Inputs.Plane1Dive });
+    if (rl.IsKeyReleased(rl.KEY_S))
+        try allMsgs.append(Msg{ .inputReleased = Inputs.Plane1Dive });
+
     const timePassed = Msg{ .timePassed = TimePassed{
         .totalTime = @floatCast(rl.GetTime()),
         .deltaTime = @floatCast(rl.GetFrameTime()),
     } };
+
     allMsgs.append(timePassed) catch |err| {
         std.debug.print("Error appending time message: {}\n", .{err});
     };

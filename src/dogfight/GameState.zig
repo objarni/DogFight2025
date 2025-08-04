@@ -59,7 +59,7 @@ pub const GameState = struct {
 
                 return 1;
             },
-            .inputClicked => |input| {
+            .inputPressed => |input| {
                 const plane1oldState = self.plane1.state;
                 switch (input) {
                     .Plane1Rise => self.plane1.rise(true),

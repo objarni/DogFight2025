@@ -37,7 +37,7 @@ pub const MenuState = struct {
 
     pub fn handleMsg(self: *MenuState, msg: Msg, effects: []Command) !u4 {
         switch (msg) {
-            .inputClicked => |input| {
+            .inputPressed => |input| {
                 if (input == Inputs.GeneralAction) {
                     effects[0] = Command{ .playSoundEffect = SoundEffect.boom };
                     effects[1] = Command{ .switchScreen = SubScreen.game };
@@ -104,7 +104,7 @@ test "MenuState.handleMsg: hitting action button should switch to game and play 
         },
     };
     const actualCount = try menuState.handleMsg(
-        Msg{ .inputClicked = Inputs.GeneralAction },
+        Msg{ .inputPressed = Inputs.GeneralAction },
         actual[0..2],
     );
     const expected: [2]Command = .{

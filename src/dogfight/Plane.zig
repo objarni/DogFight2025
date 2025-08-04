@@ -39,35 +39,38 @@ pub const Plane = struct {
     }
 
     pub fn rise(self: *Plane, pressed: bool) void {
+        std.debug.print("Rising pressed: {}\n", .{pressed});
+        self.risingPressed = pressed;
         switch (self.state) {
             .STILL => |_| {
                 self.state = .TAKEOFF_ROLL;
             },
             .TAKEOFF_ROLL => |_| {
-                if (@abs(self.position[0] - self.planeConstants.towerDistance) < self.planeConstants.towerDistance / 2) {
+                const distanceFromStart = @abs(self.position[0] - self.planeConstants.initialPos[0]);
+                const distanceFromTower = @abs(self.position[0] - self.planeConstants.towerDistance);
+                if (distanceFromTower < self.planeConstants.towerDistance / 2) {
                     self.state = .FLYING;
                     self.direction = -15;
                     const radians = std.math.degreesToRadians(self.direction);
                     const speed = self.velocity[0]; // We are only moving horizontally during takeoff
-                    // TODO compute speed and use it to set velocity
                     self.velocity = v(
                         speed * std.math.cos(radians),
                         speed * std.math.sin(radians),
                     );
                     return;
                 }
-                self.state = .CRASH;
+                if (distanceFromStart > 10)
+                    self.state = .CRASH;
                 return;
             },
-            .FLYING => |_| {
-                std.debug.print("Rising pressed: {}\n", .{pressed});
-                self.risingPressed = pressed;
-            },
+            .FLYING => |_| {},
             else => {},
         }
     }
 
     pub fn dive(self: *Plane, pressed: bool) void {
+        self.divingPressed = pressed;
+        std.debug.print("Dive command received: {}\n", .{pressed});
         switch (self.state) {
             .STILL => |_| {
                 self.state = .TAKEOFF_ROLL;
@@ -75,31 +78,51 @@ pub const Plane = struct {
             .TAKEOFF_ROLL => |_| {
                 self.state = .CRASH;
             },
-            .FLYING => |_| {
-                std.debug.print("Diving pressed: {}\n", .{pressed});
-                self.divingPressed = true;
-            },
+            .FLYING => |_| {},
             else => {},
         }
     }
 
     pub fn timePassed(self: *Plane, seconds: f32) void {
-        if (self.state == .TAKEOFF_ROLL) {
-            const newVelocity = self.velocity + v(self.planeConstants.groundAccelerationPerS * seconds, 0);
-            const newPosition = self.position + v(newVelocity[0] * seconds, 0);
-            if (@abs(newPosition[0] - self.planeConstants.initialPos[0]) >= self.planeConstants.towerDistance) {
-                self.state = PlaneState.CRASH;
-                return;
-            }
-            self.position = newPosition;
-            self.velocity = newVelocity;
-        }
-        if (self.state == .FLYING) {
-            if(risingPressed)
-                self.direction -= seconds * 100.0; // Adjust the angle for rising
-            if(divingPressed)
-                self.direction += seconds * 100.0; // Adjust the angle for diving
-            self.position = self.position + v(self.velocity[0] * seconds, self.velocity[1] * seconds);
+        const spd = @sqrt(self.velocity[0] * self.velocity[0] + self.velocity[1] * self.velocity[1]);
+        std.debug.print("Plane state: {}\n", .{self.state});
+        std.debug.print("Plane spd: {}\n", .{spd});
+        std.debug.print("Plane velocity: ({d}, {d})\n", .{self.velocity[0], self.velocity[1]});
+        switch (self.state) {
+            .STILL => {
+                if (self.risingPressed) {
+                    self.state = .TAKEOFF_ROLL;
+                } else if (self.divingPressed) {
+                    self.state = .TAKEOFF_ROLL;
+                }
+            },
+            .TAKEOFF_ROLL => {
+                const newVelocity = self.velocity + v(self.planeConstants.groundAccelerationPerS * seconds, 0);
+                const newPosition = self.position + v(newVelocity[0] * seconds, 0);
+                if (@abs(newPosition[0] - self.planeConstants.initialPos[0]) >= self.planeConstants.towerDistance) {
+                    self.state = PlaneState.CRASH;
+                    return;
+                }
+                self.position = newPosition;
+                self.velocity = newVelocity;
+            },
+            .FLYING => {
+                if (self.risingPressed)
+                    self.direction -= seconds * 100.0; // Adjust the angle for rising
+                if (self.divingPressed)
+                    self.direction += seconds * 100.0; // Adjust the angle for diving
+                const speed = @sqrt(self.velocity[0] * self.velocity[0] + self.velocity[1] * self.velocity[1]);
+                std.debug.print("Plane speed: {}\n", .{speed});
+                const radians = std.math.degreesToRadians(self.direction);
+                self.velocity = v(
+                    speed * std.math.cos(radians),
+                    speed * std.math.sin(radians),
+                );
+                self.position = self.position + v(self.velocity[0] * seconds, self.velocity[1] * seconds);
+            },
+            .CRASH => |_| {
+                // No further action needed, plane is already in crash state
+            },
         }
     }
 };
@@ -140,7 +163,7 @@ test "plane acceleration on ground during takeoff roll" {
 test "plane crashes if not enough speed during takeoff roll" {
     var plane = Plane.init(testPlaneConstants);
     plane.rise(true);
-    plane.timePassed(0.1);
+    plane.timePassed(2.0);
     plane.rise(true);
     try std.testing.expectEqual(PlaneState.CRASH, plane.state);
 }
