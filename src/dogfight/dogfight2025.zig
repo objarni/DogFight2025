@@ -9,7 +9,7 @@ const Msg = basics.Msg;
 const Command = basics.Command;
 const Inputs = basics.Inputs;
 const TimePassed = basics.TimePassed;
-const Screen = basics.Screen;
+const Screen = basics.State;
 
 const window_width: u16 = 960;
 const window_height: u16 = 540;
