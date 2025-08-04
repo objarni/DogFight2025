@@ -44,6 +44,9 @@ pub const MenuState = struct {
                     return 2;
                 }
             },
+            .inputReleased => |_| {
+                // Handle input release if needed
+            },
             .timePassed => |time| {
                 const numPeriods: f32 = time.totalTime / 0.5;
                 const intNumPeriods: u32 = @intFromFloat(numPeriods);

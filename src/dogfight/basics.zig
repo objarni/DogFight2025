@@ -5,6 +5,7 @@ pub const TimePassed = struct {
 
 pub const Msg = union(enum) {
     inputClicked: Inputs,
+    inputReleased: Inputs,
     timePassed: TimePassed,
 };
 

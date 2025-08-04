@@ -62,7 +62,21 @@ pub const GameState = struct {
             .inputClicked => |input| {
                 const plane1oldState = self.plane1.state;
                 switch (input) {
-                    .Plane1Rise => self.plane1.rise(),
+                    .Plane1Rise => self.plane1.rise(true),
+                    .Plane1Dive => self.plane1.dive(true),
+                    .Plane2Rise => {}, // TODO: Implement second plane
+                    else => {},
+                }
+                if (self.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
+                    effects[0] = Command{ .playSoundEffect = SoundEffect.crash };
+                    return 1;
+                }
+            },
+            .inputReleased => |input| {
+                const plane1oldState = self.plane1.state;
+                switch (input) {
+                    .Plane1Rise => self.plane1.rise(false),
+                    .Plane1Dive => self.plane1.dive(false),
                     .Plane2Rise => {}, // TODO: Implement second plane
                     else => {},
                 }

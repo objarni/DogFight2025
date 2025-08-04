@@ -3,6 +3,8 @@ const std = @import("std");
 const v2 = @import("V.zig");
 const V = v2.V;
 const v = v2.v;
+var risingPressed = false;
+var divingPressed = false;
 
 const PlaneConstants = struct {
     initialPos: V,
@@ -23,6 +25,8 @@ pub const Plane = struct {
     direction: f32, // Angle in degrees, 0 meaning facing right, 45 meaning down-right, etc.
     state: PlaneState,
     planeConstants: PlaneConstants,
+    risingPressed: bool = false,
+    divingPressed: bool = false,
 
     pub fn init(constants: PlaneConstants) Plane {
         return Plane{
@@ -34,7 +38,7 @@ pub const Plane = struct {
         };
     }
 
-    pub fn rise(self: *Plane) void {
+    pub fn rise(self: *Plane, pressed: bool) void {
         switch (self.state) {
             .STILL => |_| {
                 self.state = .TAKEOFF_ROLL;
@@ -55,17 +59,25 @@ pub const Plane = struct {
                 self.state = .CRASH;
                 return;
             },
+            .FLYING => |_| {
+                std.debug.print("Rising pressed: {}\n", .{pressed});
+                self.risingPressed = pressed;
+            },
             else => {},
         }
     }
 
-    pub fn dive(self: *Plane) void {
+    pub fn dive(self: *Plane, pressed: bool) void {
         switch (self.state) {
             .STILL => |_| {
                 self.state = .TAKEOFF_ROLL;
             },
             .TAKEOFF_ROLL => |_| {
                 self.state = .CRASH;
+            },
+            .FLYING => |_| {
+                std.debug.print("Diving pressed: {}\n", .{pressed});
+                self.divingPressed = true;
             },
             else => {},
         }
@@ -83,18 +95,16 @@ pub const Plane = struct {
             self.velocity = newVelocity;
         }
         if (self.state == .FLYING) {
-            // Simulate flying behavior, e.g., update position based on velocity
+            if(risingPressed)
+                self.direction -= seconds * 100.0; // Adjust the angle for rising
+            if(divingPressed)
+                self.direction += seconds * 100.0; // Adjust the angle for diving
             self.position = self.position + v(self.velocity[0] * seconds, self.velocity[1] * seconds);
-            // Here you could add more complex flying logic if needed
         }
     }
 };
 
-const testPlaneConstants = PlaneConstants{
-    .initialPos = v(0, 200),
-    .groundAccelerationPerS = 10.0,
-    .towerDistance = 330.0
-};
+const testPlaneConstants = PlaneConstants{ .initialPos = v(0, 200), .groundAccelerationPerS = 10.0, .towerDistance = 330.0 };
 
 test "initialization of plane" {
     const plane = Plane.init(testPlaneConstants);
@@ -110,34 +120,34 @@ test "initialization of plane" {
 
 test "plane starts takeoff roll from still state on rise command" {
     var plane = Plane.init(testPlaneConstants);
-    plane.rise();
+    plane.rise(true);
     try std.testing.expectEqual(PlaneState.TAKEOFF_ROLL, plane.state);
 }
 
 test "plane starts takeoff roll from still state on dive command" {
     var plane = Plane.init(testPlaneConstants);
-    plane.dive();
+    plane.dive(true);
     try std.testing.expectEqual(PlaneState.TAKEOFF_ROLL, plane.state);
 }
 
 test "plane acceleration on ground during takeoff roll" {
     var plane = Plane.init(testPlaneConstants);
-    plane.rise();
+    plane.rise(true);
     plane.timePassed(1.0);
     try std.testing.expectEqual(10.0, plane.velocity[0]);
 }
 
 test "plane crashes if not enough speed during takeoff roll" {
     var plane = Plane.init(testPlaneConstants);
-    plane.rise();
+    plane.rise(true);
     plane.timePassed(0.1);
-    plane.rise();
+    plane.rise(true);
     try std.testing.expectEqual(PlaneState.CRASH, plane.state);
 }
 
 test "plane crashes on dive - even when it has accelerated far enough" {
     var plane = Plane.init(testPlaneConstants);
-    plane.rise();
+    plane.rise(true);
     plane.timePassed(0.1);
     var i: i16 = 0;
     while (plane.position[0] < testPlaneConstants.towerDistance / 2) {
@@ -147,13 +157,13 @@ test "plane crashes on dive - even when it has accelerated far enough" {
             break; // Prevent infinite loop in case of an error
         }
     }
-    plane.dive();
+    plane.dive(true);
     try std.testing.expectEqual(PlaneState.CRASH, plane.state);
 }
 
 test "plane crashes when hitting tower during takeoff roll" {
     var plane = Plane.init(testPlaneConstants);
-    plane.rise();
+    plane.rise(true);
     var i: i32 = 0;
     try std.testing.expectEqual(PlaneState.TAKEOFF_ROLL, plane.state);
     while (@abs(plane.position[0] - testPlaneConstants.initialPos[0]) <= testPlaneConstants.towerDistance) {
@@ -168,7 +178,7 @@ test "plane crashes when hitting tower during takeoff roll" {
 
 test "plane flies if far enough from initial position during takeoff roll" {
     var plane = Plane.init(testPlaneConstants);
-    plane.rise();
+    plane.rise(true);
     plane.timePassed(0.1);
     var i: i16 = 0;
     while (@abs(plane.position[0] - testPlaneConstants.initialPos[0]) < testPlaneConstants.towerDistance / 2) {
@@ -178,7 +188,7 @@ test "plane flies if far enough from initial position during takeoff roll" {
             break; // Prevent infinite loop in case of an error
         }
     }
-    plane.rise();
+    plane.rise(true);
     plane.timePassed(0.1);
     try std.testing.expectEqual(PlaneState.FLYING, plane.state);
     try std.testing.expect(plane.position[1] < testPlaneConstants.initialPos[1]);

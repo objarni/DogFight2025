@@ -141,6 +141,18 @@ fn collectMessages(allMsgs: *std.ArrayList(Msg)) void {
         allMsgs.append(Msg{ .inputClicked = Inputs.Plane1Rise }) catch |err| {
             std.debug.print("Error appending message: {}\n", .{err});
         };
+    if (rl.IsKeyReleased(rl.KEY_A))
+        allMsgs.append(Msg{ .inputReleased = Inputs.Plane1Rise }) catch |err| {
+            std.debug.print("Error appending message: {}\n", .{err});
+        };
+    if (rl.IsKeyPressed(rl.KEY_D))
+        allMsgs.append(Msg{ .inputClicked = Inputs.Plane1Dive }) catch |err| {
+            std.debug.print("Error appending message: {}\n", .{err});
+        };
+    if (rl.IsKeyReleased(rl.KEY_D))
+        allMsgs.append(Msg{ .inputReleased = Inputs.Plane1Dive }) catch |err| {
+            std.debug.print("Error appending message: {}\n", .{err});
+        };
     const timePassed = Msg{ .timePassed = TimePassed{
         .totalTime = @floatCast(rl.GetTime()),
         .deltaTime = @floatCast(rl.GetFrameTime()),
@@ -286,6 +298,14 @@ fn executeCommands(
         }
     }
     return currentState;
+}
+
+test {
+    _ = @import("basics.zig");
+    _ = @import("MenuState.zig");
+    _ = @import("GameState.zig");
+    _ = @import("Plane.zig");
+    _ = @import("Explosion.zig");
 }
 
 // TODO: get rid of SubState; it is simply state/screen (move it to basics?)
