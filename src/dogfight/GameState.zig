@@ -96,9 +96,11 @@ pub const GameState = struct {
                 if (self.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
                     for (0..5) |_| {
                         if (self.numExplosions < self.explosions.len) {
+                            const rad = std.crypto.random.float(f32) * std.math.pi * 2;
+                            const dist = std.crypto.random.float(f32) * 50.0;
                             self.explosions[self.numExplosions] = explosion.randomExplosionAt(
-                                self.plane1.position[0],
-                                self.plane1.position[1],
+                                self.plane1.position[0] + dist * std.math.cos(rad),
+                                self.plane1.position[1] + dist * std.math.sin(rad),
                             );
                             self.numExplosions += 1;
                         }
