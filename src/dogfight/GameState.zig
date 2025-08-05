@@ -63,14 +63,14 @@ pub const GameState = struct {
                 self.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
 
                 // Update explosions
-                std.debug.print("There are {} explosions\n", .{self.numExplosions});
+                // std.debug.print("There are {} explosions\n", .{self.numExplosions});
                 for (0..self.numExplosions) |ix| {
                     var e = &self.explosions[ix];
-                    std.debug.print("Explosion at ({d}, {d}) with age {d} seconds\n", .{
-                        e.outerPosition[0],
-                        e.outerPosition[1],
-                        e.ageSeconds,
-                    });
+                    // std.debug.print("Explosion at ({d}, {d}) with age {d} seconds\n", .{
+                    //     e.outerPosition[0],
+                    //     e.outerPosition[1],
+                    //     e.ageSeconds,
+                    // });
                     e.timePassed(time.deltaTime);
                 }
                 // Remove dead explosions
@@ -94,14 +94,18 @@ pub const GameState = struct {
                     else => {},
                 }
                 if (self.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
-                    effects[0] = Command{ .playSoundEffect = SoundEffect.crash };
-                    if (self.numExplosions < self.explosions.len) {
-                        self.explosions[self.numExplosions] = explosion.randomExplosionAt(
-                            self.plane1.position[0],
-                            self.plane1.position[1],
-                        );
-                        self.numExplosions += 1;
+                    for (0..5) |_| {
+                        if (self.numExplosions < self.explosions.len) {
+                            self.explosions[self.numExplosions] = explosion.randomExplosionAt(
+                                self.plane1.position[0],
+                                self.plane1.position[1],
+                            );
+                            self.numExplosions += 1;
+                        }
                     }
+                    effects[0] = Command{
+                        .playSoundEffect = SoundEffect.crash,
+                    };
                     return 1;
                 }
             },
