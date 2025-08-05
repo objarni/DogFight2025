@@ -2,6 +2,7 @@ const std = @import("std");
 
 const plane = @import("Plane.zig");
 const Plane = plane.Plane;
+const PlaneConstants = plane.PlaneConstants;
 const PlaneState = plane.PlaneState;
 
 const explosion = @import("Explosion.zig");
@@ -21,6 +22,12 @@ const v2 = @import("V.zig");
 const V = v2.V;
 const v = v2.v;
 
+const plane1InitialParameters: PlaneConstants = .{
+    .initialPos = v(20.0, window_height - 30),
+    .towerDistance = 300.0,
+    .groundAccelerationPerS = 10.0,
+};
+
 pub const GameState = struct {
     clouds: [2]V,
     plane1: Plane,
@@ -30,11 +37,7 @@ pub const GameState = struct {
     pub fn init() GameState {
         return GameState{
             .clouds = .{ v(555.0, 305.0), v(100.0, 100.0) },
-            .plane1 = Plane.init(.{
-                .initialPos = v(20.0, window_height - 30),
-                .towerDistance = 300.0,
-                .groundAccelerationPerS = 10.0,
-            }),
+            .plane1 = Plane.init(plane1InitialParameters),
         };
     }
 
@@ -55,7 +58,11 @@ pub const GameState = struct {
                     },
                 };
                 effects[0] = propellerCmd;
+                const plane1oldState = self.plane1.state;
                 self.plane1.timePassed(time.deltaTime);
+                if (self.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
+                    return self.crashPlane1(effects);
+                }
 
                 // Move clouds
                 const deltaX: f32 = time.deltaTime;
@@ -63,14 +70,8 @@ pub const GameState = struct {
                 self.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
 
                 // Update explosions
-                // std.debug.print("There are {} explosions\n", .{self.numExplosions});
                 for (0..self.numExplosions) |ix| {
                     var e = &self.explosions[ix];
-                    // std.debug.print("Explosion at ({d}, {d}) with age {d} seconds\n", .{
-                    //     e.outerPosition[0],
-                    //     e.outerPosition[1],
-                    //     e.ageSeconds,
-                    // });
                     e.timePassed(time.deltaTime);
                 }
                 // Remove dead explosions
@@ -94,21 +95,7 @@ pub const GameState = struct {
                     else => {},
                 }
                 if (self.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
-                    for (0..5) |_| {
-                        if (self.numExplosions < self.explosions.len) {
-                            const rad = std.crypto.random.float(f32) * std.math.pi * 2;
-                            const dist = std.crypto.random.float(f32) * 50.0;
-                            self.explosions[self.numExplosions] = explosion.randomExplosionAt(
-                                self.plane1.position[0] + dist * std.math.cos(rad),
-                                self.plane1.position[1] + dist * std.math.sin(rad),
-                            );
-                            self.numExplosions += 1;
-                        }
-                    }
-                    effects[0] = Command{
-                        .playSoundEffect = SoundEffect.crash,
-                    };
-                    return 1;
+                    return self.crashPlane1(effects);
                 }
             },
             .inputReleased => |input| {
@@ -121,11 +108,36 @@ pub const GameState = struct {
                 }
                 if (self.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
                     effects[0] = Command{ .playSoundEffect = SoundEffect.crash };
+                    self.plane1 = Plane.init(.{
+                        .initialPos = v(20.0, window_height - 30),
+                        .towerDistance = 300.0,
+                        .groundAccelerationPerS = 10.0,
+                    });
                     return 1;
                 }
             },
         }
         return 0;
+    }
+
+    fn crashPlane1(self: *GameState, effects: []Command) u8 {
+        for (0..5) |_| {
+            if (self.numExplosions < self.explosions.len) {
+                const rad = std.crypto.random.float(f32) * std.math.pi * 2;
+                const dist = std.crypto.random.float(f32) * 50.0;
+                self.explosions[self.numExplosions] = explosion.randomExplosionAt(
+                    self.plane1.position[0] + dist * std.math.cos(rad),
+                    self.plane1.position[1] + dist * std.math.sin(rad),
+                );
+                self.numExplosions += 1;
+            }
+        }
+        effects[0] = Command{
+            .playSoundEffect = SoundEffect.crash,
+        };
+        self.plane1 = Plane.init(plane1InitialParameters);
+
+        return 1;
     }
 };
 

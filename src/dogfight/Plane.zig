@@ -6,7 +6,7 @@ const v = v2.v;
 var risingPressed = false;
 var divingPressed = false;
 
-const PlaneConstants = struct {
+pub const PlaneConstants = struct {
     initialPos: V,
     groundAccelerationPerS: f32,
     towerDistance: f32,
@@ -112,6 +112,9 @@ pub const Plane = struct {
                     speed * std.math.sin(radians),
                 );
                 self.position = self.position + v(self.velocity[0] * seconds, self.velocity[1] * seconds);
+                if(self.position[1] > self.planeConstants.initialPos[1]) {
+                    self.state = PlaneState.CRASH; // Plane has crashed if it goes below initial height
+                }
             },
             .CRASH => |_| {
                 // No further action needed, plane is already in crash state
