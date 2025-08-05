@@ -65,28 +65,23 @@ pub const GameState = struct {
                 // Update explosions
                 std.debug.print("There are {} explosions\n", .{self.numExplosions});
                 for (0..self.numExplosions) |ix| {
-                    var e = self.explosions[ix];
+                    var e = &self.explosions[ix];
                     std.debug.print("Explosion at ({d}, {d}) with age {d} seconds\n", .{
                         e.outerPosition[0],
                         e.outerPosition[1],
                         e.ageSeconds,
                     });
-                    e.ageSeconds -= time.deltaTime;
-                    if (e.ageSeconds <= 0) {
-                        e.alive = false;
-                    } else {
-                        e.timePassed(time.deltaTime);
-                    }
+                    e.timePassed(time.deltaTime);
                 }
                 // Remove dead explosions
-                // var i: usize = 0;
-                // while (i < self.numExplosions) {
-                //     if (!self.explosions[i].alive) {
-                //         std.debug.print("Removing dead explosion at index {}\n", .{i});
-                //         self.numExplosions -= 1;
-                //         self.explosions[i] = self.explosions[self.numExplosions];
-                //     } else i += 1;
-                // }
+                var i: usize = 0;
+                while (i < self.numExplosions) {
+                    if (!self.explosions[i].alive) {
+                        std.debug.print("Removing dead explosion at index {}\n", .{i});
+                        self.numExplosions -= 1;
+                        self.explosions[i] = self.explosions[self.numExplosions];
+                    } else i += 1;
+                }
 
                 return 1;
             },
