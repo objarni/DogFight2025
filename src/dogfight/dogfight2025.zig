@@ -276,7 +276,7 @@ fn executeCommands(
                         rl.PlayMusicStream(res.propeller);
                     }
                     rl.SetMusicPitch(res.propeller, audio.pitch);
-                    rl.SetMusicPan(res.propeller, audio.pan);
+                    rl.SetMusicPan(res.propeller, 1-audio.pan);
                 } else {
                     if (rl.IsMusicStreamPlaying(res.propeller))
                         rl.StopMusicStream(res.propeller);
