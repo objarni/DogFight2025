@@ -64,7 +64,13 @@ pub const GameState = struct {
 
                 // Update explosions
                 std.debug.print("There are {} explosions\n", .{self.numExplosions});
-                for (&self.explosions) |*e| {
+                for (0..self.numExplosions) |ix| {
+                    var e = self.explosions[ix];
+                    std.debug.print("Explosion at ({d}, {d}) with age {d} seconds\n", .{
+                        e.outerPosition[0],
+                        e.outerPosition[1],
+                        e.ageSeconds,
+                    });
                     e.ageSeconds -= time.deltaTime;
                     if (e.ageSeconds <= 0) {
                         e.alive = false;
