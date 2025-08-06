@@ -31,9 +31,9 @@ const plane1InitialParameters: PlaneConstants = .{
 pub const GameState = struct {
     clouds: [2]V,
     plane1: Plane,
-    plane1ResurrectTime: f32 = 0.0, // Time until plane 1 can be resurrected after crash
+    plane1_resurreect_timeout: f32 = 0.0, // Time until plane 1 can be resurrected after crash
     explosions: [10]Explosion = undefined, // Array of explosions, max 10
-    numExplosions: u8 = 0,
+    num_explosions: u8 = 0,
 
     pub fn init() GameState {
         return GameState{
@@ -48,7 +48,7 @@ pub const GameState = struct {
                 var numEffects: u8 = 0;
 
                 // Move plane
-                if (self.plane1ResurrectTime <= 0) {
+                if (self.plane1_resurreect_timeout <= 0) {
                     const propellerPitch: f32 = @max(0.5, @min(2.0, self.plane1.velocity[0] / 50.0));
                     const propellerPan: f32 = @max(0.0, @min(1.0, self.plane1.position[0] / window_width));
                     const propellerOn = self.plane1.state != PlaneState.STILL;
@@ -70,9 +70,9 @@ pub const GameState = struct {
                 }
 
                 // Check if plane 1 can be resurrected
-                if (self.plane1ResurrectTime > 0) {
-                    self.plane1ResurrectTime -= time.deltaTime;
-                    if (self.plane1ResurrectTime <= 0) {
+                if (self.plane1_resurreect_timeout > 0) {
+                    self.plane1_resurreect_timeout -= time.deltaTime;
+                    if (self.plane1_resurreect_timeout <= 0) {
                         self.plane1 = Plane.init(plane1InitialParameters);
                     }
                 }
@@ -83,17 +83,17 @@ pub const GameState = struct {
                 self.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
 
                 // Update explosions
-                for (0..self.numExplosions) |ix| {
+                for (0..self.num_explosions) |ix| {
                     var e = &self.explosions[ix];
                     e.timePassed(time.deltaTime);
                 }
                 // Remove dead explosions
                 var i: usize = 0;
-                while (i < self.numExplosions) {
+                while (i < self.num_explosions) {
                     if (!self.explosions[i].alive) {
                         std.debug.print("Removing dead explosion at index {}\n", .{i});
-                        self.numExplosions -= 1;
-                        self.explosions[i] = self.explosions[self.numExplosions];
+                        self.num_explosions -= 1;
+                        self.explosions[i] = self.explosions[self.num_explosions];
                     } else i += 1;
                 }
 
@@ -134,16 +134,16 @@ pub const GameState = struct {
     }
 
     fn crashPlane1(self: *GameState, effects: []Command) u8 {
-        self.plane1ResurrectTime = 4.0; // Time until plane can be resurrected
+        self.plane1_resurreect_timeout = 4.0; // Time until plane can be resurrected
         for (0..5) |_| {
-            if (self.numExplosions < self.explosions.len) {
+            if (self.num_explosions < self.explosions.len) {
                 const rad = std.crypto.random.float(f32) * std.math.pi * 2;
                 const dist = std.crypto.random.float(f32) * 50.0;
-                self.explosions[self.numExplosions] = explosion.randomExplosionAt(
+                self.explosions[self.num_explosions] = explosion.randomExplosionAt(
                     self.plane1.position[0] + dist * std.math.cos(rad),
                     self.plane1.position[1] + dist * std.math.sin(rad),
                 );
-                self.numExplosions += 1;
+                self.num_explosions += 1;
             }
         }
         effects[0] = Command{

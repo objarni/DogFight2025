@@ -216,7 +216,7 @@ fn drawGame(
     rl.DrawCircle(window_width - 50, window_height - 100, 50, rl.RED);
     rl.DrawTexture(res.background, 0, window_height - res.background.height, rl.WHITE);
 
-    if(state.plane1ResurrectTime <= 0) {
+    if(state.plane1_resurreect_timeout <= 0) {
         const sourceR = rl.Rectangle{
             .x = 0,
             .y = 0,
@@ -244,7 +244,7 @@ fn drawGame(
         rl.DrawTexture(res.cloud, @intFromFloat(cloud[0]), @intFromFloat(cloud[1]), color);
     }
 
-    for (0..state.numExplosions) |ix| {
+    for (0..state.num_explosions) |ix| {
         drawExplosion(state.explosions[ix]);
     }
 }
