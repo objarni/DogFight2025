@@ -94,7 +94,7 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
                 drawMenu(menu);
             },
             .game => |_| {
-                drawGame(game, res);
+                try drawGame(game, res);
             },
         }
         const after: i128 = std.time.nanoTimestamp();
@@ -210,13 +210,21 @@ const Resources = struct {
 fn drawGame(
     state: GameState,
     res: Resources,
-) void {
+) !void {
     rl.ClearBackground(rl.SKYBLUE);
+
+    var redPlanes: [10:0]u8 = undefined;
+    const redText = try std.fmt.bufPrintZ(
+        &redPlanes,
+        "Red:{d}\n",
+        .{state.plane1_lives},
+    );
+    rl.DrawText(redText.ptr, 10, 10, 20, rl.RED);
 
     rl.DrawCircle(window_width - 50, window_height - 100, 50, rl.RED);
     rl.DrawTexture(res.background, 0, window_height - res.background.height, rl.WHITE);
 
-    if(state.plane1_resurrect_timeout <= 0) {
+    if (state.plane1_resurrect_timeout <= 0) {
         const sourceR = rl.Rectangle{
             .x = 0,
             .y = 0,
@@ -278,7 +286,7 @@ fn executeCommands(
                         rl.PlayMusicStream(res.propeller);
                     }
                     rl.SetMusicPitch(res.propeller, audio.pitch);
-                    rl.SetMusicPan(res.propeller, 1-audio.pan);
+                    rl.SetMusicPan(res.propeller, 1 - audio.pan);
                 } else {
                     if (rl.IsMusicStreamPlaying(res.propeller))
                         rl.StopMusicStream(res.propeller);
