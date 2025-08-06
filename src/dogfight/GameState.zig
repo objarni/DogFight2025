@@ -175,7 +175,7 @@ pub const GameState = struct {
     }
 };
 
-test "GameState: both clouds move left by, but the lower cloud moves faster" {
+test "GameState: both clouds move left but the lower cloud moves faster" {
     var gameState: GameState = GameState.init();
     const highCloudX: f32 = gameState.clouds[0][0];
     const lowCloudX: f32 = gameState.clouds[1][0];
