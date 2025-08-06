@@ -31,6 +31,7 @@ const plane1InitialParameters: PlaneConstants = .{
 pub const GameState = struct {
     clouds: [2]V,
     plane1: Plane,
+    plane1ResurrectTime: f32 = 0.0, // Time until plane 1 can be resurrected after crash
     explosions: [10]Explosion = undefined, // Array of explosions, max 10
     numExplosions: u8 = 0,
 
@@ -44,24 +45,36 @@ pub const GameState = struct {
     pub fn handleMsg(self: *GameState, msg: Msg, effects: []Command) u8 {
         switch (msg) {
             .timePassed => |time| {
+                var numEffects: u8 = 0;
 
                 // Move plane
-                const propellerPitch: f32 = @max(0.5, @min(2.0, self.plane1.velocity[0] / 50.0));
-                const propellerPan: f32 = @max(0.0, @min(1.0, self.plane1.position[0] / window_width));
-                const propellerOn = self.plane1.state != PlaneState.STILL;
-                const propellerCmd = Command{
-                    .playPropellerAudio = PropellerAudio{
-                        .plane = 0, // 0 for plane 1
-                        .on = propellerOn,
-                        .pan = propellerPan,
-                        .pitch = propellerPitch,
-                    },
-                };
-                effects[0] = propellerCmd;
-                const plane1oldState = self.plane1.state;
-                self.plane1.timePassed(time.deltaTime);
-                if (self.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
-                    return self.crashPlane1(effects);
+                if (self.plane1ResurrectTime <= 0) {
+                    const propellerPitch: f32 = @max(0.5, @min(2.0, self.plane1.velocity[0] / 50.0));
+                    const propellerPan: f32 = @max(0.0, @min(1.0, self.plane1.position[0] / window_width));
+                    const propellerOn = self.plane1.state != PlaneState.STILL;
+                    const propellerCmd = Command{
+                        .playPropellerAudio = PropellerAudio{
+                            .plane = 0, // 0 for plane 1
+                            .on = propellerOn,
+                            .pan = propellerPan,
+                            .pitch = propellerPitch,
+                        },
+                    };
+                    effects[0] = propellerCmd;
+                    numEffects += 1;
+                    const plane1oldState = self.plane1.state;
+                    self.plane1.timePassed(time.deltaTime);
+                    if (self.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
+                        numEffects += self.crashPlane1(effects[1..]);
+                    }
+                }
+
+                // Check if plane 1 can be resurrected
+                if (self.plane1ResurrectTime > 0) {
+                    self.plane1ResurrectTime -= time.deltaTime;
+                    if (self.plane1ResurrectTime <= 0) {
+                        self.plane1 = Plane.init(plane1InitialParameters);
+                    }
                 }
 
                 // Move clouds
@@ -84,7 +97,7 @@ pub const GameState = struct {
                     } else i += 1;
                 }
 
-                return 1;
+                return numEffects;
             },
             .inputPressed => |input| {
                 const plane1oldState = self.plane1.state;
@@ -121,6 +134,7 @@ pub const GameState = struct {
     }
 
     fn crashPlane1(self: *GameState, effects: []Command) u8 {
+        self.plane1ResurrectTime = 4.0; // Time until plane can be resurrected
         for (0..5) |_| {
             if (self.numExplosions < self.explosions.len) {
                 const rad = std.crypto.random.float(f32) * std.math.pi * 2;
@@ -135,9 +149,16 @@ pub const GameState = struct {
         effects[0] = Command{
             .playSoundEffect = SoundEffect.crash,
         };
-        self.plane1 = Plane.init(plane1InitialParameters);
+        effects[1] = Command{
+            .playPropellerAudio = PropellerAudio{
+                .on = false,
+                .plane = 0, // 0 for plane 1
+                .pan = 0.0,
+                .pitch = 0.0,
+            },
+        };
 
-        return 1;
+        return 2;
     }
 };
 

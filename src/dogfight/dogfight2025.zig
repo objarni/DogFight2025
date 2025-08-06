@@ -216,26 +216,28 @@ fn drawGame(
     rl.DrawCircle(window_width - 50, window_height - 100, 50, rl.RED);
     rl.DrawTexture(res.background, 0, window_height - res.background.height, rl.WHITE);
 
-    const sourceR = rl.Rectangle{
-        .x = 0,
-        .y = 0,
-        .width = @floatFromInt(res.plane.width),
-        .height = @floatFromInt(res.plane.height),
-    };
-    const plane = state.plane1;
-    const planeWidth: f32 = @floatFromInt(res.plane.width);
-    const planeHeight: f32 = @floatFromInt(res.plane.height);
-    const destR = rl.Rectangle{
-        .x = plane.position[0],
-        .y = plane.position[1],
-        .width = planeWidth,
-        .height = planeHeight,
-    };
-    const anchor = rl.Vector2{
-        .x = planeWidth / 2,
-        .y = planeHeight / 2,
-    };
-    rl.DrawTexturePro(res.plane, sourceR, destR, anchor, state.plane1.direction, rl.WHITE);
+    if(state.plane1ResurrectTime <= 0) {
+        const sourceR = rl.Rectangle{
+            .x = 0,
+            .y = 0,
+            .width = @floatFromInt(res.plane.width),
+            .height = @floatFromInt(res.plane.height),
+        };
+        const plane = state.plane1;
+        const planeWidth: f32 = @floatFromInt(res.plane.width);
+        const planeHeight: f32 = @floatFromInt(res.plane.height);
+        const destR = rl.Rectangle{
+            .x = plane.position[0],
+            .y = plane.position[1],
+            .width = planeWidth,
+            .height = planeHeight,
+        };
+        const anchor = rl.Vector2{
+            .x = planeWidth / 2,
+            .y = planeHeight / 2,
+        };
+        rl.DrawTexturePro(res.plane, sourceR, destR, anchor, state.plane1.direction, rl.WHITE);
+    }
 
     for (state.clouds) |cloud| {
         const color = if (cloud[1] < 300) rl.LIGHTGRAY else rl.GRAY;
