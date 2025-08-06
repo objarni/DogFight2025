@@ -22,7 +22,7 @@ const v2 = @import("V.zig");
 const V = v2.V;
 const v = v2.v;
 
-const plane1InitialParameters: PlaneConstants = .{
+const plane1_initial_parameters: PlaneConstants = .{
     .initialPos = v(20.0, window_height - 30),
     .towerDistance = 300.0,
     .groundAccelerationPerS = 10.0,
@@ -38,7 +38,7 @@ pub const GameState = struct {
     pub fn init() GameState {
         return GameState{
             .clouds = .{ v(555.0, 305.0), v(100.0, 100.0) },
-            .plane1 = Plane.init(plane1InitialParameters),
+            .plane1 = Plane.init(plane1_initial_parameters),
         };
     }
 
@@ -73,7 +73,7 @@ pub const GameState = struct {
                 if (self.plane1_resurreect_timeout > 0) {
                     self.plane1_resurreect_timeout -= time.deltaTime;
                     if (self.plane1_resurreect_timeout <= 0) {
-                        self.plane1 = Plane.init(plane1InitialParameters);
+                        self.plane1 = Plane.init(plane1_initial_parameters);
                     }
                 }
 
