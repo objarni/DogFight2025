@@ -24,7 +24,7 @@ const v = v2.v;
 
 const plane1_initial_parameters: PlaneConstants = .{
     .initial_position = v(20.0, window_height - 30),
-    .towerDistance = 300.0,
+    .tower_distance = 300.0,
     .ground_acceleration_per_second = 10.0,
 };
 
@@ -123,7 +123,7 @@ pub const GameState = struct {
                     effects[0] = Command{ .playSoundEffect = SoundEffect.crash };
                     self.plane1 = Plane.init(.{
                         .initial_position = v(20.0, window_height - 30),
-                        .towerDistance = 300.0,
+                        .tower_distance = 300.0,
                         .ground_acceleration_per_second = 0.0,
                     });
                     return 1;
