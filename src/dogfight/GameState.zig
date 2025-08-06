@@ -25,7 +25,7 @@ const v = v2.v;
 const plane1_initial_parameters: PlaneConstants = .{
     .initialPos = v(20.0, window_height - 30),
     .towerDistance = 300.0,
-    .groundAccelerationPerS = 10.0,
+    .ground_acceleration_per_second = 10.0,
 };
 
 pub const GameState = struct {
@@ -124,7 +124,7 @@ pub const GameState = struct {
                     self.plane1 = Plane.init(.{
                         .initialPos = v(20.0, window_height - 30),
                         .towerDistance = 300.0,
-                        .groundAccelerationPerS = 10.0,
+                        .ground_acceleration_per_second = 0.0,
                     });
                     return 1;
                 }

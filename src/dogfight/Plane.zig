@@ -8,7 +8,7 @@ var divingPressed = false;
 
 pub const PlaneConstants = struct {
     initialPos: V,
-    groundAccelerationPerS: f32,
+    ground_acceleration_per_second: f32,
     towerDistance: f32,
 };
 
@@ -91,7 +91,7 @@ pub const Plane = struct {
                 }
             },
             .TAKEOFF_ROLL => {
-                const newVelocity = self.velocity + v(self.planeConstants.groundAccelerationPerS * seconds, 0);
+                const newVelocity = self.velocity + v(self.planeConstants.ground_acceleration_per_second * seconds, 0);
                 const newPosition = self.position + v(newVelocity[0] * seconds, 0);
                 if (@abs(newPosition[0] - self.planeConstants.initialPos[0]) >= self.planeConstants.towerDistance) {
                     self.state = PlaneState.CRASH;
@@ -112,7 +112,7 @@ pub const Plane = struct {
                     speed * std.math.sin(radians),
                 );
                 self.position = self.position + v(self.velocity[0] * seconds, self.velocity[1] * seconds);
-                if(self.position[1] > self.planeConstants.initialPos[1]) {
+                if (self.position[1] > self.planeConstants.initialPos[1]) {
                     self.state = PlaneState.CRASH; // Plane has crashed if it goes below initial height
                 }
             },
@@ -123,7 +123,11 @@ pub const Plane = struct {
     }
 };
 
-const testPlaneConstants = PlaneConstants{ .initialPos = v(0, 200), .groundAccelerationPerS = 10.0, .towerDistance = 330.0 };
+const testPlaneConstants = PlaneConstants{
+    .initialPos = v(0, 200),
+    .ground_acceleration_per_second = 10.0,
+    .towerDistance = 330.0,
+};
 
 test "initialization of plane" {
     const plane = Plane.init(testPlaneConstants);
