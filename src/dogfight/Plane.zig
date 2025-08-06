@@ -7,7 +7,7 @@ var risingPressed = false;
 var divingPressed = false;
 
 pub const PlaneConstants = struct {
-    initialPos: V,
+    initial_position: V,
     ground_acceleration_per_second: f32,
     towerDistance: f32,
 };
@@ -30,7 +30,7 @@ pub const Plane = struct {
 
     pub fn init(constants: PlaneConstants) Plane {
         return Plane{
-            .position = constants.initialPos,
+            .position = constants.initial_position,
             .velocity = v(0, 0),
             .state = .STILL,
             .planeConstants = constants,
@@ -45,7 +45,7 @@ pub const Plane = struct {
                 self.state = .TAKEOFF_ROLL;
             },
             .TAKEOFF_ROLL => |_| {
-                const distanceFromStart = @abs(self.position[0] - self.planeConstants.initialPos[0]);
+                const distanceFromStart = @abs(self.position[0] - self.planeConstants.initial_position[0]);
                 const distanceFromTower = @abs(self.position[0] - self.planeConstants.towerDistance);
                 if (distanceFromTower < self.planeConstants.towerDistance / 2) {
                     self.state = .FLYING;
@@ -93,7 +93,7 @@ pub const Plane = struct {
             .TAKEOFF_ROLL => {
                 const newVelocity = self.velocity + v(self.planeConstants.ground_acceleration_per_second * seconds, 0);
                 const newPosition = self.position + v(newVelocity[0] * seconds, 0);
-                if (@abs(newPosition[0] - self.planeConstants.initialPos[0]) >= self.planeConstants.towerDistance) {
+                if (@abs(newPosition[0] - self.planeConstants.initial_position[0]) >= self.planeConstants.towerDistance) {
                     self.state = PlaneState.CRASH;
                     return;
                 }
@@ -112,7 +112,7 @@ pub const Plane = struct {
                     speed * std.math.sin(radians),
                 );
                 self.position = self.position + v(self.velocity[0] * seconds, self.velocity[1] * seconds);
-                if (self.position[1] > self.planeConstants.initialPos[1]) {
+                if (self.position[1] > self.planeConstants.initial_position[1]) {
                     self.state = PlaneState.CRASH; // Plane has crashed if it goes below initial height
                 }
             },
@@ -124,7 +124,7 @@ pub const Plane = struct {
 };
 
 const testPlaneConstants = PlaneConstants{
-    .initialPos = v(0, 200),
+    .initial_position = v(0, 200),
     .ground_acceleration_per_second = 10.0,
     .towerDistance = 330.0,
 };
@@ -132,7 +132,7 @@ const testPlaneConstants = PlaneConstants{
 test "initialization of plane" {
     const plane = Plane.init(testPlaneConstants);
     const expected = Plane{
-        .position = testPlaneConstants.initialPos,
+        .position = testPlaneConstants.initial_position,
         .velocity = v(0, 0),
         .state = .STILL,
         .planeConstants = testPlaneConstants,
@@ -189,7 +189,7 @@ test "plane crashes when hitting tower during takeoff roll" {
     plane.rise(true);
     var i: i32 = 0;
     try std.testing.expectEqual(PlaneState.TAKEOFF_ROLL, plane.state);
-    while (@abs(plane.position[0] - testPlaneConstants.initialPos[0]) <= testPlaneConstants.towerDistance) {
+    while (@abs(plane.position[0] - testPlaneConstants.initial_position[0]) <= testPlaneConstants.towerDistance) {
         plane.timePassed(0.1);
         i += 1;
         if (i > 100) {
@@ -204,7 +204,7 @@ test "plane flies if far enough from initial position during takeoff roll" {
     plane.rise(true);
     plane.timePassed(0.1);
     var i: i16 = 0;
-    while (@abs(plane.position[0] - testPlaneConstants.initialPos[0]) < testPlaneConstants.towerDistance / 2) {
+    while (@abs(plane.position[0] - testPlaneConstants.initial_position[0]) < testPlaneConstants.towerDistance / 2) {
         plane.timePassed(0.1);
         i += 1;
         if (i > 100) {
@@ -214,6 +214,6 @@ test "plane flies if far enough from initial position during takeoff roll" {
     plane.rise(true);
     plane.timePassed(0.1);
     try std.testing.expectEqual(PlaneState.FLYING, plane.state);
-    try std.testing.expect(plane.position[1] < testPlaneConstants.initialPos[1]);
+    try std.testing.expect(plane.position[1] < testPlaneConstants.initial_position[1]);
     try std.testing.expect(plane.velocity[1] < 0); // Assuming the plane is flying upwards
 }
