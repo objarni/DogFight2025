@@ -318,6 +318,5 @@ test {
 
 // TODO: wrap clouds around the screen
 // TODO: add explosions upon crashing a plane
-// TODO: display airplanes left (10 to start with)
 // TODO: particle system for explosion and debris
 // TODO: switch from slices to FixedBufferAllocator in effects parameters
