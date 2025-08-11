@@ -224,7 +224,7 @@ fn drawGame(
     rl.DrawCircle(window_width - 50, window_height - 100, 50, rl.RED);
     rl.DrawTexture(res.background, 0, window_height - res.background.height, rl.WHITE);
 
-    if (state.plane1_resurrect_timeout <= 0) {
+    if (state.planes[0].resurrect_timeout <= 0) {
         const sourceR = rl.Rectangle{
             .x = 0,
             .y = 0,
