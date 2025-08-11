@@ -30,8 +30,15 @@ const plane1_initial_parameters: PlaneConstants = .{
     .ground_acceleration_per_second = 10.0,
 };
 
+const PlaneData = struct {
+    plane: Plane,
+    resurrect_timeout: f32 = 0.0, // Time until plane can be resurrected after crash
+    lives: u8 = 5, // Number of lives for plane
+};
+
 pub const GameState = struct {
     clouds: [2]V,
+    planes: [1]PlaneData,
     plane1: Plane,
     plane1_resurrect_timeout: f32 = 0.0, // Time until plane 1 can be resurrected after crash
     plane1_lives: u8 = 5, // Number of lives for plane 1
@@ -42,6 +49,13 @@ pub const GameState = struct {
         return GameState{
             .clouds = .{ v(555.0, 305.0), v(100.0, 100.0) },
             .plane1 = Plane.init(plane1_initial_parameters),
+            .planes = .{
+                .{
+                    .plane = Plane.init(plane1_initial_parameters),
+                    .resurrect_timeout = 0.0,
+                    .lives = 5,
+                },
+            },
         };
     }
 
