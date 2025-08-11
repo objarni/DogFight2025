@@ -216,8 +216,8 @@ fn drawGame(
     var redPlanes: [10:0]u8 = undefined;
     const redText = try std.fmt.bufPrintZ(
         &redPlanes,
-        "Red:{d}\n",
-        .{state.plane1_lives},
+        "Red: {d}",
+        .{state.planes[0].lives},
     );
     rl.DrawText(redText.ptr, 10, 10, 20, rl.RED);
 

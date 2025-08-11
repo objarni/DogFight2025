@@ -47,7 +47,6 @@ pub const GameState = struct {
     planes: [1]PlaneData,
     plane1: Plane,
     plane1_resurrect_timeout: f32 = 0.0, // Time until plane 1 can be resurrected after crash
-    plane1_lives: u8 = 5, // Number of lives for plane 1
     explosions: [10]Explosion = undefined, // Array of explosions, max 10
     num_explosions: u8 = 0,
 
@@ -157,7 +156,7 @@ pub const GameState = struct {
     }
 
     fn crashPlane1(self: *GameState, effects: []Command) u8 {
-        self.plane1_lives -= 1;
+        self.planes[0].lives -= 1;
         self.plane1_resurrect_timeout = 4.0; // Time until plane can be resurrected
         for (0..5) |_| {
             if (self.num_explosions < self.explosions.len) {
@@ -181,7 +180,7 @@ pub const GameState = struct {
                 .pitch = 0.0,
             },
         };
-        if (self.plane1_lives == 0) {
+        if (self.planes[0].lives == 0) {
             effects[2] = Command{
                 .playSoundEffect = SoundEffect.game_over,
             };
