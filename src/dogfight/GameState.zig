@@ -70,9 +70,9 @@ pub const GameState = struct {
 
                 // Move plane
                 if (self.planes[0].resurrect_timeout <= 0) {
-                    const propellerPitch: f32 = @max(0.5, @min(2.0, self.plane1.velocity[0] / 50.0));
-                    const propellerPan: f32 = @max(0.0, @min(1.0, self.plane1.position[0] / window_width));
-                    const propellerOn = self.plane1.state != PlaneState.STILL;
+                    const propellerPitch: f32 = @max(0.5, @min(2.0, self.planes[0].plane.velocity[0] / 50.0));
+                    const propellerPan: f32 = @max(0.0, @min(1.0, self.planes[0].plane.position[0] / window_width));
+                    const propellerOn = self.planes[0].plane.state != PlaneState.STILL;
                     const propellerCmd = Command{
                         .playPropellerAudio = PropellerAudio{
                             .plane = 0, // 0 for plane 1
@@ -83,9 +83,9 @@ pub const GameState = struct {
                     };
                     effects[0] = propellerCmd;
                     numEffects += 1;
-                    const plane1oldState = self.plane1.state;
-                    self.plane1.timePassed(time.deltaTime);
-                    if (self.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
+                    const plane1oldState = self.planes[0].plane.state;
+                    self.planes[0].plane.timePassed(time.deltaTime);
+                    if (self.planes[0].plane.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
                         numEffects += self.crashPlane1(effects[1..]);
                     }
                 }
@@ -121,26 +121,26 @@ pub const GameState = struct {
                 return numEffects;
             },
             .inputPressed => |input| {
-                const plane1oldState = self.plane1.state;
+                const plane1oldState = self.planes[0].plane.state;
                 switch (input) {
-                    .Plane1Rise => self.plane1.rise(true),
-                    .Plane1Dive => self.plane1.dive(true),
+                    .Plane1Rise => self.planes[0].plane.rise(true),
+                    .Plane1Dive => self.planes[0].plane.dive(true),
                     .Plane2Rise => {},
                     else => {},
                 }
-                if (self.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
+                if (self.planes[0].plane.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
                     return self.crashPlane1(effects);
                 }
             },
             .inputReleased => |input| {
-                const plane1oldState = self.plane1.state;
+                const plane1oldState = self.planes[0].plane.state;
                 switch (input) {
-                    .Plane1Rise => self.plane1.rise(false),
-                    .Plane1Dive => self.plane1.dive(false),
+                    .Plane1Rise => self.planes[0].plane.rise(false),
+                    .Plane1Dive => self.planes[0].plane.dive(false),
                     .Plane2Rise => {},
                     else => {},
                 }
-                if (self.plane1.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
+                if (self.planes[0].plane.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
                     effects[0] = Command{ .playSoundEffect = SoundEffect.crash };
                     self.plane1 = Plane.init(.{
                         .initial_position = v(20.0, window_height - 30),
@@ -162,8 +162,8 @@ pub const GameState = struct {
                 const rad = std.crypto.random.float(f32) * std.math.pi * 2;
                 const dist = std.crypto.random.float(f32) * 50.0;
                 self.explosions[self.num_explosions] = explosion.randomExplosionAt(
-                    self.plane1.position[0] + dist * std.math.cos(rad),
-                    self.plane1.position[1] + dist * std.math.sin(rad),
+                    self.planes[0].plane.position[0] + dist * std.math.cos(rad),
+                    self.planes[0].plane.position[1] + dist * std.math.sin(rad),
                 );
                 self.num_explosions += 1;
             }
