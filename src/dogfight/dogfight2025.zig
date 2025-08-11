@@ -231,7 +231,7 @@ fn drawGame(
             .width = @floatFromInt(res.plane.width),
             .height = @floatFromInt(res.plane.height),
         };
-        const plane = state.plane1;
+        const plane = state.planes[0].plane;
         const planeWidth: f32 = @floatFromInt(res.plane.width);
         const planeHeight: f32 = @floatFromInt(res.plane.height);
         const destR = rl.Rectangle{
@@ -244,7 +244,14 @@ fn drawGame(
             .x = planeWidth / 2,
             .y = planeHeight / 2,
         };
-        rl.DrawTexturePro(res.plane, sourceR, destR, anchor, state.plane1.direction, rl.WHITE);
+        rl.DrawTexturePro(
+            res.plane,
+            sourceR,
+            destR,
+            anchor,
+            plane.direction,
+            rl.WHITE,
+        );
     }
 
     for (state.clouds) |cloud| {

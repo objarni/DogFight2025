@@ -45,14 +45,12 @@ const PlaneData = struct {
 pub const GameState = struct {
     clouds: [2]V,
     planes: [1]PlaneData,
-    plane1: Plane,
     explosions: [10]Explosion = undefined, // Array of explosions, max 10
     num_explosions: u8 = 0,
 
     pub fn init() GameState {
         return GameState{
             .clouds = .{ v(555.0, 305.0), v(100.0, 100.0) },
-            .plane1 = Plane.init(plane1_initial_parameters),
             .planes = .{
                 .{
                     .plane = Plane.init(plane2_initial_parameters),
@@ -94,7 +92,7 @@ pub const GameState = struct {
                 if (self.planes[0].resurrect_timeout > 0) {
                     self.planes[0].resurrect_timeout -= time.deltaTime;
                     if (self.planes[0].resurrect_timeout <= 0) {
-                        self.plane1 = Plane.init(plane1_initial_parameters);
+                        self.planes[0].plane = Plane.init(plane1_initial_parameters);
                     }
                 }
 
@@ -142,7 +140,7 @@ pub const GameState = struct {
                 }
                 if (self.planes[0].plane.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
                     effects[0] = Command{ .playSoundEffect = SoundEffect.crash };
-                    self.plane1 = Plane.init(.{
+                    self.planes[0].plane = Plane.init(.{
                         .initial_position = v(20.0, window_height - 30),
                         .tower_distance = 300.0,
                         .ground_acceleration_per_second = 0.0,
