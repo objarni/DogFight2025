@@ -224,34 +224,36 @@ fn drawGame(
     rl.DrawCircle(window_width - 50, window_height - 100, 50, rl.RED);
     rl.DrawTexture(res.background, 0, window_height - res.background.height, rl.WHITE);
 
-    if (state.planes[0].resurrect_timeout <= 0) {
-        const sourceR = rl.Rectangle{
-            .x = 0,
-            .y = 0,
-            .width = @floatFromInt(res.plane.width),
-            .height = @floatFromInt(res.plane.height),
-        };
-        const plane = state.planes[0].plane;
-        const planeWidth: f32 = @floatFromInt(res.plane.width);
-        const planeHeight: f32 = @floatFromInt(res.plane.height);
-        const destR = rl.Rectangle{
-            .x = plane.position[0],
-            .y = plane.position[1],
-            .width = planeWidth,
-            .height = planeHeight,
-        };
-        const anchor = rl.Vector2{
-            .x = planeWidth / 2,
-            .y = planeHeight / 2,
-        };
-        rl.DrawTexturePro(
-            res.plane,
-            sourceR,
-            destR,
-            anchor,
-            plane.direction,
-            rl.WHITE,
-        );
+    for (0..2) |plane_ix| {
+        if (state.planes[plane_ix].resurrect_timeout <= 0) {
+            const sourceR = rl.Rectangle{
+                .x = 0,
+                .y = 0,
+                .width = @floatFromInt(res.plane.width),
+                .height = @floatFromInt(res.plane.height),
+            };
+            const plane = state.planes[plane_ix].plane;
+            const planeWidth: f32 = @floatFromInt(res.plane.width);
+            const planeHeight: f32 = @floatFromInt(res.plane.height);
+            const destR = rl.Rectangle{
+                .x = plane.position[0],
+                .y = plane.position[1],
+                .width = planeWidth,
+                .height = planeHeight,
+            };
+            const anchor = rl.Vector2{
+                .x = planeWidth / 2,
+                .y = planeHeight / 2,
+            };
+            rl.DrawTexturePro(
+                res.plane,
+                sourceR,
+                destR,
+                anchor,
+                plane.direction,
+                rl.WHITE,
+            );
+        }
     }
 
     for (state.clouds) |cloud| {

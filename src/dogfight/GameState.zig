@@ -46,7 +46,7 @@ const PlaneData = struct {
 
 pub const GameState = struct {
     clouds: [2]V,
-    planes: [1]PlaneData,
+    planes: [2]PlaneData,
     explosions: [10]Explosion = undefined, // Array of explosions, max 10
     num_explosions: u8 = 0,
 
@@ -54,6 +54,11 @@ pub const GameState = struct {
         return GameState{
             .clouds = .{ v(555.0, 305.0), v(100.0, 100.0) },
             .planes = .{
+                .{
+                    .plane = Plane.init(plane1_initial_parameters),
+                    .resurrect_timeout = 0.0,
+                    .lives = 5,
+                },
                 .{
                     .plane = Plane.init(plane2_initial_parameters),
                     .resurrect_timeout = 0.0,
