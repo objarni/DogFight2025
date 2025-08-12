@@ -146,6 +146,16 @@ fn collectMessages(allMsgs: *std.ArrayList(Msg)) !void {
     if (rl.IsKeyReleased(rl.KEY_S))
         try allMsgs.append(Msg{ .inputReleased = Inputs.Plane1Dive });
 
+    if (rl.IsKeyPressed(rl.KEY_J))
+        try allMsgs.append(Msg{ .inputPressed = Inputs.Plane2Rise });
+    if (rl.IsKeyReleased(rl.KEY_J))
+        try allMsgs.append(Msg{ .inputReleased = Inputs.Plane2Rise });
+
+    if (rl.IsKeyPressed(rl.KEY_K))
+        try allMsgs.append(Msg{ .inputPressed = Inputs.Plane2Dive });
+    if (rl.IsKeyReleased(rl.KEY_K))
+        try allMsgs.append(Msg{ .inputReleased = Inputs.Plane2Dive });
+
     const timePassed = Msg{ .timePassed = TimePassed{
         .totalTime = @floatCast(rl.GetTime()),
         .deltaTime = @floatCast(rl.GetFrameTime()),
