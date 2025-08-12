@@ -36,6 +36,8 @@ const plane2_initial_parameters: PlaneConstants = .{
     .ground_acceleration_per_second = 10.0,
 };
 
+const plane_constants : [2]PlaneConstants = .{ plane1_initial_parameters, plane2_initial_parameters };
+
 const PlaneData = struct {
     plane: Plane,
     resurrect_timeout: f32 = 0.0, // Time until plane can be resurrected after crash
@@ -92,7 +94,7 @@ pub const GameState = struct {
                 if (self.planes[0].resurrect_timeout > 0) {
                     self.planes[0].resurrect_timeout -= time.deltaTime;
                     if (self.planes[0].resurrect_timeout <= 0) {
-                        self.planes[0].plane = Plane.init(plane1_initial_parameters);
+                        self.planes[0].plane = Plane.init(plane_constants[0]);
                     }
                 }
 
