@@ -251,7 +251,7 @@ fn drawGame(
                 destR,
                 anchor,
                 plane.direction,
-                if(plane_ix==0)rl.WHITE else rl.GREEN,
+                if (plane_ix == 0) rl.WHITE else rl.GREEN,
             );
         }
     }
