@@ -31,7 +31,7 @@ const plane1_initial_parameters: PlaneConstants = .{
 };
 
 const plane2_initial_parameters: PlaneConstants = .{
-    .initial_position = v(window_width - 120, window_height - 30),
+    .initial_position = v(window_width - 280, window_height - 30),
     .tower_distance = 300.0,
     .ground_acceleration_per_second = 10.0,
 };
