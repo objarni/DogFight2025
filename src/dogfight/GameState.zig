@@ -68,7 +68,7 @@ pub const GameState = struct {
         };
     }
 
-    pub fn handleMsg(self: *GameState, msg: Msg, effects: []Command) u8 {
+    pub fn handleMsg(self: *GameState, msg: Msg, effects: []Command, commands: *std.ArrayList(Command)) !u8 {
         switch (msg) {
             .timePassed => |time| {
                 var numEffects: u8 = 0;
@@ -87,11 +87,12 @@ pub const GameState = struct {
                         },
                     };
                     effects[0] = propellerCmd;
+                    try commands.append(propellerCmd);
                     numEffects += 1;
                     const plane1oldState = self.planes[0].plane.state;
                     self.planes[0].plane.timePassed(time.deltaTime);
                     if (self.planes[0].plane.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
-                        numEffects += self.crashPlane(0, effects[1..]);
+                        numEffects += try self.crashPlane(0, effects[1..], commands);
                     }
                 }
 
@@ -142,7 +143,7 @@ pub const GameState = struct {
                 for(0..2) |plane_ix| {
                     if (self.planes[plane_ix].plane.state == PlaneState.CRASH and
                         plane_old_state[plane_ix] != PlaneState.CRASH) {
-                        num_effects += self.crashPlane(plane_ix, effects);
+                        num_effects += try self.crashPlane(plane_ix, effects, commands);
                     }
                 }
                 return num_effects;
@@ -165,7 +166,8 @@ pub const GameState = struct {
                         plane_old_state[plane_ix] != PlaneState.CRASH)
                     {
                         effects[num_effects] = Command{ .playSoundEffect = SoundEffect.crash };
-                        num_effects += self.crashPlane(plane_ix, effects);
+                        try commands.append(Command{ .playSoundEffect = SoundEffect.crash });
+                        num_effects += try self.crashPlane(plane_ix, effects, commands);
                     }
                 }
                 return num_effects;
@@ -174,7 +176,7 @@ pub const GameState = struct {
         return 0;
     }
 
-    fn crashPlane(self: *GameState, plane_ix: usize, effects: []Command) u8 {
+    fn crashPlane(self: *GameState, plane_ix: usize, effects: []Command, commands: *std.ArrayList(Command)) !u8 {
         self.planes[plane_ix].lives -= 1;
         self.planes[plane_ix].resurrect_timeout = 4.0; // Time until plane can be resurrected
         for (0..5) |_| {
@@ -191,6 +193,9 @@ pub const GameState = struct {
         effects[0] = Command{
             .playSoundEffect = SoundEffect.crash,
         };
+        try commands.append(Command{
+            .playSoundEffect = SoundEffect.crash,
+        });
         effects[1] = Command{
             .playPropellerAudio = PropellerAudio{
                 .on = false,
@@ -199,6 +204,7 @@ pub const GameState = struct {
                 .pitch = 0.0,
             },
         };
+        try commands.append(effects[1]);
         if (self.planes[plane_ix].lives == 0) {
             effects[2] = Command{
                 .playSoundEffect = SoundEffect.game_over,
@@ -206,6 +212,8 @@ pub const GameState = struct {
             effects[3] = Command{
                 .switchScreen = State.menu,
             };
+            try commands.append(effects[2]);
+            try commands.append(effects[3]);
             return 4;
         }
 
