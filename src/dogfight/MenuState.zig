@@ -36,7 +36,7 @@ pub const MenuState = struct {
         self.es.deinit();
     }
 
-    pub fn handleMsg(self: *MenuState, msg: Msg, commands: *std.ArrayList(Command)) !u4 {
+    pub fn handleMsg(self: *MenuState, msg: Msg, commands: *std.ArrayList(Command)) !void {
         switch (msg) {
             .inputPressed => |input| {
                 if (input == Inputs.GeneralAction) {
@@ -46,7 +46,6 @@ pub const MenuState = struct {
                     try commands.append(Command{
                         .switchScreen = SubScreen.game,
                     });
-                    return 2;
                 }
             },
             .inputReleased => |_| {
@@ -70,13 +69,11 @@ pub const MenuState = struct {
                 var i: usize = 0;
                 while (i < self.es.items.len) {
                     if (!self.es.items[i].alive) {
-                        std.debug.print("Removing dead explosion at index {}\n", .{i});
                         _ = self.es.swapRemove(i);
                     } else i += 1;
                 }
             },
         }
-        return 0;
     }
 };
 
