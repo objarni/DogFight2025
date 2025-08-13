@@ -82,19 +82,17 @@ pub const MenuState = struct {
 
 test "MenuState.handleMsg: hitting action button should switch to game and play Boom sound" {
     const ally = std.testing.allocator;
-    var menuState = MenuState.init(ally);
+    var menu_state = MenuState.init(ally);
     var actual_commands = std.ArrayList(Command).init(ally);
     defer actual_commands.deinit();
-    _ = try menuState.handleMsg(
+    _ = try menu_state.handleMsg(
         Msg{ .inputPressed = Inputs.GeneralAction },
         &actual_commands,
     );
-    const actualCount = actual_commands.items.len;
     const expected: [2]Command = .{
         Command{ .playSoundEffect = SoundEffect.boom },
         Command{ .switchScreen = SubScreen.game },
     };
-    try std.testing.expectEqual(2, actualCount);
     try std.testing.expectEqualSlices(
         Command,
         &expected,
