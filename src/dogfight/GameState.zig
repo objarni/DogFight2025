@@ -76,7 +76,7 @@ pub const GameState = struct {
                     self.planes[0].plane.state,
                     self.planes[1].plane.state,
                 };
-                for(0..2) |plane_ix| {
+                for (0..2) |plane_ix| {
                     if (self.planes[plane_ix].resurrect_timeout <= 0) {
                         const propellerPitch: f32 = @max(0.5, @min(2.0, self.planes[plane_ix].plane.velocity[0] / 50.0));
                         const propellerPan: f32 = @max(0.0, @min(1.0, self.planes[plane_ix].plane.position[0] / window_width));
@@ -92,17 +92,17 @@ pub const GameState = struct {
                         try commands.append(propellerCmd);
                         self.planes[plane_ix].plane.timePassed(time.deltaTime);
                         if (self.planes[plane_ix].plane.state == PlaneState.CRASH and
-                            plane_old_state[plane_ix] != PlaneState.CRASH) {
+                            plane_old_state[plane_ix] != PlaneState.CRASH)
+                        {
                             try self.crashPlane(plane_ix, commands);
                         }
                     }
-                }
 
-                // Check if plane 1 can be resurrected
-                if (self.planes[0].resurrect_timeout > 0) {
-                    self.planes[0].resurrect_timeout -= time.deltaTime;
-                    if (self.planes[0].resurrect_timeout <= 0) {
-                        self.planes[0].plane = Plane.init(plane_constants[0]);
+                    if (self.planes[plane_ix].resurrect_timeout > 0) {
+                        self.planes[plane_ix].resurrect_timeout -= time.deltaTime;
+                        if (self.planes[plane_ix].resurrect_timeout <= 0) {
+                            self.planes[plane_ix].plane = Plane.init(plane_constants[plane_ix]);
+                        }
                     }
                 }
 
@@ -139,9 +139,10 @@ pub const GameState = struct {
                     .Plane2Dive => self.planes[1].plane.dive(true),
                     else => {},
                 }
-                for(0..2) |plane_ix| {
+                for (0..2) |plane_ix| {
                     if (self.planes[plane_ix].plane.state == PlaneState.CRASH and
-                        plane_old_state[plane_ix] != PlaneState.CRASH) {
+                        plane_old_state[plane_ix] != PlaneState.CRASH)
+                    {
                         try self.crashPlane(plane_ix, commands);
                     }
                 }
