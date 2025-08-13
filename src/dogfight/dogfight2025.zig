@@ -114,7 +114,6 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
 
         allMsgs.clearRetainingCapacity();
         try collectMessages(&allMsgs);
-        // std.debug.print("Collected messages: {d}\n", .{allMsgs.items.len});
         for (allMsgs.items) |msg| {
             effects.clearRetainingCapacity();
             var cmdsFromHandlingMsg: [10]Command = undefined;
@@ -128,7 +127,6 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
                 },
             }
             const cmds = cmdsFromHandlingMsg[0..@intCast(cmdsCount)];
-            std.debug.print("cmds: {any}\n", .{cmds});
             currentState = executeCommands(cmds, res, currentState);
             currentState = executeCommands(effects.items, res, currentState);
         }

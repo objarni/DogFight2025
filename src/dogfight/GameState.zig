@@ -222,11 +222,14 @@ pub const GameState = struct {
 };
 
 test "GameState: both clouds move left but the lower cloud moves faster" {
+    const ally = std.testing.allocator;
+    var commands = std.ArrayList(Command).init(ally);
+    defer commands.deinit();
     var gameState: GameState = GameState.init();
     const highCloudX: f32 = gameState.clouds[0][0];
     const lowCloudX: f32 = gameState.clouds[1][0];
     var effects: [10]Command = undefined;
-    _ = gameState.handleMsg(
+    _ = try gameState.handleMsg(
         Msg{
             .timePassed = TimePassed{
                 .totalTime = 1.0,
@@ -234,6 +237,7 @@ test "GameState: both clouds move left but the lower cloud moves faster" {
             },
         },
         &effects,
+        &commands,
     );
     try std.testing.expectApproxEqAbs(
         highCloudX - 5.0,
