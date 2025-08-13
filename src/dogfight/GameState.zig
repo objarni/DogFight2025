@@ -237,3 +237,4 @@ test "GameState: both clouds move left but the lower cloud moves faster" {
 }
 
 // TODO: Fix buggy second plane lift off behaviour
+// TODO: Implement two propeller sounds, one for each plane
