@@ -126,8 +126,8 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
                     cmdsCount = try game.handleMsg(msg, &cmdsFromHandlingMsg, &effects);
                 },
             }
-            const cmds = cmdsFromHandlingMsg[0..@intCast(cmdsCount)];
-            currentState = executeCommands(cmds, res, currentState);
+            // const cmds = cmdsFromHandlingMsg[0..@intCast(cmdsCount)];
+            // currentState = executeCommands(cmds, res, currentState);
             currentState = executeCommands(effects.items, res, currentState);
         }
 
@@ -342,4 +342,4 @@ test {
 // TODO: wrap planes around the screen
 // TODO: shots
 // TODO: particle system for explosion and debris
-// TODO: switch from slices to FixedBufferAllocator in effects parameters
+// TODO: remove effects slice leftovers in handleMsg game/menu (wohoo!)
