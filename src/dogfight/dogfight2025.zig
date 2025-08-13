@@ -116,14 +116,13 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
         try collectMessages(&allMsgs);
         for (allMsgs.items) |msg| {
             effects.clearRetainingCapacity();
-            var cmdsFromHandlingMsg: [10]Command = undefined;
             var cmdsCount: u8 = 0;
             switch (currentState) {
                 .menu => |_| {
                     try menu.handleMsg(msg, &effects);
                 },
                 .game => |_| {
-                    cmdsCount = try game.handleMsg(msg, &cmdsFromHandlingMsg, &effects);
+                    cmdsCount = try game.handleMsg(msg, &effects);
                 },
             }
             currentState = executeCommands(effects.items, res, currentState);

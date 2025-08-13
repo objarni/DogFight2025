@@ -68,7 +68,7 @@ pub const GameState = struct {
         };
     }
 
-    pub fn handleMsg(self: *GameState, msg: Msg, effects: []Command, commands: *std.ArrayList(Command)) !u8 {
+    pub fn handleMsg(self: *GameState, msg: Msg, commands: *std.ArrayList(Command)) !u8 {
         switch (msg) {
             .timePassed => |time| {
                 var numEffects: u8 = 0;
@@ -86,7 +86,6 @@ pub const GameState = struct {
                             .pitch = propellerPitch,
                         },
                     };
-                    effects[0] = propellerCmd;
                     try commands.append(propellerCmd);
                     numEffects += 1;
                     const plane1oldState = self.planes[0].plane.state;
@@ -165,7 +164,6 @@ pub const GameState = struct {
                     if (self.planes[plane_ix].plane.state == PlaneState.CRASH and
                         plane_old_state[plane_ix] != PlaneState.CRASH)
                     {
-                        effects[num_effects] = Command{ .playSoundEffect = SoundEffect.crash };
                         try commands.append(Command{ .playSoundEffect = SoundEffect.crash });
                         num_effects += try self.crashPlane(plane_ix, commands);
                     }
