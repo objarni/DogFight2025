@@ -222,13 +222,14 @@ fn drawGame(
 ) !void {
     rl.ClearBackground(rl.SKYBLUE);
 
-    var redPlanes: [10:0]u8 = undefined;
-    const redText = try std.fmt.bufPrintZ(
-        &redPlanes,
-        "Red: {d}",
+    var buffer: [10:0]u8 = undefined;
+    const format = "Red: {d}";
+    const display_text = try std.fmt.bufPrintZ(
+        &buffer,
+        format,
         .{state.players[0].lives},
     );
-    rl.DrawText(redText.ptr, 10, 10, 20, rl.RED);
+    rl.DrawText(display_text.ptr, 10, 10, 20, rl.RED);
 
     rl.DrawCircle(window_width - 50, window_height - 100, 50, rl.RED);
     rl.DrawTexture(res.background, 0, window_height - res.background.height, rl.WHITE);
