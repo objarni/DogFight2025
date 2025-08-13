@@ -77,7 +77,7 @@ pub const GameState = struct {
                     self.players[1].plane.state,
                 };
                 for (0..2) |plane_ix| {
-                    var player = self.players[plane_ix];
+                    var player: *Player = &self.players[plane_ix];
                     if (player.resurrect_timeout <= 0) {
                         const propellerPitch: f32 = @max(0.5, @min(2.0, player.plane.velocity[0] / 50.0));
                         const propellerPan: f32 = @max(0.0, @min(1.0, player.plane.position[0] / window_width));
