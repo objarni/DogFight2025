@@ -223,13 +223,24 @@ fn drawGame(
     rl.ClearBackground(rl.SKYBLUE);
 
     var buffer: [10:0]u8 = undefined;
-    const format = "Red: {d}";
-    const display_text = try std.fmt.bufPrintZ(
-        &buffer,
-        format,
-        .{state.players[0].lives},
-    );
-    rl.DrawText(display_text.ptr, 10, 10, 20, rl.RED);
+    for (0..2) |i| {
+        const x_pos = if (i == 0) 10 else window_width - 100;
+        const text_color = if (i == 0) rl.RED else rl.DARKGREEN;
+        var display_text: [:0]u8 = undefined;
+        if (i == 0)
+            display_text = try std.fmt.bufPrintZ(
+                &buffer,
+                "Red: {d}",
+                .{state.players[i].lives},
+            )
+        else
+            display_text = try std.fmt.bufPrintZ(
+                &buffer,
+                "Green: {d}",
+                .{state.players[i].lives},
+            );
+        rl.DrawText(display_text.ptr, x_pos, 10, 20, text_color);
+    }
 
     rl.DrawCircle(window_width - 50, window_height - 100, 50, rl.RED);
     rl.DrawTexture(res.background, 0, window_height - res.background.height, rl.WHITE);
