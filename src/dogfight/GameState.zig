@@ -236,4 +236,4 @@ test "GameState: both clouds move left but the lower cloud moves faster" {
     );
 }
 
-// TODO: Implement second plane
+// TODO: Fix buggy second plane lift off behaviourπ
