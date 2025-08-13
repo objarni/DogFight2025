@@ -82,6 +82,8 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
     var game: GameState = .init();
     var currentState = Screen.menu;
 
+    var effects: std.ArrayList(Command) = .init(ally);
+    defer effects.deinit();
     while (!rl.WindowShouldClose()) {
         // if (!rl.IsMusicStreamPlaying(res.propellerAudio1))
         //     rl.PlayMusicStream(res.propellerAudio1);
@@ -114,11 +116,12 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
         try collectMessages(&allMsgs);
         // std.debug.print("Collected messages: {d}\n", .{allMsgs.items.len});
         for (allMsgs.items) |msg| {
+            effects.clearRetainingCapacity();
             var cmdsFromHandlingMsg: [10]Command = undefined;
             var cmdsCount: u8 = 0;
             switch (currentState) {
                 .menu => |_| {
-                    cmdsCount = try menu.handleMsg(msg, &cmdsFromHandlingMsg);
+                    cmdsCount = try menu.handleMsg(msg, &cmdsFromHandlingMsg, &effects);
                 },
                 .game => |_| {
                     cmdsCount = game.handleMsg(msg, &cmdsFromHandlingMsg);
@@ -126,6 +129,7 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
             }
             const cmds = cmdsFromHandlingMsg[0..@intCast(cmdsCount)];
             currentState = executeCommands(cmds, res, currentState);
+            currentState = executeCommands(effects.items, res, currentState);
         }
 
         rl.EndDrawing();
