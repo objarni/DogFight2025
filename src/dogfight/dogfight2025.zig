@@ -116,13 +116,12 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
         try collectMessages(&allMsgs);
         for (allMsgs.items) |msg| {
             effects.clearRetainingCapacity();
-            var cmdsCount: u8 = 0;
             switch (currentState) {
                 .menu => |_| {
                     try menu.handleMsg(msg, &effects);
                 },
                 .game => |_| {
-                    cmdsCount = try game.handleMsg(msg, &effects);
+                    try game.handleMsg(msg, &effects);
                 },
             }
             currentState = executeCommands(effects.items, res, currentState);
@@ -339,4 +338,4 @@ test {
 // TODO: wrap planes around the screen
 // TODO: shots
 // TODO: particle system for explosion and debris
-// TODO: remove effects slice leftovers in handleMsg game/menu (wohoo!)
+// TODO: remove effects slice leftovers in handleMsg game/menu (wo-hoo!)

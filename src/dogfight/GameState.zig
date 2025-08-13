@@ -68,11 +68,9 @@ pub const GameState = struct {
         };
     }
 
-    pub fn handleMsg(self: *GameState, msg: Msg, commands: *std.ArrayList(Command)) !u8 {
+    pub fn handleMsg(self: *GameState, msg: Msg, commands: *std.ArrayList(Command)) !void {
         switch (msg) {
             .timePassed => |time| {
-                var numEffects: u8 = 0;
-
                 // Move plane
                 if (self.planes[0].resurrect_timeout <= 0) {
                     const propellerPitch: f32 = @max(0.5, @min(2.0, self.planes[0].plane.velocity[0] / 50.0));
@@ -87,11 +85,10 @@ pub const GameState = struct {
                         },
                     };
                     try commands.append(propellerCmd);
-                    numEffects += 1;
                     const plane1oldState = self.planes[0].plane.state;
                     self.planes[0].plane.timePassed(time.deltaTime);
                     if (self.planes[0].plane.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
-                        numEffects += try self.crashPlane(0, commands);
+                        try self.crashPlane(0, commands);
                     }
                 }
 
@@ -122,8 +119,6 @@ pub const GameState = struct {
                         self.explosions[i] = self.explosions[self.num_explosions];
                     } else i += 1;
                 }
-
-                return numEffects;
             },
             .inputPressed => |input| {
                 // TODO: refactor so that we don't need to keep track of plane old state
@@ -138,14 +133,12 @@ pub const GameState = struct {
                     .Plane2Dive => self.planes[1].plane.dive(true),
                     else => {},
                 }
-                var num_effects: u8 = 0;
                 for(0..2) |plane_ix| {
                     if (self.planes[plane_ix].plane.state == PlaneState.CRASH and
                         plane_old_state[plane_ix] != PlaneState.CRASH) {
-                        num_effects += try self.crashPlane(plane_ix, commands);
+                        try self.crashPlane(plane_ix, commands);
                     }
                 }
-                return num_effects;
             },
             .inputReleased => |input| {
                 const plane_old_state: [2]PlaneState = .{
@@ -159,22 +152,19 @@ pub const GameState = struct {
                     .Plane2Dive => self.planes[1].plane.dive(false),
                     else => {},
                 }
-                var num_effects: u8 = 0;
                 for (0..2) |plane_ix| {
                     if (self.planes[plane_ix].plane.state == PlaneState.CRASH and
                         plane_old_state[plane_ix] != PlaneState.CRASH)
                     {
                         try commands.append(Command{ .playSoundEffect = SoundEffect.crash });
-                        num_effects += try self.crashPlane(plane_ix, commands);
+                        try self.crashPlane(plane_ix, commands);
                     }
                 }
-                return num_effects;
             },
         }
-        return 0;
     }
 
-    fn crashPlane(self: *GameState, plane_ix: usize, commands: *std.ArrayList(Command)) !u8 {
+    fn crashPlane(self: *GameState, plane_ix: usize, commands: *std.ArrayList(Command)) !void {
         self.planes[plane_ix].lives -= 1;
         self.planes[plane_ix].resurrect_timeout = 4.0; // Time until plane can be resurrected
         for (0..5) |_| {
@@ -206,10 +196,7 @@ pub const GameState = struct {
             try commands.append(Command{
                 .switchScreen = State.menu,
             });
-            return 4;
         }
-
-        return 2;
     }
 };
 
