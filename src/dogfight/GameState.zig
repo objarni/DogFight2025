@@ -72,23 +72,29 @@ pub const GameState = struct {
         switch (msg) {
             .timePassed => |time| {
                 // Move plane
-                if (self.planes[0].resurrect_timeout <= 0) {
-                    const propellerPitch: f32 = @max(0.5, @min(2.0, self.planes[0].plane.velocity[0] / 50.0));
-                    const propellerPan: f32 = @max(0.0, @min(1.0, self.planes[0].plane.position[0] / window_width));
-                    const propellerOn = self.planes[0].plane.state != PlaneState.STILL;
-                    const propellerCmd = Command{
-                        .playPropellerAudio = PropellerAudio{
-                            .plane = 0, // 0 for plane 1
-                            .on = propellerOn,
-                            .pan = propellerPan,
-                            .pitch = propellerPitch,
-                        },
-                    };
-                    try commands.append(propellerCmd);
-                    const plane1oldState = self.planes[0].plane.state;
-                    self.planes[0].plane.timePassed(time.deltaTime);
-                    if (self.planes[0].plane.state == PlaneState.CRASH and plane1oldState != PlaneState.CRASH) {
-                        try self.crashPlane(0, commands);
+                const plane_old_state: [2]PlaneState = .{
+                    self.planes[0].plane.state,
+                    self.planes[1].plane.state,
+                };
+                for(0..2) |plane_ix| {
+                    if (self.planes[plane_ix].resurrect_timeout <= 0) {
+                        const propellerPitch: f32 = @max(0.5, @min(2.0, self.planes[plane_ix].plane.velocity[0] / 50.0));
+                        const propellerPan: f32 = @max(0.0, @min(1.0, self.planes[plane_ix].plane.position[0] / window_width));
+                        const propellerOn = self.planes[plane_ix].plane.state != PlaneState.STILL;
+                        const propellerCmd = Command{
+                            .playPropellerAudio = PropellerAudio{
+                                .plane = @as(u1, @intCast(plane_ix)),
+                                .on = propellerOn,
+                                .pan = propellerPan,
+                                .pitch = propellerPitch,
+                            },
+                        };
+                        try commands.append(propellerCmd);
+                        self.planes[plane_ix].plane.timePassed(time.deltaTime);
+                        if (self.planes[plane_ix].plane.state == PlaneState.CRASH and
+                            plane_old_state[plane_ix] != PlaneState.CRASH) {
+                            try self.crashPlane(plane_ix, commands);
+                        }
                     }
                 }
 
