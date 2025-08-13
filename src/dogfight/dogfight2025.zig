@@ -120,14 +120,12 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
             var cmdsCount: u8 = 0;
             switch (currentState) {
                 .menu => |_| {
-                    cmdsCount = try menu.handleMsg(msg, &cmdsFromHandlingMsg, &effects);
+                    cmdsCount = try menu.handleMsg(msg, &effects);
                 },
                 .game => |_| {
                     cmdsCount = try game.handleMsg(msg, &cmdsFromHandlingMsg, &effects);
                 },
             }
-            // const cmds = cmdsFromHandlingMsg[0..@intCast(cmdsCount)];
-            // currentState = executeCommands(cmds, res, currentState);
             currentState = executeCommands(effects.items, res, currentState);
         }
 

@@ -36,12 +36,10 @@ pub const MenuState = struct {
         self.es.deinit();
     }
 
-    pub fn handleMsg(self: *MenuState, msg: Msg, effects: []Command, commands: *std.ArrayList(Command)) !u4 {
+    pub fn handleMsg(self: *MenuState, msg: Msg, commands: *std.ArrayList(Command)) !u4 {
         switch (msg) {
             .inputPressed => |input| {
                 if (input == Inputs.GeneralAction) {
-                    effects[0] = Command{ .playSoundEffect = SoundEffect.boom };
-                    effects[1] = Command{ .switchScreen = SubScreen.game };
                     try commands.append(Command{
                         .playSoundEffect = SoundEffect.boom,
                     });
@@ -85,21 +83,13 @@ pub const MenuState = struct {
 test "MenuState.handleMsg: hitting action button should switch to game and play Boom sound" {
     const ally = std.testing.allocator;
     var menuState = MenuState.init(ally);
-    var commands = std.ArrayList(Command).init(ally);
-    defer commands.deinit();
-    var actual: [2]Command = .{
-        Command{
-            .playSoundEffect = SoundEffect.boom,
-        },
-        Command{
-            .playSoundEffect = SoundEffect.boom,
-        },
-    };
-    const actualCount = try menuState.handleMsg(
+    var actual_commands = std.ArrayList(Command).init(ally);
+    defer actual_commands.deinit();
+    _ = try menuState.handleMsg(
         Msg{ .inputPressed = Inputs.GeneralAction },
-        actual[0..2],
-        &commands,
+        &actual_commands,
     );
+    const actualCount = actual_commands.items.len;
     const expected: [2]Command = .{
         Command{ .playSoundEffect = SoundEffect.boom },
         Command{ .switchScreen = SubScreen.game },
@@ -108,7 +98,7 @@ test "MenuState.handleMsg: hitting action button should switch to game and play 
     try std.testing.expectEqualSlices(
         Command,
         &expected,
-        actual[0..actualCount],
+        actual_commands.items,
     );
 }
 
@@ -125,8 +115,7 @@ test "MenuState.handleMsg: press space blinks every 0.5 second on menu screen" {
             .deltaTime = 0.40,
         },
     };
-    const effects: [0]Command = .{};
-    _ = try menuState.handleMsg(msg, &effects, &commands);
+    _ = try menuState.handleMsg(msg, &commands);
     try std.testing.expectEqual(menuState.blink, false);
 
     // Test expected
@@ -136,7 +125,7 @@ test "MenuState.handleMsg: press space blinks every 0.5 second on menu screen" {
             .deltaTime = 0.35,
         },
     };
-    _ = try menuState.handleMsg(msg2, &effects, &commands);
+    _ = try menuState.handleMsg(msg2, &commands);
 
     try std.testing.expectEqual(menuState.blink, true);
 }
