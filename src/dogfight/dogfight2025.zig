@@ -226,7 +226,7 @@ fn drawGame(
     const redText = try std.fmt.bufPrintZ(
         &redPlanes,
         "Red: {d}",
-        .{state.planes[0].lives},
+        .{state.players[0].lives},
     );
     rl.DrawText(redText.ptr, 10, 10, 20, rl.RED);
 
@@ -234,14 +234,14 @@ fn drawGame(
     rl.DrawTexture(res.background, 0, window_height - res.background.height, rl.WHITE);
 
     for (0..2) |plane_ix| {
-        if (state.planes[plane_ix].resurrect_timeout <= 0) {
+        if (state.players[plane_ix].resurrect_timeout <= 0) {
             const sourceR = rl.Rectangle{
                 .x = 0,
                 .y = 0,
                 .width = @floatFromInt(res.plane.width),
                 .height = @floatFromInt(res.plane.height),
             };
-            const plane = state.planes[plane_ix].plane;
+            const plane = state.players[plane_ix].plane;
             const planeWidth: f32 = @floatFromInt(res.plane.width);
             const planeHeight: f32 = @floatFromInt(res.plane.height);
             const destR = rl.Rectangle{

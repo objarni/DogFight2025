@@ -38,7 +38,7 @@ const plane2_initial_parameters: PlaneConstants = .{
 
 const plane_constants: [2]PlaneConstants = .{ plane1_initial_parameters, plane2_initial_parameters };
 
-const PlaneData = struct {
+const Player = struct {
     plane: Plane,
     resurrect_timeout: f32 = 0.0, // Time until plane can be resurrected after crash
     lives: u8 = 5, // Number of lives for plane
@@ -46,14 +46,14 @@ const PlaneData = struct {
 
 pub const GameState = struct {
     clouds: [2]V,
-    planes: [2]PlaneData,
+    players: [2]Player,
     explosions: [10]Explosion = undefined, // Array of explosions, max 10
     num_explosions: u8 = 0,
 
     pub fn init() GameState {
         return GameState{
             .clouds = .{ v(555.0, 305.0), v(100.0, 100.0) },
-            .planes = .{
+            .players = .{
                 .{
                     .plane = Plane.init(plane1_initial_parameters),
                     .resurrect_timeout = 0.0,
@@ -73,14 +73,15 @@ pub const GameState = struct {
             .timePassed => |time| {
                 // Move plane
                 const plane_old_state: [2]PlaneState = .{
-                    self.planes[0].plane.state,
-                    self.planes[1].plane.state,
+                    self.players[0].plane.state,
+                    self.players[1].plane.state,
                 };
                 for (0..2) |plane_ix| {
-                    if (self.planes[plane_ix].resurrect_timeout <= 0) {
-                        const propellerPitch: f32 = @max(0.5, @min(2.0, self.planes[plane_ix].plane.velocity[0] / 50.0));
-                        const propellerPan: f32 = @max(0.0, @min(1.0, self.planes[plane_ix].plane.position[0] / window_width));
-                        const propellerOn = self.planes[plane_ix].plane.state != PlaneState.STILL;
+                    var player = self.players[plane_ix];
+                    if (player.resurrect_timeout <= 0) {
+                        const propellerPitch: f32 = @max(0.5, @min(2.0, player.plane.velocity[0] / 50.0));
+                        const propellerPan: f32 = @max(0.0, @min(1.0, player.plane.position[0] / window_width));
+                        const propellerOn = player.plane.state != PlaneState.STILL;
                         const propellerCmd = Command{
                             .playPropellerAudio = PropellerAudio{
                                 .plane = @as(u1, @intCast(plane_ix)),
@@ -90,18 +91,18 @@ pub const GameState = struct {
                             },
                         };
                         try commands.append(propellerCmd);
-                        self.planes[plane_ix].plane.timePassed(time.deltaTime);
-                        if (self.planes[plane_ix].plane.state == PlaneState.CRASH and
+                        player.plane.timePassed(time.deltaTime);
+                        if (player.plane.state == PlaneState.CRASH and
                             plane_old_state[plane_ix] != PlaneState.CRASH)
                         {
                             try self.crashPlane(plane_ix, commands);
                         }
                     }
 
-                    if (self.planes[plane_ix].resurrect_timeout > 0) {
-                        self.planes[plane_ix].resurrect_timeout -= time.deltaTime;
-                        if (self.planes[plane_ix].resurrect_timeout <= 0) {
-                            self.planes[plane_ix].plane = Plane.init(plane_constants[plane_ix]);
+                    if (player.resurrect_timeout > 0) {
+                        player.resurrect_timeout -= time.deltaTime;
+                        if (player.resurrect_timeout <= 0) {
+                            player.plane = Plane.init(plane_constants[plane_ix]);
                         }
                     }
                 }
@@ -129,18 +130,18 @@ pub const GameState = struct {
             .inputPressed => |input| {
                 // TODO: refactor so that we don't need to keep track of plane old state
                 const plane_old_state: [2]PlaneState = .{
-                    self.planes[0].plane.state,
-                    self.planes[1].plane.state,
+                    self.players[0].plane.state,
+                    self.players[1].plane.state,
                 };
                 switch (input) {
-                    .Plane1Rise => self.planes[0].plane.rise(true),
-                    .Plane1Dive => self.planes[0].plane.dive(true),
-                    .Plane2Rise => self.planes[1].plane.rise(true),
-                    .Plane2Dive => self.planes[1].plane.dive(true),
+                    .Plane1Rise => self.players[0].plane.rise(true),
+                    .Plane1Dive => self.players[0].plane.dive(true),
+                    .Plane2Rise => self.players[1].plane.rise(true),
+                    .Plane2Dive => self.players[1].plane.dive(true),
                     else => {},
                 }
                 for (0..2) |plane_ix| {
-                    if (self.planes[plane_ix].plane.state == PlaneState.CRASH and
+                    if (self.players[plane_ix].plane.state == PlaneState.CRASH and
                         plane_old_state[plane_ix] != PlaneState.CRASH)
                     {
                         try self.crashPlane(plane_ix, commands);
@@ -149,18 +150,18 @@ pub const GameState = struct {
             },
             .inputReleased => |input| {
                 const plane_old_state: [2]PlaneState = .{
-                    self.planes[0].plane.state,
-                    self.planes[1].plane.state,
+                    self.players[0].plane.state,
+                    self.players[1].plane.state,
                 };
                 switch (input) {
-                    .Plane1Rise => self.planes[0].plane.rise(false),
-                    .Plane1Dive => self.planes[0].plane.dive(false),
-                    .Plane2Rise => self.planes[1].plane.rise(false),
-                    .Plane2Dive => self.planes[1].plane.dive(false),
+                    .Plane1Rise => self.players[0].plane.rise(false),
+                    .Plane1Dive => self.players[0].plane.dive(false),
+                    .Plane2Rise => self.players[1].plane.rise(false),
+                    .Plane2Dive => self.players[1].plane.dive(false),
                     else => {},
                 }
                 for (0..2) |plane_ix| {
-                    if (self.planes[plane_ix].plane.state == PlaneState.CRASH and
+                    if (self.players[plane_ix].plane.state == PlaneState.CRASH and
                         plane_old_state[plane_ix] != PlaneState.CRASH)
                     {
                         try commands.append(Command{ .playSoundEffect = SoundEffect.crash });
@@ -172,15 +173,15 @@ pub const GameState = struct {
     }
 
     fn crashPlane(self: *GameState, plane_ix: usize, commands: *std.ArrayList(Command)) !void {
-        self.planes[plane_ix].lives -= 1;
-        self.planes[plane_ix].resurrect_timeout = 4.0; // Time until plane can be resurrected
+        self.players[plane_ix].lives -= 1;
+        self.players[plane_ix].resurrect_timeout = 4.0; // Time until plane can be resurrected
         for (0..5) |_| {
             if (self.num_explosions < self.explosions.len) {
                 const rad = std.crypto.random.float(f32) * std.math.pi * 2;
                 const dist = std.crypto.random.float(f32) * 50.0;
                 self.explosions[self.num_explosions] = explosion.randomExplosionAt(
-                    self.planes[plane_ix].plane.position[0] + dist * std.math.cos(rad),
-                    self.planes[plane_ix].plane.position[1] + dist * std.math.sin(rad),
+                    self.players[plane_ix].plane.position[0] + dist * std.math.cos(rad),
+                    self.players[plane_ix].plane.position[1] + dist * std.math.sin(rad),
                 );
                 self.num_explosions += 1;
             }
@@ -196,7 +197,7 @@ pub const GameState = struct {
                 .pitch = 0.0,
             },
         });
-        if (self.planes[plane_ix].lives == 0) {
+        if (self.players[plane_ix].lives == 0) {
             try commands.append(Command{
                 .playSoundEffect = SoundEffect.game_over,
             });
@@ -214,15 +215,13 @@ test "GameState: both clouds move left but the lower cloud moves faster" {
     var gameState: GameState = GameState.init();
     const highCloudX: f32 = gameState.clouds[0][0];
     const lowCloudX: f32 = gameState.clouds[1][0];
-    var effects: [10]Command = undefined;
-    _ = try gameState.handleMsg(
+    try gameState.handleMsg(
         Msg{
             .timePassed = TimePassed{
                 .totalTime = 1.0,
                 .deltaTime = 1.0,
             },
         },
-        &effects,
         &commands,
     );
     try std.testing.expectApproxEqAbs(
