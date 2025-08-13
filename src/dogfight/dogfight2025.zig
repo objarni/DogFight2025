@@ -338,4 +338,3 @@ test {
 // TODO: wrap planes around the screen
 // TODO: shots
 // TODO: particle system for explosion and debris
-// TODO: remove effects slice leftovers in handleMsg game/menu (wo-hoo!)
