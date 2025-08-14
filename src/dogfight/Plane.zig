@@ -9,7 +9,7 @@ var divingPressed = false;
 pub const PlaneConstants = struct {
     initial_position: V,
     ground_acceleration_per_second: f32,
-    tower_distance: f32,
+    takeoff_length: f32,
 };
 
 pub const PlaneState = enum {
@@ -46,8 +46,8 @@ pub const Plane = struct {
             },
             .TAKEOFF_ROLL => |_| {
                 const distanceFromStart = @abs(self.position[0] - self.planeConstants.initial_position[0]);
-                const distanceFromTower = @abs(self.position[0] - self.planeConstants.tower_distance);
-                if (distanceFromTower < self.planeConstants.tower_distance / 2) {
+                std.debug.print("Distance from tower: {d}\n", .{distanceFromStart});
+                if (distanceFromStart > self.planeConstants.takeoff_length) {
                     self.state = .FLYING;
                     self.direction = -15;
                     const radians = std.math.degreesToRadians(self.direction);
@@ -93,7 +93,7 @@ pub const Plane = struct {
             .TAKEOFF_ROLL => {
                 const newVelocity = self.velocity + v(self.planeConstants.ground_acceleration_per_second * seconds, 0);
                 const newPosition = self.position + v(newVelocity[0] * seconds, 0);
-                if (@abs(newPosition[0] - self.planeConstants.initial_position[0]) >= self.planeConstants.tower_distance) {
+                if (@abs(newPosition[0] - self.planeConstants.initial_position[0]) >= 2 * self.planeConstants.takeoff_length) {
                     self.state = PlaneState.CRASH;
                     return;
                 }
@@ -126,7 +126,7 @@ pub const Plane = struct {
 const testPlaneConstants = PlaneConstants{
     .initial_position = v(0, 200),
     .ground_acceleration_per_second = 10.0,
-    .tower_distance = 330.0,
+    .takeoff_length = 330.0,
 };
 
 test "initialization of plane" {
@@ -173,7 +173,7 @@ test "plane crashes on dive - even when it has accelerated far enough" {
     plane.rise(true);
     plane.timePassed(0.1);
     var i: i16 = 0;
-    while (plane.position[0] < testPlaneConstants.tower_distance / 2) {
+    while (plane.position[0] < testPlaneConstants.takeoff_length / 2) {
         plane.timePassed(0.1);
         i += 1;
         if (i > 100) {
@@ -189,7 +189,7 @@ test "plane crashes when hitting tower during takeoff roll" {
     plane.rise(true);
     var i: i32 = 0;
     try std.testing.expectEqual(PlaneState.TAKEOFF_ROLL, plane.state);
-    while (@abs(plane.position[0] - testPlaneConstants.initial_position[0]) <= testPlaneConstants.tower_distance) {
+    while (@abs(plane.position[0] - testPlaneConstants.initial_position[0]) <= testPlaneConstants.takeoff_length) {
         plane.timePassed(0.1);
         i += 1;
         if (i > 100) {
@@ -204,7 +204,7 @@ test "plane flies if far enough from initial position during takeoff roll" {
     plane.rise(true);
     plane.timePassed(0.1);
     var i: i16 = 0;
-    while (@abs(plane.position[0] - testPlaneConstants.initial_position[0]) < testPlaneConstants.tower_distance / 2) {
+    while (@abs(plane.position[0] - testPlaneConstants.initial_position[0]) < testPlaneConstants.takeoff_length / 2) {
         plane.timePassed(0.1);
         i += 1;
         if (i > 100) {
