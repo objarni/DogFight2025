@@ -42,7 +42,10 @@ fn initRaylib() Resources {
         .game_over = rl.LoadSound("assets/GameOver.mp3"),
         .plane = rl.LoadTexture("assets/Plane.png"),
         .cloud = rl.LoadTexture("assets/CloudBig.png"),
-        .propeller = rl.LoadMusicStream("assets/PropellerPlane.mp3"),
+        .propellers = .{
+            rl.LoadMusicStream("assets/PropellerPlane.mp3"),
+            rl.LoadMusicStream("assets/PropellerPlane.mp3"),
+        },
         .background = rl.LoadTexture("assets/Background.png"),
     };
 
@@ -64,7 +67,8 @@ fn deinitRaylib(res: Resources) void {
     rl.UnloadTexture(res.plane);
     rl.UnloadTexture(res.cloud);
     rl.UnloadTexture(res.background);
-    rl.UnloadMusicStream(res.propeller);
+    rl.UnloadMusicStream(res.propellers[0]);
+    rl.UnloadMusicStream(res.propellers[1]);
     rl.CloseAudioDevice();
     rl.CloseWindow();
 }
@@ -110,7 +114,8 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
         }
 
         // Update music streams
-        rl.UpdateMusicStream(res.propeller);
+        rl.UpdateMusicStream(res.propellers[0]);
+        rl.UpdateMusicStream(res.propellers[1]);
 
         allMsgs.clearRetainingCapacity();
         try collectMessages(&allMsgs);
@@ -213,7 +218,7 @@ const Resources = struct {
     plane: rl.Texture2D,
     cloud: rl.Texture2D,
     background: rl.Texture2D,
-    propeller: rl.Music,
+    propellers: [2]rl.Music,
 };
 
 fn drawGame(
@@ -311,15 +316,16 @@ fn executeCommands(
                 }
             },
             .playPropellerAudio => |audio| {
+                const plane = audio.plane;
                 if (audio.on) {
-                    if (!rl.IsMusicStreamPlaying(res.propeller)) {
-                        rl.PlayMusicStream(res.propeller);
+                    if (!rl.IsMusicStreamPlaying(res.propellers[plane])) {
+                        rl.PlayMusicStream(res.propellers[plane]);
                     }
-                    rl.SetMusicPitch(res.propeller, audio.pitch);
-                    rl.SetMusicPan(res.propeller, 1 - audio.pan);
+                    rl.SetMusicPitch(res.propellers[plane], audio.pitch);
+                    rl.SetMusicPan(res.propellers[plane], 1 - audio.pan);
                 } else {
-                    if (rl.IsMusicStreamPlaying(res.propeller))
-                        rl.StopMusicStream(res.propeller);
+                    if (rl.IsMusicStreamPlaying(res.propellers[plane]))
+                        rl.StopMusicStream(res.propellers[plane]);
                 }
             },
             .switchScreen => |screen| {
