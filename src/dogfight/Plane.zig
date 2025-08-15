@@ -81,6 +81,10 @@ pub const Plane = struct {
         }
     }
 
+    pub fn computeSpeed(self: *Plane) f32 {
+        return @sqrt(self.velocity[0] * self.velocity[0] + self.velocity[1] * self.velocity[1]);
+    }
+
     pub fn timePassed(self: *Plane, seconds: f32) void {
         switch (self.state) {
             .STILL => {
@@ -105,7 +109,7 @@ pub const Plane = struct {
                     self.direction -= seconds * 100.0; // Adjust the angle for rising
                 if (self.divingPressed)
                     self.direction += seconds * 100.0; // Adjust the angle for diving
-                const speed = @sqrt(self.velocity[0] * self.velocity[0] + self.velocity[1] * self.velocity[1]);
+                const speed = self.computeSpeed();
                 const radians = std.math.degreesToRadians(self.direction);
                 self.velocity = v(
                     speed * std.math.cos(radians),
