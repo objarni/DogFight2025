@@ -324,7 +324,7 @@ fn executeCommands(
                     }
                     rl.SetMusicPitch(res.propellers[plane], audio.pitch);
                     rl.SetMusicPan(res.propellers[plane], 1 - audio.pan);
-π                    // TODO: tween the pan value so that it doesn't jump left/right instantly
+                    // TODO: tween the pan value so that it doesn't jump left/right instantly
                 } else {
                     if (rl.IsMusicStreamPlaying(res.propellers[plane]))
                         rl.StopMusicStream(res.propellers[plane]);
