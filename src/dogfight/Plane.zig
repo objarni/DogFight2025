@@ -20,6 +20,7 @@ pub const PlaneState = enum {
 };
 
 const tweak = @import("tweak.zig");
+const basics = @import("basics.zig");
 
 pub const Plane = struct {
     position: V,
@@ -120,6 +121,10 @@ pub const Plane = struct {
                     speed * std.math.sin(radians),
                 );
                 self.position = self.position + v(self.velocity[0] * seconds, self.velocity[1] * seconds);
+                if (self.position[0] < 0)
+                    self.position[0] += basics.window_width;
+                if (self.position[0] > basics.window_width)
+                    self.position[0] -= basics.window_width;
                 if (self.position[1] > self.planeConstants.initial_position[1]) {
                     self.state = PlaneState.CRASH; // Plane has crashed if it goes below initial height
                 }

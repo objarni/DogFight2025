@@ -35,6 +35,7 @@ fn initRaylib() Resources {
     rl.SetConfigFlags(rl.FLAG_WINDOW_HIGHDPI);
     rl.InitWindow(window_width, window_height, "DogFight 2025");
     rl.InitAudioDevice();
+    // rl.ToggleFullscreen();
 
     const res = Resources{
         .boom = rl.LoadSound("assets/Boom.wav"),
