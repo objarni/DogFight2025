@@ -91,7 +91,7 @@ pub const GameState = struct {
                             },
                         };
                         try commands.append(propellerCmd);
-                        player.plane.timePassed(time.deltaTime);
+                        try player.plane.timePassed(time.deltaTime);
                         if (player.plane.state == PlaneState.CRASH and
                             plane_old_state[plane_ix] != PlaneState.CRASH)
                         {

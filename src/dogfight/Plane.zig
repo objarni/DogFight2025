@@ -19,6 +19,8 @@ pub const PlaneState = enum {
     CRASH,
 };
 
+const tweak = @import("tweak.zig");
+
 pub const Plane = struct {
     position: V,
     velocity: V,
@@ -85,7 +87,8 @@ pub const Plane = struct {
         return @sqrt(self.velocity[0] * self.velocity[0] + self.velocity[1] * self.velocity[1]);
     }
 
-    pub fn timePassed(self: *Plane, seconds: f32) void {
+    pub fn timePassed(self: *Plane, seconds: f32) !void {
+        self.planeConstants.ground_acceleration_per_second = try tweak.number(f32);
         switch (self.state) {
             .STILL => {
                 if (self.risingPressed) {
