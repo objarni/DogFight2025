@@ -97,9 +97,15 @@ pub const GameState = struct {
                         {
                             try self.crashPlane(plane_ix, commands);
                         }
-                    }
-
-                    if (player.resurrect_timeout > 0) {
+                    } else {
+                        try commands.append(Command{
+                            .playPropellerAudio = PropellerAudio{
+                                .plane = @as(u1, @intCast(plane_ix)),
+                                .on = false,
+                                .pan = 0,
+                                .pitch = 0,
+                            },
+                        });
                         player.resurrect_timeout -= time.deltaTime;
                         if (player.resurrect_timeout <= 0) {
                             player.plane = Plane.init(plane_constants[plane_ix]);
