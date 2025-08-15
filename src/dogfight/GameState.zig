@@ -27,13 +27,13 @@ const v = v2.v;
 const plane1_initial_parameters: PlaneConstants = .{
     .initial_position = v(20.0, window_height - 30),
     .takeoff_length = 150.0,
-    .ground_acceleration_per_second = 10.0,
+    .ground_acceleration_per_second = 40.0,
 };
 
 const plane2_initial_parameters: PlaneConstants = .{
     .initial_position = v(window_width - 280, window_height - 30),
     .takeoff_length = 150.0,
-    .ground_acceleration_per_second = 10.0,
+    .ground_acceleration_per_second = 40.0,
 };
 
 const plane_constants: [2]PlaneConstants = .{ plane1_initial_parameters, plane2_initial_parameters };
