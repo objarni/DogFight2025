@@ -237,3 +237,5 @@ test "GameState: both clouds move left but the lower cloud moves faster" {
 }
 
 // TODO: Implement two propeller sounds, one for each plane
+// TODO: Fix plane2 audio not stopping at crash weirdness
+// TODO: Switch explosion array to ArrayList
