@@ -107,12 +107,14 @@ pub const Plane = struct {
                 self.velocity = newVelocity;
             },
             .FLYING => {
-                if (self.risingPressed)
-                    self.direction -= seconds * 100.0; // Adjust the angle for rising
-                if (self.divingPressed)
-                    self.direction += seconds * 100.0; // Adjust the angle for diving
-                const speed = self.computeSpeed();
+                var speed = self.computeSpeed();
                 const radians = std.math.degreesToRadians(self.direction);
+                const acceleration = std.math.sin(radians);
+                speed += seconds * (10.0 + acceleration * 40.0);
+                if (self.risingPressed)
+                    self.direction -= speed * seconds;
+                if (self.divingPressed)
+                    self.direction += speed * seconds;
                 self.velocity = v(
                     speed * std.math.cos(radians),
                     speed * std.math.sin(radians),
