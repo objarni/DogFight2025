@@ -10,6 +10,7 @@ pub const PlaneConstants = struct {
     initial_position: V,
     ground_acceleration_per_second: f32,
     takeoff_length: f32,
+    max_speed: f32 = 200.0, // Maximum speed of the plane in pixels per second
 };
 
 pub const PlaneState = enum {
@@ -112,10 +113,13 @@ pub const Plane = struct {
                 const radians = std.math.degreesToRadians(self.direction);
                 const acceleration = std.math.sin(radians);
                 speed += seconds * (10.0 + acceleration * 40.0);
+                std.debug.print("Speed: {d}\n", .{speed});
+                if(speed > self.planeConstants.max_speed)
+                    speed = self.planeConstants.max_speed;
                 if (self.risingPressed)
-                    self.direction -= speed * seconds;
+                    self.direction -= (try tweak.number(f32) + speed) * seconds;
                 if (self.divingPressed)
-                    self.direction += speed * seconds;
+                    self.direction += (try tweak.number(f32) + speed) * seconds;
                 self.velocity = v(
                     speed * std.math.cos(radians),
                     speed * std.math.sin(radians),

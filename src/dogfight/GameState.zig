@@ -79,7 +79,10 @@ pub const GameState = struct {
                 for (0..2) |plane_ix| {
                     var player: *Player = &self.players[plane_ix];
                     if (player.resurrect_timeout <= 0) {
-                        const propellerPitch: f32 = @max(0.5, @min(2.0, player.plane.computeSpeed() / 50.0));
+                        const propellerPitch: f32 = @max(
+                            0.5,
+                            @min(2.0, 2.0 * player.plane.computeSpeed() / player.plane.planeConstants.max_speed),
+                        );
                         const propellerPan: f32 = @max(0.0, @min(1.0, player.plane.position[0] / window_width));
                         const propellerOn = player.plane.state != PlaneState.STILL;
                         const propellerCmd = Command{
