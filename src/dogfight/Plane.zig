@@ -125,9 +125,10 @@ pub const Plane = struct {
                     self.position[0] += basics.window_width;
                 if (self.position[0] > basics.window_width)
                     self.position[0] -= basics.window_width;
-                if (self.position[1] > self.planeConstants.initial_position[1]) {
-                    self.state = PlaneState.CRASH; // Plane has crashed if it goes below initial height
-                }
+                if (self.position[1] > self.planeConstants.initial_position[1])
+                    self.state = PlaneState.CRASH;
+                if (self.position[1] < 0)
+                    self.position[1] = 0; // Prevent going off the top of the screen
             },
             .CRASH => |_| {
                 // No further action needed, plane is already in crash state
