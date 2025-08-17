@@ -63,12 +63,12 @@ pub const GameState = struct {
                 .{
                     .plane = Plane.init(plane1_initial_parameters),
                     .resurrect_timeout = 0.0,
-                    .lives = 3,
+                    .lives = 1,
                 },
                 .{
                     .plane = Plane.init(plane2_initial_parameters),
                     .resurrect_timeout = 0.0,
-                    .lives = 3,
+                    .lives = 1,
                 },
             },
             .shots = .init(ally),

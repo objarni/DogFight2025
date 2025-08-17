@@ -143,8 +143,8 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
             }
             const result = executeCommands(effects.items, res, currentState);
             currentState = result.new_state;
-            if(result.state_changed) {
-                if(currentState == State.game)
+            if (result.state_changed) {
+                if (currentState == State.game)
                     game = GameState.init(ally);
             }
         }
@@ -213,14 +213,24 @@ fn drawMenu(menu: MenuState) void {
     }
 }
 
-fn drawGameOver(game_over: GameOverState, _: Resources) void {
+fn drawGameOver(game_over: GameOverState, res: Resources) void {
     rl.ClearBackground(rl.DARKPURPLE);
     const textSize = 40;
-    drawCenteredText("GAME OVER", 180, textSize, rl.DARKGREEN);
+    drawCenteredText("GAME OVER", 180, textSize, rl.WHITE);
     const red_won = game_over.winning_player == 0;
     const color = if (red_won) rl.RED else rl.GREEN;
+    rl.DrawTextureEx(
+        res.plane,
+        rl.Vector2{
+            .x = @floatFromInt(@divFloor(window_width - res.plane.width * 2, 2)),
+            .y = @floatFromInt(@divFloor(window_height - res.plane.height * 2, 2)),
+        },
+        0,
+        2.0,
+        color,
+    );
     if (game_over.blink) {
-        drawCenteredText(if (red_won) "Red player won" else "Green player won", 220, 20, color);
+        drawCenteredText(if (red_won) "Red player won" else "Green player won", 320, 20, color);
     }
 }
 
