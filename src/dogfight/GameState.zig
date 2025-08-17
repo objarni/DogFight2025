@@ -90,13 +90,23 @@ pub const GameState = struct {
                 // Remove shots that are out of bounds
                 var i: usize = 0;
                 while (i < self.shots.items.len) {
-                    if (self.shots.items[i].position[1] < 0 or
-                        self.shots.items[i].position[1] > window_height or
-                        self.shots.items[i].position[0] < 0 or
-                        self.shots.items[i].position[0] > window_width)
+                    const shot = self.shots.items[i];
+                    const hit_ground = shot.position[1] > self.players[0].plane.plane_constants.initial_position[1];
+                    if (shot.position[1] < 0 or hit_ground or
+                        shot.position[0] < 0 or
+                        shot.position[0] > window_width)
                     {
                         std.debug.print("Removing shot at index {}\n", .{i});
                         _ = self.shots.swapRemove(i);
+                        if (hit_ground) {
+                            self.explosions[self.num_explosions] = Explosion.init(
+                                0.3,
+                                shot.position,
+                                4,
+                                0,
+                            );
+                            self.num_explosions += 1;
+                        }
                     } else i += 1;
                 }
 
@@ -165,10 +175,10 @@ pub const GameState = struct {
                     .Plane1Rise => self.players[0].plane.rise(true),
                     .Plane1Dive => self.players[0].plane.dive(true),
                     .Plane1Fire => {
-                        if(self.players[0].plane.state != PlaneState.FLYING) {
+                        if (self.players[0].plane.state != PlaneState.FLYING) {
                             std.debug.print("Plane 1 cannot fire, not flying\n", .{});
                             return;
-π                        }
+                        }
                         std.debug.print("Plane 1 firing\n", .{});
                         try self.shots.append(Shot{
                             .position = self.players[0].plane.position,
