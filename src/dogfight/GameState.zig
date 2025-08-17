@@ -75,13 +75,31 @@ pub const GameState = struct {
         };
     }
 
-    pub fn deinit(_: *GameState) void {
-        // self.shots.deinit();
+    pub fn deinit(self: *GameState) void {
+        self.shots.deinit();
     }
 
     pub fn handleMsg(self: *GameState, msg: Msg, commands: *std.ArrayList(Command)) !void {
         switch (msg) {
             .timePassed => |time| {
+                // Move shots
+                for (self.shots.items) |*shot| {
+                    shot.position[0] += shot.velocity[0] * time.deltaTime;
+                    shot.position[1] += shot.velocity[1] * time.deltaTime;
+                }
+                // Remove shots that are out of bounds
+                var i: usize = 0;
+                while (i < self.shots.items.len) {
+                    if (self.shots.items[i].position[1] < 0 or
+                        self.shots.items[i].position[1] > window_height or
+                        self.shots.items[i].position[0] < 0 or
+                        self.shots.items[i].position[0] > window_width)
+                    {
+                        std.debug.print("Removing shot at index {}\n", .{i});
+                        _ = self.shots.swapRemove(i);
+                    } else i += 1;
+                }
+
                 // Move plane
                 const plane_old_state: [2]PlaneState = .{
                     self.players[0].plane.state,
@@ -135,20 +153,7 @@ pub const GameState = struct {
                 self.clouds[0][0] -= deltaX * 5.0;
                 self.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
 
-                // Update explosions
-                for (0..self.num_explosions) |ix| {
-                    var e = &self.explosions[ix];
-                    e.timePassed(time.deltaTime);
-                }
-                // Remove dead explosions
-                var i: usize = 0;
-                while (i < self.num_explosions) {
-                    if (!self.explosions[i].alive) {
-                        std.debug.print("Removing dead explosion at index {}\n", .{i});
-                        self.num_explosions -= 1;
-                        self.explosions[i] = self.explosions[self.num_explosions];
-                    } else i += 1;
-                }
+                self.updateExplosions(time);
             },
             .inputPressed => |input| {
                 // TODO: refactor so that we don't need to keep track of plane old state
@@ -202,6 +207,21 @@ pub const GameState = struct {
                     }
                 }
             },
+        }
+    }
+
+    fn updateExplosions(self: *GameState, time: TimePassed) void {
+        for (0..self.num_explosions) |ix| {
+            var e = &self.explosions[ix];
+            e.timePassed(time.deltaTime);
+        }
+        var i: usize = 0;
+        while (i < self.num_explosions) {
+            if (!self.explosions[i].alive) {
+                std.debug.print("Removing dead explosion at index {}\n", .{i});
+                self.num_explosions -= 1;
+                self.explosions[i] = self.explosions[self.num_explosions];
+            } else i += 1;
         }
     }
 
