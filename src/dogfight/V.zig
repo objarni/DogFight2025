@@ -9,6 +9,10 @@ pub fn lerp(a: V, b: V, t: f32) V {
     );
 }
 
+pub fn mulScalar(vec: V, scalar: f32) V {
+    return V{ vec[0] * scalar, vec[1] * scalar };
+}
+
 pub const V: type = @Vector(2, f32);
 
 const std = @import("std");

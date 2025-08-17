@@ -33,6 +33,7 @@ pub const State = enum {
 pub const SoundEffect = enum {
     boom,
     crash,
+    shoot,
     game_over,
 };
 

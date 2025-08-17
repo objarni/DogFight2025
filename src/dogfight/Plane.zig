@@ -123,7 +123,7 @@ pub const Plane = struct {
                     speed * std.math.cos(radians),
                     speed * std.math.sin(radians),
                 );
-                self.position = self.position + v(self.velocity[0] * seconds, self.velocity[1] * seconds);
+                self.position = self.position + v2.mulScalar(self.velocity, seconds);
                 if (self.position[0] < 0)
                     self.position[0] += basics.window_width;
                 if (self.position[0] > basics.window_width)

@@ -168,10 +168,10 @@ pub const GameState = struct {
                         std.debug.print("Plane 1 firing\n", .{});
                         try self.shots.append(Shot{
                             .position = self.players[0].plane.position,
-                            .velocity = v(0.0, -500.0), // Shot goes upwards
+                            .velocity = v2.mulScalar(self.players[0].plane.velocity, 2.0),
                         });
                         try commands.append(Command{
-                            .playSoundEffect = SoundEffect.boom,
+                            .playSoundEffect = SoundEffect.shoot,
                         });
                     },
                     .Plane2Rise => self.players[1].plane.rise(true),
@@ -291,3 +291,4 @@ test "GameState: both clouds move left but the lower cloud moves faster" {
 
 // TODO: Fix plane2 audio not stopping at crash weirdness
 // TODO: Switch explosion array to ArrayList
+// TODO: shadows beneath planes

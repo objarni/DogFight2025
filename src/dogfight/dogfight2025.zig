@@ -40,6 +40,7 @@ fn initRaylib() Resources {
     const res = Resources{
         .boom = rl.LoadSound("assets/Boom.wav"),
         .crash = rl.LoadSound("assets/Crash.mp3"),
+        .shoot = rl.LoadSound("assets/Shoot.wav"),
         .game_over = rl.LoadSound("assets/GameOver.mp3"),
         .plane = rl.LoadTexture("assets/Plane.png"),
         .cloud = rl.LoadTexture("assets/CloudBig.png"),
@@ -64,6 +65,7 @@ fn initRaylib() Resources {
 fn deinitRaylib(res: Resources) void {
     rl.UnloadSound(res.boom);
     rl.UnloadSound(res.crash);
+    rl.UnloadSound(res.shoot);
     rl.UnloadSound(res.game_over);
     rl.UnloadTexture(res.plane);
     rl.UnloadTexture(res.cloud);
@@ -218,6 +220,7 @@ fn drawExplosion(e: Explosion) void {
 const Resources = struct {
     boom: rl.Sound,
     crash: rl.Sound,
+    shoot: rl.Sound,
     game_over: rl.Sound,
     plane: rl.Texture2D,
     cloud: rl.Texture2D,
@@ -254,6 +257,15 @@ fn drawGame(
     rl.DrawCircle(window_width - 50, window_height - 100, 50, rl.RED);
     rl.DrawTexture(res.background, 0, window_height - res.background.height, rl.WHITE);
 
+    for (state.shots.items) |shot| {
+        rl.DrawCircle(
+            @intFromFloat(shot.position[0]),
+            @intFromFloat(shot.position[1]),
+            1.0,
+            rl.WHITE,
+        );
+    }
+
     for (0..2) |plane_ix| {
         if (state.players[plane_ix].resurrect_timeout <= 0) {
             const sourceR = rl.Rectangle{
@@ -286,15 +298,6 @@ fn drawGame(
         }
     }
 
-    for(state.shots.items) |shot| {
-        rl.DrawCircle(
-            @intFromFloat(shot.position[0]),
-            @intFromFloat(shot.position[1]),
-            1.0,
-            rl.WHITE,
-        );
-    }
-
     for (state.clouds) |cloud| {
         const color = if (cloud[1] < 300) rl.LIGHTGRAY else rl.GRAY;
         rl.DrawTexture(res.cloud, @intFromFloat(cloud[0]), @intFromFloat(cloud[1]), color);
@@ -321,6 +324,9 @@ fn executeCommands(
                     .crash => {
                         rl.PlaySound(res.crash);
                         std.debug.print("Playing crash sound effect\n", .{});
+                    },
+                    .shoot => {
+                        rl.PlaySound(res.shoot);
                     },
                     .game_over => {
                         rl.PlaySound(res.game_over);
