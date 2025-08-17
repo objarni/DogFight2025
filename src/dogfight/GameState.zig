@@ -1,9 +1,9 @@
 const std = @import("std");
 
-const plane = @import("Plane.zig");
-const Plane = plane.Plane;
-const PlaneConstants = plane.PlaneConstants;
-const PlaneState = plane.PlaneState;
+const p = @import("Plane.zig");
+const Plane = p.Plane;
+const PlaneConstants = p.PlaneConstants;
+const PlaneState = p.PlaneState;
 
 const explosion = @import("Explosion.zig");
 const Explosion = explosion.Explosion;
@@ -110,7 +110,19 @@ pub const GameState = struct {
                     } else i += 1;
                 }
 
-                // Move plane
+                // Does a shot hit plane?
+                for (self.shots.items) |shot| {
+                    for (0..2) |player_ix| {
+                        const plane = self.players[player_ix].plane;
+                        if (self.players[player_ix].resurrect_timeout <= 0) {
+                            const distance = v2.len(plane.position - shot.position);
+                            if (distance < 10 and plane.state == PlaneState.FLYING)
+                                try self.crashPlane(player_ix, commands);
+                        }
+                    }
+                }
+
+                // Move planes
                 const plane_old_state: [2]PlaneState = .{
                     self.players[0].plane.state,
                     self.players[1].plane.state,
@@ -214,14 +226,20 @@ pub const GameState = struct {
 
     fn planeFire(self: *GameState, commands: *std.ArrayList(Command), player_ix: u1) !void {
         const player_human_readable: u8 = @as(u8, player_ix) + 1;
-        if (self.players[player_ix].plane.state != PlaneState.FLYING) {
+        const plane = self.players[player_ix].plane;
+        if (plane.state != PlaneState.FLYING) {
             std.debug.print("Plane {d} cannot fire, not flying\n", .{player_human_readable});
             return;
         }
         std.debug.print("Plane {d} firing\n", .{player_human_readable});
+        const radians = std.math.degreesToRadians(plane.direction);
+        const plane_direction= v(
+            std.math.cos(radians),
+            std.math.sin(radians),
+        );
         try self.shots.append(Shot{
-            .position = self.players[player_ix].plane.position,
-            .velocity = v2.mulScalar(self.players[player_ix].plane.velocity, 2.0),
+            .position = plane.position + v2.mulScalar(plane_direction, 20),
+            .velocity = v2.mulScalar(plane.velocity, 2.0),
         });
         try commands.append(Command{
             .playSoundEffect = SoundEffect.shoot,

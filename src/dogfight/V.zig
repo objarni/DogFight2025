@@ -13,6 +13,10 @@ pub fn mulScalar(vec: V, scalar: f32) V {
     return V{ vec[0] * scalar, vec[1] * scalar };
 }
 
+pub fn len(vec: V) f32 {
+    return std.math.sqrt(vec[0] * vec[0] + vec[1] * vec[1]);
+}
+
 pub const V: type = @Vector(2, f32);
 
 const std = @import("std");
