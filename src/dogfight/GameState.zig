@@ -175,18 +175,7 @@ pub const GameState = struct {
                     .Plane1Rise => self.players[0].plane.rise(true),
                     .Plane1Dive => self.players[0].plane.dive(true),
                     .Plane1Fire => {
-                        if (self.players[0].plane.state != PlaneState.FLYING) {
-                            std.debug.print("Plane 1 cannot fire, not flying\n", .{});
-                            return;
-                        }
-                        std.debug.print("Plane 1 firing\n", .{});
-                        try self.shots.append(Shot{
-                            .position = self.players[0].plane.position,
-                            .velocity = v2.mulScalar(self.players[0].plane.velocity, 2.0),
-                        });
-                        try commands.append(Command{
-                            .playSoundEffect = SoundEffect.shoot,
-                        });
+                        try self.planeFire(commands, 0);
                     },
                     .Plane2Rise => self.players[1].plane.rise(true),
                     .Plane2Dive => self.players[1].plane.dive(true),
@@ -222,6 +211,22 @@ pub const GameState = struct {
                 }
             },
         }
+    }
+
+    fn planeFire(self: *GameState, commands: *std.ArrayList(Command), player_ix: u1) !void {
+        const player_human_readable = player_ix + 1;
+        if (self.players[player_ix].plane.state != PlaneState.FLYING) {
+            std.debug.print("Plane {d} cannot fire, not flying\n", .{player_human_readable});
+            return;
+        }
+        std.debug.print("Plane {d} firing\n", .{player_human_readable});
+        try self.shots.append(Shot{
+            .position = self.players[player_ix].plane.position,
+            .velocity = v2.mulScalar(self.players[player_ix].plane.velocity, 2.0),
+        });
+        try commands.append(Command{
+            .playSoundEffect = SoundEffect.shoot,
+        });
     }
 
     fn updateExplosions(self: *GameState, time: TimePassed) void {

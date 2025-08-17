@@ -156,6 +156,8 @@ fn collectMessages(allMsgs: *std.ArrayList(Msg)) !void {
     if (rl.IsKeyReleased(rl.KEY_S))
         try allMsgs.append(Msg{ .inputReleased = Inputs.Plane1Dive });
 
+    if (rl.IsKeyPressed(rl.KEY_RIGHT_SHIFT))
+        try allMsgs.append(Msg{ .inputPressed = Inputs.Plane2Fire });
     if (rl.IsKeyPressed(rl.KEY_J))
         try allMsgs.append(Msg{ .inputPressed = Inputs.Plane2Rise });
     if (rl.IsKeyReleased(rl.KEY_J))
