@@ -202,11 +202,11 @@ fn drawCenteredText(text: []const u8, y: u16, fontSize: u16, color: rl.Color) vo
 }
 
 fn drawMenu(menu: MenuState) void {
-    rl.ClearBackground(rl.SKYBLUE);
+    rl.ClearBackground(rl.DARKBLUE);
     const textSize = 40;
-    drawCenteredText("Dogfight 2025", 180, textSize, rl.DARKGREEN);
+    drawCenteredText("Dogfight 2025", 180, textSize, rl.GREEN);
     if (menu.blink)
-        drawCenteredText("Press SPACE to START!", 220, 20, rl.DARKGRAY);
+        drawCenteredText("Press SPACE to START!", 220, 20, rl.GRAY);
     drawExplosion(menu.e);
     for (menu.es.items) |e| {
         drawExplosion(e);
@@ -214,7 +214,7 @@ fn drawMenu(menu: MenuState) void {
 }
 
 fn drawGameOver(game_over: GameOverState, _: Resources) void {
-    rl.ClearBackground(rl.SKYBLUE);
+    rl.ClearBackground(rl.DARKPURPLE);
     const textSize = 40;
     drawCenteredText("GAME OVER", 180, textSize, rl.DARKGREEN);
     const red_won = game_over.winning_player == 0;
