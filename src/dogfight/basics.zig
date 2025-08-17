@@ -13,10 +13,10 @@ pub const Inputs = enum {
     plane1_rise,
     plane1_dive,
     plane1_fire,
-    Plane2Rise,
-    Plane2Dive,
-    Plane2Fire,
-    GeneralAction, // This is starting game, pausing/unpausing, switching from game over to menu etc
+    plane2_rise,
+    plane2_dive,
+    plane2_fire,
+    general_action, // This is starting game, pausing/unpausing, switching from game over to menu etc
 };
 
 pub const Command = union(enum) {

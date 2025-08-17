@@ -50,7 +50,6 @@ pub const Plane = struct {
             },
             .TAKEOFF_ROLL => |_| {
                 const distanceFromStart = @abs(self.position[0] - self.plane_constants.initial_position[0]);
-                std.debug.print("Distance from tower: {d}\n", .{distanceFromStart});
                 if (distanceFromStart > self.plane_constants.takeoff_length) {
                     self.state = .FLYING;
                     self.direction = -15;

@@ -154,7 +154,7 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
 
 fn collectMessages(allMsgs: *std.ArrayList(Msg)) !void {
     if (rl.IsKeyPressed(rl.KEY_SPACE))
-        try allMsgs.append(Msg{ .inputPressed = Inputs.GeneralAction });
+        try allMsgs.append(Msg{ .inputPressed = Inputs.general_action });
 
     if (rl.IsKeyPressed(rl.KEY_LEFT_SHIFT))
         try allMsgs.append(Msg{ .inputPressed = Inputs.plane1_fire });
@@ -169,16 +169,16 @@ fn collectMessages(allMsgs: *std.ArrayList(Msg)) !void {
         try allMsgs.append(Msg{ .inputReleased = Inputs.plane1_dive });
 
     if (rl.IsKeyPressed(rl.KEY_RIGHT_SHIFT))
-        try allMsgs.append(Msg{ .inputPressed = Inputs.Plane2Fire });
+        try allMsgs.append(Msg{ .inputPressed = Inputs.plane2_fire });
     if (rl.IsKeyPressed(rl.KEY_J))
-        try allMsgs.append(Msg{ .inputPressed = Inputs.Plane2Rise });
+        try allMsgs.append(Msg{ .inputPressed = Inputs.plane2_rise });
     if (rl.IsKeyReleased(rl.KEY_J))
-        try allMsgs.append(Msg{ .inputReleased = Inputs.Plane2Rise });
+        try allMsgs.append(Msg{ .inputReleased = Inputs.plane2_rise });
 
     if (rl.IsKeyPressed(rl.KEY_K))
-        try allMsgs.append(Msg{ .inputPressed = Inputs.Plane2Dive });
+        try allMsgs.append(Msg{ .inputPressed = Inputs.plane2_dive });
     if (rl.IsKeyReleased(rl.KEY_K))
-        try allMsgs.append(Msg{ .inputReleased = Inputs.Plane2Dive });
+        try allMsgs.append(Msg{ .inputReleased = Inputs.plane2_dive });
 
     const timePassed = Msg{ .timePassed = TimePassed{
         .totalTime = @floatCast(rl.GetTime()),

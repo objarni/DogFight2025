@@ -187,9 +187,9 @@ pub const GameState = struct {
                     .plane1_rise => self.players[0].plane.rise(true),
                     .plane1_dive => self.players[0].plane.dive(true),
                     .plane1_fire => try self.planeFire(commands, 0),
-                    .Plane2Rise => self.players[1].plane.rise(true),
-                    .Plane2Dive => self.players[1].plane.dive(true),
-                    .Plane2Fire => try self.planeFire(commands, 1),
+                    .plane2_rise => self.players[1].plane.rise(true),
+                    .plane2_dive => self.players[1].plane.dive(true),
+                    .plane2_fire => try self.planeFire(commands, 1),
                     else => {},
                 }
                 for (0..2) |plane_ix| {
@@ -208,8 +208,8 @@ pub const GameState = struct {
                 switch (input) {
                     .plane1_rise => self.players[0].plane.rise(false),
                     .plane1_dive => self.players[0].plane.dive(false),
-                    .Plane2Rise => self.players[1].plane.rise(false),
-                    .Plane2Dive => self.players[1].plane.dive(false),
+                    .plane2_rise => self.players[1].plane.rise(false),
+                    .plane2_dive => self.players[1].plane.dive(false),
                     else => {},
                 }
                 for (0..2) |plane_ix| {
@@ -301,7 +301,7 @@ test "GameState: both clouds move left but the lower cloud moves faster" {
     const ally = std.testing.allocator;
     var commands = std.ArrayList(Command).init(ally);
     defer commands.deinit();
-    var gameState: GameState = GameState.init();
+    var gameState: GameState = GameState.init(ally);
     const highCloudX: f32 = gameState.clouds[0][0];
     const lowCloudX: f32 = gameState.clouds[1][0];
     try gameState.handleMsg(

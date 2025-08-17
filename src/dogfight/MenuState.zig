@@ -39,7 +39,7 @@ pub const MenuState = struct {
     pub fn handleMsg(self: *MenuState, msg: Msg, commands: *std.ArrayList(Command)) !void {
         switch (msg) {
             .inputPressed => |input| {
-                if (input == Inputs.GeneralAction) {
+                if (input == Inputs.general_action) {
                     try commands.append(Command{
                         .playSoundEffect = SoundEffect.boom,
                     });
@@ -83,7 +83,7 @@ test "MenuState.handleMsg: hitting action button should switch to game and play 
     var actual_commands = std.ArrayList(Command).init(ally);
     defer actual_commands.deinit();
     _ = try menu_state.handleMsg(
-        Msg{ .inputPressed = Inputs.GeneralAction },
+        Msg{ .inputPressed = Inputs.general_action },
         &actual_commands,
     );
     const expected: [2]Command = .{

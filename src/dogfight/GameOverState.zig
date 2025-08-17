@@ -27,7 +27,7 @@ pub const GameOverState = struct {
     pub fn handleMsg(self: *GameOverState, msg: Msg, commands: *std.ArrayList(Command)) !void {
         switch (msg) {
             .inputPressed => |input| {
-                if (input == Inputs.GeneralAction) {
+                if (input == Inputs.general_action) {
                     try commands.append(Command{
                         .switchScreen = SubScreen.menu,
                     });
@@ -52,7 +52,7 @@ test "GameOverState.handleMsg: hitting action button should switch to menu" {
     var actual_commands = std.ArrayList(Command).init(ally);
     defer actual_commands.deinit();
     _ = try gameover_state.handleMsg(
-        Msg{ .inputPressed = Inputs.GeneralAction },
+        Msg{ .inputPressed = Inputs.general_action },
         &actual_commands,
     );
     const expected: [2]Command = .{
