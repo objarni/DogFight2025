@@ -144,6 +144,10 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
             currentState = executeCommands(effects.items, res, currentState);
         }
 
+        // TODO: this 'hack' is just so ugly :P
+        // If any of the players lives are 0, there is a winner
+        if (game.players[0].lives == 0 or game.players[1].lives == 0)
+            game_over.winning_player = if (game.players[0].lives > 0) 0 else 1;
         rl.EndDrawing();
     }
 }
