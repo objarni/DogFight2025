@@ -28,6 +28,7 @@ pub const Command = union(enum) {
 pub const State = enum {
     menu,
     game,
+    game_over
 };
 
 pub const SoundEffect = enum {

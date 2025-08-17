@@ -17,6 +17,7 @@ const window_height: u16 = 540;
 const Explosion = @import("Explosion.zig").Explosion;
 const MenuState = @import("MenuState.zig").MenuState;
 const GameState = @import("GameState.zig").GameState;
+const GameOverState = @import("GameOverState.zig").GameOverState;
 
 pub fn run() !void {
     const res = initRaylib();
@@ -88,6 +89,7 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
     defer menu.deinit();
     var game: GameState = .init(ally);
     defer game.deinit();
+    var game_over: GameOverState = .init(0);
     var currentState = Screen.menu;
 
     var effects: std.ArrayList(Command) = .init(ally);
@@ -105,6 +107,9 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
             },
             .game => |_| {
                 try drawGame(game, res);
+            },
+            .game_over => |_| {
+                drawGameOver(game_over, res);
             },
         }
         const after: i128 = std.time.nanoTimestamp();
@@ -131,6 +136,9 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
                 },
                 .game => |_| {
                     try game.handleMsg(msg, &effects);
+                },
+                .game_over => |_| {
+                    try game_over.handleMsg(msg, &effects);
                 },
             }
             currentState = executeCommands(effects.items, res, currentState);
@@ -193,6 +201,17 @@ fn drawMenu(menu: MenuState) void {
     drawExplosion(menu.e);
     for (menu.es.items) |e| {
         drawExplosion(e);
+    }
+}
+
+fn drawGameOver(game_over: GameOverState, _: Resources) void {
+    rl.ClearBackground(rl.SKYBLUE);
+    const textSize = 40;
+    drawCenteredText("GAME OVER", 180, textSize, rl.DARKGREEN);
+    const red_won = game_over.winning_player == 0;
+    const color = if (red_won) rl.RED else rl.GREEN;
+    if (game_over.blink) {
+        drawCenteredText(if (red_won) "Red player won" else "Green player won", 220, 20, color);
     }
 }
 
@@ -358,6 +377,9 @@ fn executeCommands(
                     },
                     .game => |_| {
                         return Screen.game;
+                    },
+                    .game_over => |_| {
+                        return Screen.game_over;
                     },
                 }
             },

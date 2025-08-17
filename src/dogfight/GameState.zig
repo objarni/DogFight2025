@@ -41,7 +41,7 @@ const plane_constants: [2]PlaneConstants = .{ plane1_initial_parameters, plane2_
 const Player = struct {
     plane: Plane,
     resurrect_timeout: f32 = 0.0, // Time until plane can be resurrected after crash
-    lives: u8 = 5, // Number of lives for plane
+    lives: u8, // Number of lives for plane
 };
 
 const Shot = struct {
@@ -63,12 +63,12 @@ pub const GameState = struct {
                 .{
                     .plane = Plane.init(plane1_initial_parameters),
                     .resurrect_timeout = 0.0,
-                    .lives = 5,
+                    .lives = 1,
                 },
                 .{
                     .plane = Plane.init(plane2_initial_parameters),
                     .resurrect_timeout = 0.0,
-                    .lives = 5,
+                    .lives = 1,
                 },
             },
             .shots = .init(ally),
@@ -291,7 +291,7 @@ pub const GameState = struct {
                 .playSoundEffect = SoundEffect.game_over,
             });
             try commands.append(Command{
-                .switchScreen = State.menu,
+                .switchScreen = State.game_over,
             });
         }
     }
