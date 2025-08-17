@@ -373,9 +373,9 @@ fn executeCommands(
                         rl.StopMusicStream(res.propellers[plane]);
                 }
             },
-            .switchScreen => |screen| {
-                std.debug.print("Switching to screen: {}\n", .{screen});
-                switch (screen) {
+            .switchScreen => |state| {
+                std.debug.print("Switching to screen: {}\n", .{state});
+                switch (state) {
                     .menu => |_| {
                         return State.menu;
                     },
