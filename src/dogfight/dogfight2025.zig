@@ -286,6 +286,15 @@ fn drawGame(
         }
     }
 
+    for(state.shots.items) |shot| {
+        rl.DrawCircle(
+            @intFromFloat(shot.position[0]),
+            @intFromFloat(shot.position[1]),
+            1.0,
+            rl.WHITE,
+        );
+    }
+
     for (state.clouds) |cloud| {
         const color = if (cloud[1] < 300) rl.LIGHTGRAY else rl.GRAY;
         rl.DrawTexture(res.cloud, @intFromFloat(cloud[0]), @intFromFloat(cloud[1]), color);

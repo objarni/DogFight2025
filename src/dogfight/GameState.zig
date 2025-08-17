@@ -75,8 +75,8 @@ pub const GameState = struct {
         };
     }
 
-    pub fn deinit(self: *GameState) void {
-        self.shots.deinit();
+    pub fn deinit(_: *GameState) void {
+        // self.shots.deinit();
     }
 
     pub fn handleMsg(self: *GameState, msg: Msg, commands: *std.ArrayList(Command)) !void {
@@ -161,6 +161,10 @@ pub const GameState = struct {
                     .Plane1Dive => self.players[0].plane.dive(true),
                     .Plane1Fire => {
                         std.debug.print("Plane 1 firing\n", .{});
+                        try self.shots.append(Shot{
+                            .position = self.players[0].plane.position,
+                            .velocity = v(0.0, -500.0), // Shot goes upwards
+                        });
                         try commands.append(Command{
                             .playSoundEffect = SoundEffect.boom,
                         });
