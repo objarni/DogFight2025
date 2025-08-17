@@ -10,8 +10,8 @@ pub const Msg = union(enum) {
 };
 
 pub const Inputs = enum {
-    Plane1Rise,
-    Plane1Dive,
+    plane1_rise,
+    plane1_dive,
     Plane1Fire,
     Plane2Rise,
     Plane2Dive,

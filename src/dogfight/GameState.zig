@@ -184,8 +184,8 @@ pub const GameState = struct {
                     self.players[1].plane.state,
                 };
                 switch (input) {
-                    .Plane1Rise => self.players[0].plane.rise(true),
-                    .Plane1Dive => self.players[0].plane.dive(true),
+                    .plane1_rise => self.players[0].plane.rise(true),
+                    .plane1_dive => self.players[0].plane.dive(true),
                     .Plane1Fire => try self.planeFire(commands, 0),
                     .Plane2Rise => self.players[1].plane.rise(true),
                     .Plane2Dive => self.players[1].plane.dive(true),
@@ -206,8 +206,8 @@ pub const GameState = struct {
                     self.players[1].plane.state,
                 };
                 switch (input) {
-                    .Plane1Rise => self.players[0].plane.rise(false),
-                    .Plane1Dive => self.players[0].plane.dive(false),
+                    .plane1_rise => self.players[0].plane.rise(false),
+                    .plane1_dive => self.players[0].plane.dive(false),
                     .Plane2Rise => self.players[1].plane.rise(false),
                     .Plane2Dive => self.players[1].plane.dive(false),
                     else => {},

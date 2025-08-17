@@ -159,14 +159,14 @@ fn collectMessages(allMsgs: *std.ArrayList(Msg)) !void {
     if (rl.IsKeyPressed(rl.KEY_LEFT_SHIFT))
         try allMsgs.append(Msg{ .inputPressed = Inputs.Plane1Fire });
     if (rl.IsKeyPressed(rl.KEY_A))
-        try allMsgs.append(Msg{ .inputPressed = Inputs.Plane1Rise });
+        try allMsgs.append(Msg{ .inputPressed = Inputs.plane1_rise });
     if (rl.IsKeyReleased(rl.KEY_A))
-        try allMsgs.append(Msg{ .inputReleased = Inputs.Plane1Rise });
+        try allMsgs.append(Msg{ .inputReleased = Inputs.plane1_rise });
 
     if (rl.IsKeyPressed(rl.KEY_S))
-        try allMsgs.append(Msg{ .inputPressed = Inputs.Plane1Dive });
+        try allMsgs.append(Msg{ .inputPressed = Inputs.plane1_dive });
     if (rl.IsKeyReleased(rl.KEY_S))
-        try allMsgs.append(Msg{ .inputReleased = Inputs.Plane1Dive });
+        try allMsgs.append(Msg{ .inputReleased = Inputs.plane1_dive });
 
     if (rl.IsKeyPressed(rl.KEY_RIGHT_SHIFT))
         try allMsgs.append(Msg{ .inputPressed = Inputs.Plane2Fire });
