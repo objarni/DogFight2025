@@ -374,7 +374,7 @@ fn executeCommands(
                 }
             },
             .switchScreen => |state| {
-                std.debug.print("Switching to screen: {}\n", .{state});
+                std.debug.print("Switching to state: {}\n", .{state});
                 switch (state) {
                     .menu => |_| {
                         return State.menu;
