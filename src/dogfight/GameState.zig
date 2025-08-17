@@ -186,7 +186,7 @@ pub const GameState = struct {
                 switch (input) {
                     .plane1_rise => self.players[0].plane.rise(true),
                     .plane1_dive => self.players[0].plane.dive(true),
-                    .Plane1Fire => try self.planeFire(commands, 0),
+                    .plane1_fire => try self.planeFire(commands, 0),
                     .Plane2Rise => self.players[1].plane.rise(true),
                     .Plane2Dive => self.players[1].plane.dive(true),
                     .Plane2Fire => try self.planeFire(commands, 1),

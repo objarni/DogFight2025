@@ -12,7 +12,7 @@ pub const Msg = union(enum) {
 pub const Inputs = enum {
     plane1_rise,
     plane1_dive,
-    Plane1Fire,
+    plane1_fire,
     Plane2Rise,
     Plane2Dive,
     Plane2Fire,
