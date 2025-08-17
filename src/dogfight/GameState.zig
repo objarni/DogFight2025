@@ -165,6 +165,10 @@ pub const GameState = struct {
                     .Plane1Rise => self.players[0].plane.rise(true),
                     .Plane1Dive => self.players[0].plane.dive(true),
                     .Plane1Fire => {
+                        if(self.players[0].plane.state != PlaneState.FLYING) {
+                            std.debug.print("Plane 1 cannot fire, not flying\n", .{});
+                            return;
+π                        }
                         std.debug.print("Plane 1 firing\n", .{});
                         try self.shots.append(Shot{
                             .position = self.players[0].plane.position,
