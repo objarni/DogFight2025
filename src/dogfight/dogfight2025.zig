@@ -84,7 +84,8 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
 
     var menu: MenuState = .init(ally);
     defer menu.deinit();
-    var game: GameState = .init();
+    var game: GameState = .init(ally);
+    defer game.deinit();
     var currentState = Screen.menu;
 
     var effects: std.ArrayList(Command) = .init(ally);

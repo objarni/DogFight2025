@@ -44,13 +44,19 @@ const Player = struct {
     lives: u8 = 5, // Number of lives for plane
 };
 
+const Shot = struct {
+    position: V,
+    velocity: V,
+};
+
 pub const GameState = struct {
     clouds: [2]V,
     players: [2]Player,
     explosions: [10]Explosion = undefined, // Array of explosions, max 10
     num_explosions: u8 = 0,
+    shots: std.ArrayList(Shot) = undefined,
 
-    pub fn init() GameState {
+    pub fn init(ally: std.mem.Allocator) GameState {
         return GameState{
             .clouds = .{ v(555.0, 305.0), v(100.0, 100.0) },
             .players = .{
@@ -65,7 +71,12 @@ pub const GameState = struct {
                     .lives = 5,
                 },
             },
+            .shots = .init(ally),
         };
+    }
+
+    pub fn deinit(self: *GameState) void {
+        self.shots.deinit();
     }
 
     pub fn handleMsg(self: *GameState, msg: Msg, commands: *std.ArrayList(Command)) !void {
