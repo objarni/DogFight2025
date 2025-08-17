@@ -28,7 +28,7 @@ pub const Plane = struct {
     velocity: V,
     direction: f32, // Angle in degrees, 0 meaning facing right, 45 meaning down-right, etc.
     state: PlaneState,
-    planeConstants: PlaneConstants,
+    plane_constants: PlaneConstants,
     risingPressed: bool = false,
     divingPressed: bool = false,
 
@@ -37,7 +37,7 @@ pub const Plane = struct {
             .position = constants.initial_position,
             .velocity = v(0, 0),
             .state = .STILL,
-            .planeConstants = constants,
+            .plane_constants = constants,
             .direction = 0.0,
         };
     }
@@ -49,9 +49,9 @@ pub const Plane = struct {
                 self.state = .TAKEOFF_ROLL;
             },
             .TAKEOFF_ROLL => |_| {
-                const distanceFromStart = @abs(self.position[0] - self.planeConstants.initial_position[0]);
+                const distanceFromStart = @abs(self.position[0] - self.plane_constants.initial_position[0]);
                 std.debug.print("Distance from tower: {d}\n", .{distanceFromStart});
-                if (distanceFromStart > self.planeConstants.takeoff_length) {
+                if (distanceFromStart > self.plane_constants.takeoff_length) {
                     self.state = .FLYING;
                     self.direction = -15;
                     const radians = std.math.degreesToRadians(self.direction);
@@ -99,9 +99,9 @@ pub const Plane = struct {
                 }
             },
             .TAKEOFF_ROLL => {
-                const newVelocity = self.velocity + v(self.planeConstants.ground_acceleration_per_second * seconds, 0);
+                const newVelocity = self.velocity + v(self.plane_constants.ground_acceleration_per_second * seconds, 0);
                 const newPosition = self.position + v(newVelocity[0] * seconds, 0);
-                if (@abs(newPosition[0] - self.planeConstants.initial_position[0]) >= 2 * self.planeConstants.takeoff_length) {
+                if (@abs(newPosition[0] - self.plane_constants.initial_position[0]) >= 2 * self.plane_constants.takeoff_length) {
                     self.state = PlaneState.CRASH;
                     return;
                 }
@@ -114,8 +114,8 @@ pub const Plane = struct {
                 const acceleration = std.math.sin(radians);
                 speed += seconds * (10.0 + acceleration * 40.0);
                 std.debug.print("Speed: {d}\n", .{speed});
-                if(speed > self.planeConstants.max_speed)
-                    speed = self.planeConstants.max_speed;
+                if(speed > self.plane_constants.max_speed)
+                    speed = self.plane_constants.max_speed;
                 if (self.risingPressed)
                     self.direction -= (try tweak.number(f32) + speed) * seconds;
                 if (self.divingPressed)
@@ -129,7 +129,7 @@ pub const Plane = struct {
                     self.position[0] += basics.window_width;
                 if (self.position[0] > basics.window_width)
                     self.position[0] -= basics.window_width;
-                if (self.position[1] > self.planeConstants.initial_position[1])
+                if (self.position[1] > self.plane_constants.initial_position[1])
                     self.state = PlaneState.CRASH;
                 if (self.position[1] < 0)
                     self.position[1] = 0; // Prevent going off the top of the screen
@@ -153,7 +153,7 @@ test "initialization of plane" {
         .position = testPlaneConstants.initial_position,
         .velocity = v(0, 0),
         .state = .STILL,
-        .planeConstants = testPlaneConstants,
+        .plane_constants = testPlaneConstants,
         .direction = 0.0,
     };
     try std.testing.expectEqual(expected, plane);
