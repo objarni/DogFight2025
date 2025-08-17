@@ -113,7 +113,6 @@ pub const Plane = struct {
                 const radians = std.math.degreesToRadians(self.direction);
                 const acceleration = std.math.sin(radians);
                 speed += seconds * (10.0 + acceleration * 40.0);
-                std.debug.print("Speed: {d}\n", .{speed});
                 if(speed > self.plane_constants.max_speed)
                     speed = self.plane_constants.max_speed;
                 if (self.risingPressed)
