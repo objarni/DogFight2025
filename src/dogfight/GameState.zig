@@ -233,7 +233,7 @@ pub const GameState = struct {
         }
         std.debug.print("Plane {d} firing\n", .{player_human_readable});
         const radians = std.math.degreesToRadians(plane.direction);
-        const plane_direction= v(
+        const plane_direction = v(
             std.math.cos(radians),
             std.math.sin(radians),
         );
@@ -289,6 +289,18 @@ pub const GameState = struct {
         if (self.players[plane_ix].lives == 0) {
             try commands.append(Command{
                 .playSoundEffect = SoundEffect.game_over,
+            });
+            try commands.append(Command{
+                .playPropellerAudio = PropellerAudio{
+                    .on = false,
+                    .plane = 0,
+                },
+            });
+            try commands.append(Command{
+                .playPropellerAudio = PropellerAudio{
+                    .on = false,
+                    .plane = 1,
+                },
             });
             try commands.append(Command{
                 .switchScreen = State.game_over,

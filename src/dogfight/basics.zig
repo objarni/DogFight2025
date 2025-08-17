@@ -41,8 +41,8 @@ pub const SoundEffect = enum {
 pub const PropellerAudio = struct {
     plane: u1, // 0 for plane 1, 1 for plane 2
     on: bool, // true if sound is on, false if muted
-    pan: f32, // 0.0 to 1.0, where 0.0 is left, 1.0 is right
-    pitch: f32, // 1.0 is normal, 0.5 is half speed, 2.0 is double speed
+    pan: f32 = 0, // 0.0 to 1.0, where 0.0 is left, 1.0 is right
+    pitch: f32 = 0, // 1.0 is normal, 0.5 is half speed, 2.0 is double speed
 };
 
 pub const window_width: u16 = 960;
