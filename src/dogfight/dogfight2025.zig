@@ -9,7 +9,7 @@ const Msg = basics.Msg;
 const Command = basics.Command;
 const Inputs = basics.Inputs;
 const TimePassed = basics.TimePassed;
-const Screen = basics.State;
+const State = basics.State;
 
 const window_width: u16 = 960;
 const window_height: u16 = 540;
@@ -90,7 +90,7 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
     var game: GameState = .init(ally);
     defer game.deinit();
     var game_over: GameOverState = .init(0);
-    var currentState = Screen.menu;
+    var currentState = State.menu;
 
     var effects: std.ArrayList(Command) = .init(ally);
     defer effects.deinit();
@@ -336,8 +336,8 @@ fn drawGame(
 fn executeCommands(
     cmds: []const Command,
     res: Resources,
-    currentState: Screen,
-) Screen {
+    currentState: State,
+) State {
     for (cmds) |command| {
         switch (command) {
             .playSoundEffect => |sfx| {
@@ -377,13 +377,13 @@ fn executeCommands(
                 std.debug.print("Switching to screen: {}\n", .{screen});
                 switch (screen) {
                     .menu => |_| {
-                        return Screen.menu;
+                        return State.menu;
                     },
                     .game => |_| {
-                        return Screen.game;
+                        return State.game;
                     },
                     .game_over => |_| {
-                        return Screen.game_over;
+                        return State.game_over;
                     },
                 }
             },
