@@ -148,6 +148,12 @@ pub const GameState = struct {
                 switch (input) {
                     .Plane1Rise => self.players[0].plane.rise(true),
                     .Plane1Dive => self.players[0].plane.dive(true),
+                    .Plane1Fire => {
+                        std.debug.print("Plane 1 firing\n", .{});
+                        try commands.append(Command{
+                            .playSoundEffect = SoundEffect.boom,
+                        });
+                    },
                     .Plane2Rise => self.players[1].plane.rise(true),
                     .Plane2Dive => self.players[1].plane.dive(true),
                     else => {},

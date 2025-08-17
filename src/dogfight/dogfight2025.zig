@@ -141,6 +141,8 @@ fn collectMessages(allMsgs: *std.ArrayList(Msg)) !void {
     if (rl.IsKeyPressed(rl.KEY_SPACE))
         try allMsgs.append(Msg{ .inputPressed = Inputs.GeneralAction });
 
+    if (rl.IsKeyPressed(rl.KEY_LEFT_SHIFT))
+        try allMsgs.append(Msg{ .inputPressed = Inputs.Plane1Fire });
     if (rl.IsKeyPressed(rl.KEY_A))
         try allMsgs.append(Msg{ .inputPressed = Inputs.Plane1Rise });
     if (rl.IsKeyReleased(rl.KEY_A))
