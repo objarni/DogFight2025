@@ -141,7 +141,12 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
                     try game_over.handleMsg(msg, &effects);
                 },
             }
-            currentState = executeCommands(effects.items, res, currentState);
+            const result = executeCommands(effects.items, res, currentState);
+            currentState = result.new_state;
+            if(result.state_changed) {
+                if(currentState == State.game)
+                    game = GameState.init(ally);
+            }
         }
 
         // TODO: this 'hack' is just so ugly :P
@@ -333,11 +338,16 @@ fn drawGame(
     }
 }
 
+const ExecuteCommandsResult = struct {
+    new_state: State,
+    state_changed: bool,
+};
+
 fn executeCommands(
     cmds: []const Command,
     res: Resources,
     currentState: State,
-) State {
+) ExecuteCommandsResult {
     for (cmds) |command| {
         switch (command) {
             .playSoundEffect => |sfx| {
@@ -376,20 +386,27 @@ fn executeCommands(
             .switchScreen => |state| {
                 std.debug.print("Switching to state: {}\n", .{state});
                 switch (state) {
-                    .menu => |_| {
-                        return State.menu;
+                    .menu => |_| return ExecuteCommandsResult{
+                        .new_state = State.menu,
+                        .state_changed = true,
                     },
-                    .game => |_| {
-                        return State.game;
+                    .game => |_| return ExecuteCommandsResult{
+                        .new_state = State.game,
+                        .state_changed = true,
                     },
-                    .game_over => |_| {
-                        return State.game_over;
+                    .game_over => |_| return ExecuteCommandsResult{
+                        .new_state = State.game_over,
+                        .state_changed = true,
                     },
                 }
             },
         }
     }
-    return currentState;
+
+    return ExecuteCommandsResult{
+        .new_state = currentState,
+        .state_changed = false,
+    };
 }
 
 test {
