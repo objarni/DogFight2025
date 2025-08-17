@@ -12,8 +12,10 @@ pub const Msg = union(enum) {
 pub const Inputs = enum {
     Plane1Rise,
     Plane1Dive,
+    Plane1Fire,
     Plane2Rise,
     Plane2Dive,
+    Plane2Fire,
     GeneralAction, // This is starting game, pausing/unpausing, switching from game over to menu etc
 };
 
