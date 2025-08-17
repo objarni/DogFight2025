@@ -88,7 +88,7 @@ pub const Plane = struct {
         return @sqrt(self.velocity[0] * self.velocity[0] + self.velocity[1] * self.velocity[1]);
     }
 
-    pub fn timePassed(self: *Plane, seconds: f32) !void {
+    pub fn timePassed(self: *Plane, seconds: f32) void {
         switch (self.state) {
             .STILL => {
                 if (self.risingPressed) {
@@ -115,9 +115,9 @@ pub const Plane = struct {
                 if(speed > self.plane_constants.max_speed)
                     speed = self.plane_constants.max_speed;
                 if (self.risingPressed)
-                    self.direction -= (try tweak.number(f32) + speed) * seconds;
+                    self.direction -= (40.0 + speed) * seconds;
                 if (self.divingPressed)
-                    self.direction += (try tweak.number(f32) + speed) * seconds;
+                    self.direction += (40.0 + speed) * seconds;
                 self.velocity = v(
                     speed * std.math.cos(radians),
                     speed * std.math.sin(radians),
