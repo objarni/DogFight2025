@@ -36,7 +36,7 @@ fn initRaylib() Resources {
     rl.SetConfigFlags(rl.FLAG_WINDOW_HIGHDPI);
     rl.InitWindow(window_width, window_height, "DogFight 2025");
     rl.InitAudioDevice();
-    // rl.ToggleFullscreen();
+    rl.ToggleFullscreen();
 
     const res = Resources{
         .boom = rl.LoadSound("assets/Boom.wav"),
@@ -308,33 +308,12 @@ fn drawGame(
 
     for (0..2) |plane_ix| {
         if (state.players[plane_ix].resurrect_timeout <= 0) {
-            const sourceR = rl.Rectangle{
-                .x = 0,
-                .y = 0,
-                .width = @floatFromInt(res.plane.width),
-                .height = @floatFromInt(res.plane.height),
-            };
             const plane = state.players[plane_ix].plane;
-            const planeWidth: f32 = @floatFromInt(res.plane.width);
-            const planeHeight: f32 = @floatFromInt(res.plane.height);
-            const destR = rl.Rectangle{
-                .x = plane.position[0],
-                .y = plane.position[1],
-                .width = planeWidth,
-                .height = planeHeight,
-            };
-            const anchor = rl.Vector2{
-                .x = planeWidth / 2,
-                .y = planeHeight / 2,
-            };
-            rl.DrawTexturePro(
-                res.plane,
-                sourceR,
-                destR,
-                anchor,
-                plane.direction,
-                if (plane_ix == 0) rl.WHITE else rl.GREEN,
-            );
+            const texture = res.plane;
+            const position = plane.position;
+            const rotation_deg = plane.direction;
+            const color = if (plane_ix == 0) rl.WHITE else rl.GREEN;
+            drawRotatedTexture(texture, position, rotation_deg, color);
         }
     }
 
@@ -346,6 +325,35 @@ fn drawGame(
     for (0..state.num_explosions) |ix| {
         drawExplosion(state.explosions[ix]);
     }
+}
+
+fn drawRotatedTexture(texture: rl.struct_Texture, position: @Vector(2, f32), rotation_deg: f32, color: anytype) void {
+    const sourceR = rl.Rectangle{
+        .x = 0,
+        .y = 0,
+        .width = @floatFromInt(texture.width),
+        .height = @floatFromInt(texture.height),
+    };
+    const w: f32 = @floatFromInt(texture.width);
+    const h: f32 = @floatFromInt(texture.height);
+    const destR = rl.Rectangle{
+        .x = position[0],
+        .y = position[1],
+        .width = w,
+        .height = h,
+    };
+    const anchor = rl.Vector2{
+        .x = w / 2,
+        .y = h / 2,
+    };
+    rl.DrawTexturePro(
+        texture,
+        sourceR,
+        destR,
+        anchor,
+        rotation_deg,
+        color,
+    );
 }
 
 const ExecuteCommandsResult = struct {
