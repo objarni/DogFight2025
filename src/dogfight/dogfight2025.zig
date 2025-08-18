@@ -36,7 +36,7 @@ fn initRaylib() Resources {
     rl.SetConfigFlags(rl.FLAG_WINDOW_HIGHDPI);
     rl.InitWindow(window_width, window_height, "DogFight 2025");
     rl.InitAudioDevice();
-    rl.ToggleFullscreen();
+    // rl.ToggleFullscreen();
 
     const res = Resources{
         .boom = rl.LoadSound("assets/Boom.wav"),
@@ -161,7 +161,7 @@ fn collectMessages(allMsgs: *std.ArrayList(Msg)) !void {
     if (rl.IsKeyPressed(rl.KEY_SPACE))
         try allMsgs.append(Msg{ .inputPressed = Inputs.general_action });
 
-    if (rl.IsKeyPressed(rl.KEY_LEFT_SHIFT))
+    if (rl.IsKeyPressed(rl.KEY_LEFT_CONTROL))
         try allMsgs.append(Msg{ .inputPressed = Inputs.plane1_fire });
     if (rl.IsKeyPressed(rl.KEY_A))
         try allMsgs.append(Msg{ .inputPressed = Inputs.plane1_rise });
@@ -173,7 +173,7 @@ fn collectMessages(allMsgs: *std.ArrayList(Msg)) !void {
     if (rl.IsKeyReleased(rl.KEY_S))
         try allMsgs.append(Msg{ .inputReleased = Inputs.plane1_dive });
 
-    if (rl.IsKeyPressed(rl.KEY_RIGHT_SHIFT))
+    if (rl.IsKeyPressed(rl.KEY_RIGHT_CONTROL))
         try allMsgs.append(Msg{ .inputPressed = Inputs.plane2_fire });
     if (rl.IsKeyPressed(rl.KEY_J))
         try allMsgs.append(Msg{ .inputPressed = Inputs.plane2_rise });
