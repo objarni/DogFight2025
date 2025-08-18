@@ -5,5 +5,7 @@ pub fn number(comptime T: type) !f32 {
     defer file.close();
     var buf: [32]u8 = undefined;
     const len = try file.readAll(&buf);
-    return try std.fmt.parseFloat(T, buf[0..len]);
+    return std.fmt.parseFloat(T, buf[0..len]) catch {
+        return 10.0;
+    };
 }

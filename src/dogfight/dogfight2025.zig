@@ -173,7 +173,7 @@ fn collectMessages(allMsgs: *std.ArrayList(Msg)) !void {
     if (rl.IsKeyReleased(rl.KEY_S))
         try allMsgs.append(Msg{ .inputReleased = Inputs.plane1_dive });
 
-    if (rl.IsKeyPressed(rl.KEY_RIGHT_CONTROL))
+    if (rl.IsKeyPressed(rl.KEY_PERIOD))
         try allMsgs.append(Msg{ .inputPressed = Inputs.plane2_fire });
     if (rl.IsKeyPressed(rl.KEY_J))
         try allMsgs.append(Msg{ .inputPressed = Inputs.plane2_rise });
@@ -199,6 +199,14 @@ fn drawCenteredText(text: []const u8, y: u16, fontSize: u16, color: rl.Color) vo
     const textWidth: u16 = @intCast(rl.MeasureText(text.ptr, fontSize));
     const xPos: u16 = (window_width - textWidth) / 2;
     rl.DrawText(text.ptr, xPos, y, fontSize, color);
+}
+
+fn drawTextCenteredAt(text: []const u8, x: i16, y: i16, fontSize: i16, color: rl.Color) void {
+    const text_width: i16 = @intCast(rl.MeasureText(text.ptr, fontSize));
+    const x_pos = x - @divFloor(text_width, 2);
+    const y_pos = y - @divFloor(fontSize, 2);
+    // std.debug.print("x: {d} y: {d} Text width: {d}", .{x_pos, y_pos, text_width});
+    rl.DrawText(text.ptr, x_pos, y_pos, fontSize, color);
 }
 
 fn drawMenu(menu: MenuState) void {
@@ -268,6 +276,8 @@ const Resources = struct {
     propellers: [2]rl.Music,
 };
 
+const tweak = @import("tweak.zig");
+
 fn drawGame(
     state: GameState,
     res: Resources,
@@ -296,6 +306,20 @@ fn drawGame(
 
     rl.DrawCircle(window_width - 50, window_height - 100, 50, rl.RED);
     rl.DrawTexture(res.background, 0, window_height - res.background.height, rl.WHITE);
+    drawTextCenteredAt(
+        "Red controls: A rise, S dive, LCtrl fire",
+        210,
+        40,
+        20,
+        rl.BLACK,
+    );
+    drawTextCenteredAt(
+        "Green controls: J rise, K dive, . is fire",
+        730,
+        40,
+        20,
+        rl.BLACK,
+    );
 
     for (state.shots.items) |shot| {
         rl.DrawCircle(
