@@ -328,7 +328,7 @@ fn drawGame(
 }
 
 fn drawRotatedTexture(texture: rl.struct_Texture, position: @Vector(2, f32), rotation_deg: f32, color: anytype) void {
-    const sourceR = rl.Rectangle{
+    const source_rect = rl.Rectangle{
         .x = 0,
         .y = 0,
         .width = @floatFromInt(texture.width),
@@ -336,7 +336,7 @@ fn drawRotatedTexture(texture: rl.struct_Texture, position: @Vector(2, f32), rot
     };
     const w: f32 = @floatFromInt(texture.width);
     const h: f32 = @floatFromInt(texture.height);
-    const destR = rl.Rectangle{
+    const dest_rect = rl.Rectangle{
         .x = position[0],
         .y = position[1],
         .width = w,
@@ -348,8 +348,8 @@ fn drawRotatedTexture(texture: rl.struct_Texture, position: @Vector(2, f32), rot
     };
     rl.DrawTexturePro(
         texture,
-        sourceR,
-        destR,
+        source_rect,
+        dest_rect,
         anchor,
         rotation_deg,
         color,
