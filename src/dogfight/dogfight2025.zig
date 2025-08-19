@@ -304,6 +304,9 @@ fn drawGame(
                 .{state.players[i].lives},
             );
         rl.DrawText(display_text.ptr, x_pos, 10, 20, text_color);
+        // Draw power bar
+        rl.DrawRectangle(x_pos, 30, 15 * 5, 9, rl.BLACK);
+        rl.DrawRectangleGradientH(x_pos, 32, 15 * state.players[i].plane.power, 5, rl.RED, rl.GREEN);
     }
 
     rl.DrawCircle(window_width - 50, window_height - 100, 50, rl.RED);
@@ -311,14 +314,14 @@ fn drawGame(
     drawTextCenteredAt(
         "Red controls: A rise, S dive, LCtrl fire",
         210,
-        40,
+        50,
         20,
         rl.BLACK,
     );
     drawTextCenteredAt(
         "Green controls: J rise, K dive, . is fire",
         730,
-        40,
+        50,
         20,
         rl.BLACK,
     );
