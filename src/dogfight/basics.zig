@@ -36,6 +36,7 @@ pub const SoundEffect = enum {
     crash,
     shoot,
     game_over,
+    hit,
 };
 
 pub const PropellerAudio = struct {

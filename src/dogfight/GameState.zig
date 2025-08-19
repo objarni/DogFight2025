@@ -111,15 +111,33 @@ pub const GameState = struct {
                 }
 
                 // Does a shot hit plane?
-                for (self.shots.items) |shot| {
+                var shot_ix: usize = 0;
+                var remove_shot: bool = undefined;
+                while (shot_ix < self.shots.items.len) {
+                    const shot = self.shots.items[shot_ix];
+                    remove_shot = false;
                     for (0..2) |player_ix| {
-                        const plane = self.players[player_ix].plane;
+                        var plane = &self.players[player_ix].plane;
                         if (self.players[player_ix].resurrect_timeout <= 0) {
                             const distance = v2.len(plane.position - shot.position);
-                            if (distance < 10 and plane.state == PlaneState.FLYING)
-                                try self.crashPlane(player_ix, commands);
+                            if (distance < 10 and plane.state == PlaneState.FLYING) {
+                                remove_shot = true;
+                                plane.power -= 1;
+                                std.debug.print("Plane {d} hit, power left: {d}", .{ player_ix, plane.power });
+                                try commands.append(Command{ .playSoundEffect = SoundEffect.hit });
+                                if (plane.power == 0)
+                                    try self.crashPlane(player_ix, commands);
+                            }
                         }
                     }
+                    if (remove_shot)
+                        _ = self.shots.swapRemove(shot_ix)
+                    else
+                        shot_ix += 1;
+                    // if (remove_shot)
+                    //     self.shots.swapRemove(shot_ix)
+                    // else
+                    //     shot_ix += 1;
                 }
 
                 // Move planes

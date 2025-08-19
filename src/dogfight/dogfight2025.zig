@@ -42,6 +42,7 @@ fn initRaylib() Resources {
         .boom = rl.LoadSound("assets/Boom.wav"),
         .crash = rl.LoadSound("assets/Crash.mp3"),
         .shoot = rl.LoadSound("assets/Shoot.wav"),
+        .hit = rl.LoadSound("assets/Hit.wav"),
         .game_over = rl.LoadSound("assets/GameOver.mp3"),
         .plane = rl.LoadTexture("assets/Plane.png"),
         .cloud = rl.LoadTexture("assets/CloudBig.png"),
@@ -270,6 +271,7 @@ const Resources = struct {
     crash: rl.Sound,
     shoot: rl.Sound,
     game_over: rl.Sound,
+    hit: rl.Sound,
     plane: rl.Texture2D,
     cloud: rl.Texture2D,
     background: rl.Texture2D,
@@ -409,6 +411,9 @@ fn executeCommands(
                         rl.PlaySound(res.game_over);
                         std.debug.print("Playing game over sound effect\n", .{});
                     },
+                    .hit => {
+                        rl.PlaySound(res.hit);
+                    }
                 }
             },
             .playPropellerAudio => |audio| {
@@ -417,6 +422,7 @@ fn executeCommands(
                     if (!rl.IsMusicStreamPlaying(res.propellers[plane])) {
                         rl.PlayMusicStream(res.propellers[plane]);
                     }
+                    rl.SetMusicVolume(res.propellers[plane], 0.5);
                     rl.SetMusicPitch(res.propellers[plane], audio.pitch);
                     rl.SetMusicPan(res.propellers[plane], 1 - audio.pan);
                     // TODO: tween the pan value so that it doesn't jump left/right instantly

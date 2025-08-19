@@ -31,6 +31,7 @@ pub const Plane = struct {
     plane_constants: PlaneConstants,
     risingPressed: bool = false,
     divingPressed: bool = false,
+    power: u8,
 
     pub fn init(constants: PlaneConstants) Plane {
         return Plane{
@@ -39,6 +40,7 @@ pub const Plane = struct {
             .state = .STILL,
             .plane_constants = constants,
             .direction = 0.0,
+            .power = 5,
         };
     }
 
