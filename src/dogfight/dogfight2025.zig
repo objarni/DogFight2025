@@ -467,7 +467,9 @@ test {
 }
 
 // TODO: wrap clouds around the screen
-// TODO: wrap planes around the screen
-// TODO: particle system for explosion and debris
+// TODO: debris with gravity and rotation
+// TODO: smoke trails for planes
 // TODO: figure out how to play menu theme at start of game (some kind of init for states?)
 // TODO: refactor away from array_list.Managed to std.ArrayList
+// TODO: Switch explosion array to array_list.Managed
+// TODO: shadows beneath planes

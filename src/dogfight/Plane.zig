@@ -237,9 +237,7 @@ test "plane flies if player presses rise when far enough from initial position" 
     try std.testing.expect(plane.velocity[1] < 0); // Assuming the plane is flying upwards
 }
 
-// TODO: accel/decel behaviour - with max/min speed to start with
-// TODO: when accel/decel feels good, introduce "STALL" state with gravity!
-// TODO: finally, in STALL state, ability to recover to FLYING with enough y-velocity and direction downwards
-// TODO: crash when hitting 'roof'
-// TODO: wraparound when going off screen
+// TODO: introduce "STALL" state to very low speed - with gravity!
+// TODO: also STALL when hitting 'roof'
+// TODO: in STALL state, ability to recover to FLYING with enough y-velocity and direction downwards
 // TODO: return crash or not from timePassed, so that we can handle it in GameState

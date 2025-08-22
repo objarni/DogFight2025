@@ -354,7 +354,3 @@ test "GameState: both clouds move left but the lower cloud moves faster" {
         0.1,
     );
 }
-
-// TODO: Fix plane2 audio not stopping at crash weirdness
-// TODO: Switch explosion array to array_list.Managed
-// TODO: shadows beneath planes
