@@ -74,7 +74,7 @@ pub const Explosion = struct {
     }
 };
 
-fn writeExplosionString(buffer: *std.ArrayList(u8), explosion: Explosion) !void {
+fn writeExplosionString(buffer: *std.array_list.Managed(u8), explosion: Explosion) !void {
     var writer = buffer.writer();
     try writer.print(
         \\t={d}
@@ -144,7 +144,7 @@ test "explosion state printer" {
         std.math.pi,
     );
 
-    var actual = std.ArrayList(u8).init(ally);
+    var actual = std.array_list.Managed(u8).init(ally);
     defer actual.deinit();
     try writeExplosionString(&actual, expl);
 
@@ -160,7 +160,7 @@ test "explosion init function" {
         std.math.pi / 4.0, // 45 degrees in radians
     );
 
-    var actual = std.ArrayList(u8).init(ally);
+    var actual = std.array_list.Managed(u8).init(ally);
     defer actual.deinit();
     try writeExplosionString(&actual, explosion);
 
@@ -220,7 +220,7 @@ test "the life of an explosion 2" {
         \\
     ;
     const ally = std.testing.allocator;
-    var actual = std.ArrayList(u8).init(ally);
+    var actual = std.array_list.Managed(u8).init(ally);
     defer actual.deinit();
     const writer = actual.writer();
     _ = try writer.write("Explosion at 50,50 of size 100, lifetime 1 second:\n\n");

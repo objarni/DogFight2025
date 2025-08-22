@@ -24,7 +24,7 @@ pub const GameOverState = struct {
         };
     }
 
-    pub fn handleMsg(self: *GameOverState, msg: Msg, commands: *std.ArrayList(Command)) !void {
+    pub fn handleMsg(self: *GameOverState, msg: Msg, commands: *std.array_list.Managed(Command)) !void {
         switch (msg) {
             .inputPressed => |input| {
                 if (input == Inputs.general_action) {
@@ -49,7 +49,7 @@ pub const GameOverState = struct {
 test "GameOverState.handleMsg: hitting action button should switch to menu" {
     const ally = std.testing.allocator;
     var gameover_state = GameOverState.init(ally);
-    var actual_commands = std.ArrayList(Command).init(ally);
+    var actual_commands = std.array_list.Managed(Command).init(ally);
     defer actual_commands.deinit();
     _ = try gameover_state.handleMsg(
         Msg{ .inputPressed = Inputs.general_action },
@@ -68,7 +68,7 @@ test "GameOverState.handleMsg: hitting action button should switch to menu" {
 
 test "GameOverState.handleMsg: press space blinks every 0.5 second on game over screen" {
     const ally = std.testing.allocator;
-    var commands = std.ArrayList(Command).init(ally);
+    var commands = std.array_list.Managed(Command).init(ally);
     defer commands.deinit();
 
     // No text expected

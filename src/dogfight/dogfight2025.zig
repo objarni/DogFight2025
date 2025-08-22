@@ -82,7 +82,7 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
     var drawAverage: i128 = 0;
     var drawAverageCount: u32 = 0;
 
-    var allMsgs: std.ArrayList(Msg) = .init(ally);
+    var allMsgs: std.array_list.Managed(Msg) = .init(ally);
     defer allMsgs.deinit();
     try allMsgs.ensureTotalCapacity(10);
 
@@ -93,11 +93,9 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
     var game_over: GameOverState = .init(0);
     var currentState = State.menu;
 
-    var effects: std.ArrayList(Command) = .init(ally);
+    var effects: std.array_list.Managed(Command) = .init(ally);
     defer effects.deinit();
     while (!rl.WindowShouldClose()) {
-        // if (!rl.IsMusicStreamPlaying(res.propellerAudio1))
-        //     rl.PlayMusicStream(res.propellerAudio1);
         rl.BeginDrawing();
 
         // Draw
@@ -158,7 +156,7 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
     }
 }
 
-fn collectMessages(allMsgs: *std.ArrayList(Msg)) !void {
+fn collectMessages(allMsgs: *std.array_list.Managed(Msg)) !void {
     if (rl.IsKeyPressed(rl.KEY_SPACE))
         try allMsgs.append(Msg{ .inputPressed = Inputs.general_action });
 

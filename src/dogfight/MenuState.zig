@@ -15,11 +15,11 @@ const window_height: u16 = basics.window_height;
 
 pub const MenuState = struct {
     blink: bool = false,
-    es: std.ArrayList(Explosion),
+    es: std.array_list.Managed(Explosion),
     e: Explosion,
 
     pub fn init(ally: std.mem.Allocator) MenuState {
-        const explosionsArray = std.ArrayList(Explosion).init(ally);
+        const explosionsArray = std.array_list.Managed(Explosion).init(ally);
         return MenuState{
             .blink = false,
             .e = Explosion.init(
@@ -36,7 +36,7 @@ pub const MenuState = struct {
         self.es.deinit();
     }
 
-    pub fn handleMsg(self: *MenuState, msg: Msg, commands: *std.ArrayList(Command)) !void {
+    pub fn handleMsg(self: *MenuState, msg: Msg, commands: *std.array_list.Managed(Command)) !void {
         switch (msg) {
             .inputPressed => |input| {
                 if (input == Inputs.general_action) {
@@ -80,7 +80,7 @@ pub const MenuState = struct {
 test "MenuState.handleMsg: hitting action button should switch to game and play Boom sound" {
     const ally = std.testing.allocator;
     var menu_state = MenuState.init(ally);
-    var actual_commands = std.ArrayList(Command).init(ally);
+    var actual_commands = std.array_list.Managed(Command).init(ally);
     defer actual_commands.deinit();
     _ = try menu_state.handleMsg(
         Msg{ .inputPressed = Inputs.general_action },
@@ -99,7 +99,7 @@ test "MenuState.handleMsg: hitting action button should switch to game and play 
 
 test "MenuState.handleMsg: press space blinks every 0.5 second on menu screen" {
     const ally = std.testing.allocator;
-    var commands = std.ArrayList(Command).init(ally);
+    var commands = std.array_list.Managed(Command).init(ally);
     defer commands.deinit();
 
     // No text expected

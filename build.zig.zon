@@ -2,11 +2,11 @@
     .name = .dogfight2025,
     .version = "0.0.1",
     .fingerprint = 0x232553eac010cc5f,
-    .minimum_zig_version = "0.14.1",
+    .minimum_zig_version = "0.15.1",
     .dependencies = .{
         .raylib = .{
-            .url = "git+https://github.com/raysan5/raylib.git#5434ae11001ac55a77fa80cfcb3e490c66d60eaa",
-            .hash = "raylib-5.5.0-whq8uHdBPwSyiJEcAiNU7xaJYF2kt99AiV4tbqAwWk3d",
+            .url = "git+https://github.com/raysan5/raylib.git#ce1cd0d7e6f982b7251a530c9b55df653ab3c984",
+            .hash = "raylib-5.5.0-whq8uMpHxwTHm60jp8j7tMwRimtB99XPr62y2vL2ltv2",
         },
     },
     .paths = .{

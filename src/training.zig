@@ -5,7 +5,7 @@ test "parse integers" {
     const input = "123 67 89,99";
     const ally = std.testing.allocator;
 
-    var list = std.ArrayList(u32).init(ally);
+    var list = std.array_list.Managed(u32).init(ally);
     // Ensure the list is freed at scope exit.
     // Try commenting out this line!
     defer list.deinit();
@@ -108,15 +108,15 @@ test "mars rover parser - error examples" {
     try std.testing.expectError(error.InvalidArgument, Rover.fromString("0 1 North"));
 }
 
-const List = std.ArrayList;
+const List = std.array_list.Managed;
 
 const MarsRoverProblem = struct {
     rovers: List(Rover),
     instructions: List([]const u8),
 
     fn init(ally: std.mem.Allocator, input: []const u8) !MarsRoverProblem {
-        var rovers = std.ArrayList(Rover).init(ally);
-        var instructions = std.ArrayList([]const u8).init(ally);
+        var rovers = std.array_list.Managed(Rover).init(ally);
+        var instructions = std.array_list.Managed([]const u8).init(ally);
 
         var it = std.mem.splitScalar(u8, input, '\n');
         if (it.next() == null) return error.TooFewParts;

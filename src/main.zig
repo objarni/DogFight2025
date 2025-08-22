@@ -21,7 +21,7 @@ pub fn main() !void {
     }
 
     if (argv.len != 2) {
-        std.debug.print("Usage: {s} <program number>\n", .{argv});
+        std.debug.print("Usage: {any} <program number>\n", .{argv});
         return error.InvalidArgument;
     }
 
@@ -275,10 +275,10 @@ fn program7() !void {
         height: f32,
     };
 
-    var debris = std.ArrayList(Debris).init(std.heap.page_allocator);
+    var debris = std.array_list.Managed(Debris).init(std.heap.page_allocator);
     defer debris.deinit();
 
-    var houses = std.ArrayList(House).init(std.heap.page_allocator);
+    var houses = std.array_list.Managed(House).init(std.heap.page_allocator);
     defer houses.deinit();
 
     const numHouses = 20;
@@ -293,7 +293,7 @@ fn program7() !void {
         try houses.append(House{ .x = x, .width = width, .height = height });
     }
 
-    var raindrops = std.ArrayList(RainDrop).init(std.heap.page_allocator);
+    var raindrops = std.array_list.Managed(RainDrop).init(std.heap.page_allocator);
     defer raindrops.deinit();
     const numRaindrops = 2000;
     for(0..numRaindrops) |_| {

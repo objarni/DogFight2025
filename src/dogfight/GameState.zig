@@ -54,7 +54,7 @@ pub const GameState = struct {
     players: [2]Player,
     explosions: [10]Explosion = undefined, // Array of explosions, max 10
     num_explosions: u8 = 0,
-    shots: std.ArrayList(Shot) = undefined,
+    shots: std.array_list.Managed(Shot) = undefined,
 
     pub fn init(ally: std.mem.Allocator) GameState {
         return GameState{
@@ -79,7 +79,7 @@ pub const GameState = struct {
         self.shots.deinit();
     }
 
-    pub fn handleMsg(self: *GameState, msg: Msg, commands: *std.ArrayList(Command)) !void {
+    pub fn handleMsg(self: *GameState, msg: Msg, commands: *std.array_list.Managed(Command)) !void {
         switch (msg) {
             .timePassed => |time| {
                 // Move shots
@@ -242,7 +242,7 @@ pub const GameState = struct {
         }
     }
 
-    fn planeFire(self: *GameState, commands: *std.ArrayList(Command), player_ix: u1) !void {
+    fn planeFire(self: *GameState, commands: *std.array_list.Managed(Command), player_ix: u1) !void {
         const player_human_readable: u8 = @as(u8, player_ix) + 1;
         const plane = self.players[player_ix].plane;
         if (plane.state != PlaneState.FLYING) {
@@ -257,7 +257,7 @@ pub const GameState = struct {
         );
         try self.shots.append(Shot{
             .position = plane.position + v2.mulScalar(plane_direction, 20),
-            .velocity = v2.mulScalar(plane.velocity, 2.0),
+            .velocity = v2.mulScalar(plane.velocity, 3.0),
         });
         try commands.append(Command{
             .playSoundEffect = SoundEffect.shoot,
@@ -279,7 +279,7 @@ pub const GameState = struct {
         }
     }
 
-    fn crashPlane(self: *GameState, plane_ix: usize, commands: *std.ArrayList(Command)) !void {
+    fn crashPlane(self: *GameState, plane_ix: usize, commands: *std.array_list.Managed(Command)) !void {
         self.players[plane_ix].lives -= 1;
         self.players[plane_ix].resurrect_timeout = 4.0; // Time until plane can be resurrected
         for (0..5) |_| {
@@ -329,7 +329,7 @@ pub const GameState = struct {
 
 test "GameState: both clouds move left but the lower cloud moves faster" {
     const ally = std.testing.allocator;
-    var commands = std.ArrayList(Command).init(ally);
+    var commands = std.array_list.Managed(Command).init(ally);
     defer commands.deinit();
     var gameState: GameState = GameState.init(ally);
     const highCloudX: f32 = gameState.clouds[0][0];
@@ -356,5 +356,5 @@ test "GameState: both clouds move left but the lower cloud moves faster" {
 }
 
 // TODO: Fix plane2 audio not stopping at crash weirdness
-// TODO: Switch explosion array to ArrayList
+// TODO: Switch explosion array to array_list.Managed
 // TODO: shadows beneath planes
