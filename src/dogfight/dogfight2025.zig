@@ -468,5 +468,4 @@ test {
 
 // TODO: wrap clouds around the screen
 // TODO: wrap planes around the screen
-// TODO: shots
 // TODO: particle system for explosion and debris
