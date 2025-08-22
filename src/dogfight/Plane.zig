@@ -155,6 +155,7 @@ test "initialization of plane" {
         .state = .STILL,
         .plane_constants = testPlaneConstants,
         .direction = 0.0,
+        .power = 5,
     };
     try std.testing.expectEqual(expected, plane);
 }
@@ -174,14 +175,14 @@ test "plane starts takeoff roll from still state on dive command" {
 test "plane acceleration on ground during takeoff roll" {
     var plane = Plane.init(testPlaneConstants);
     plane.rise(true);
-    try plane.timePassed(1.0);
+    plane.timePassed(1.0);
     try std.testing.expectEqual(testPlaneConstants.ground_acceleration_per_second, plane.velocity[0]);
 }
 
 test "plane crashes if not enough speed during takeoff roll" {
     var plane = Plane.init(testPlaneConstants);
     plane.rise(true);
-    try plane.timePassed(2.0);
+    plane.timePassed(2.0);
     plane.rise(true);
     try std.testing.expectEqual(PlaneState.CRASH, plane.state);
 }
@@ -189,10 +190,10 @@ test "plane crashes if not enough speed during takeoff roll" {
 test "plane crashes on dive - even when it has accelerated far enough" {
     var plane = Plane.init(testPlaneConstants);
     plane.rise(true);
-    try plane.timePassed(0.1);
+    plane.timePassed(0.1);
     var i: i16 = 0;
     while (plane.position[0] < testPlaneConstants.takeoff_length / 2) {
-        try plane.timePassed(0.1);
+        plane.timePassed(0.1);
         i += 1;
         if (i > 100) {
             break; // Prevent infinite loop in case of an error
@@ -208,7 +209,7 @@ test "plane crashes when passing runway during takeoff roll" {
     var i: i32 = 0;
     try std.testing.expectEqual(PlaneState.TAKEOFF_ROLL, plane.state);
     while (@abs(plane.position[0] - testPlaneConstants.initial_position[0]) < 2 * testPlaneConstants.takeoff_length) {
-        try plane.timePassed(0.1);
+        plane.timePassed(0.1);
         i += 1;
         if (i > 1000) {
             break; // Prevent infinite loop in case of an error
@@ -220,17 +221,17 @@ test "plane crashes when passing runway during takeoff roll" {
 test "plane flies if player presses rise when far enough from initial position" {
     var plane = Plane.init(testPlaneConstants);
     plane.rise(true);
-    try plane.timePassed(0.1);
+    plane.timePassed(0.1);
     var i: i16 = 0;
     while (@abs(plane.position[0] - testPlaneConstants.initial_position[0]) <= testPlaneConstants.takeoff_length) {
-        try plane.timePassed(0.1);
+        plane.timePassed(0.1);
         i += 1;
         if (i > 1000) {
             break; // Prevent infinite loop in case of an error
         }
     }
     plane.rise(true);
-    try plane.timePassed(0.1);
+    plane.timePassed(0.1);
     try std.testing.expectEqual(PlaneState.FLYING, plane.state);
     try std.testing.expect(plane.position[1] < testPlaneConstants.initial_position[1]);
     try std.testing.expect(plane.velocity[1] < 0); // Assuming the plane is flying upwards

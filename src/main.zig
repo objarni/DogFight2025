@@ -21,7 +21,7 @@ pub fn main() !void {
     }
 
     if (argv.len != 2) {
-        std.debug.print("Usage: {any} <program number>\n", .{argv});
+        std.debug.print("Usage: {s} <program number>\n", .{argv[0]});
         return error.InvalidArgument;
     }
 
