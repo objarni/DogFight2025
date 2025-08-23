@@ -335,6 +335,13 @@ fn drawGame(
 
     for (0..2) |plane_ix| {
         const plane = state.players[plane_ix].plane;
+        const rectangle = rl.Rectangle{
+            .x = plane.position[0] - 14,
+            .y = window_height - 29,
+            .width = @floatFromInt(res.plane.width - 9),
+            .height = 4,
+        };
+        rl.DrawRectangleRounded(rectangle, 2.0, 10, rl.BLACK);
         if (state.players[plane_ix].resurrect_timeout <= 0) {
             const texture = res.plane;
             const position = plane.position;
@@ -342,13 +349,6 @@ fn drawGame(
             const color = if (plane_ix == 0) rl.WHITE else rl.GREEN;
             drawRotatedTexture(texture, position, rotation_deg, color);
         }
-        const rectangle = rl.Rectangle{
-            .x = plane.position[0] - 14,
-            .y = window_height - 25,
-            .width = @floatFromInt(res.plane.width - 5),
-            .height = 5,
-        };
-        rl.DrawRectangleRounded(rectangle, 2.0, 10, rl.BLACK);
     }
 
     for (state.clouds) |cloud| {
