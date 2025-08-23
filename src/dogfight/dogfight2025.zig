@@ -469,6 +469,7 @@ test {
     _ = @import("basics.zig");
     _ = @import("MenuState.zig");
     _ = @import("GameState.zig");
+    _ = @import("GameOverState.zig");
     _ = @import("Plane.zig");
     _ = @import("Explosion.zig");
 }

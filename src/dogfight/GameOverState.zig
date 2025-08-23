@@ -48,16 +48,15 @@ pub const GameOverState = struct {
 
 test "GameOverState.handleMsg: hitting action button should switch to menu" {
     const ally = std.testing.allocator;
-    var gameover_state = GameOverState.init(ally);
+    var gameover_state = GameOverState.init(0);
     var actual_commands = std.array_list.Managed(Command).init(ally);
     defer actual_commands.deinit();
     _ = try gameover_state.handleMsg(
         Msg{ .inputPressed = Inputs.general_action },
         &actual_commands,
     );
-    const expected: [2]Command = .{
-        Command{ .playSoundEffect = SoundEffect.boom },
-        Command{ .switchScreen = SubScreen.game },
+    const expected: [1]Command = .{
+        Command{ .switchScreen = SubScreen.menu },
     };
     try std.testing.expectEqualSlices(
         Command,
@@ -72,10 +71,10 @@ test "GameOverState.handleMsg: press space blinks every 0.5 second on game over 
     defer commands.deinit();
 
     // No text expected
-    var gameover_state: GameOverState = .init(ally);
+    var gameover_state: GameOverState = .init(0);
     const msg = Msg{
         .timePassed = .{
-            .totalTime = 0.40,
+            .totalTime = 0.41,
             .deltaTime = 0.40,
         },
     };
