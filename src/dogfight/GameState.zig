@@ -51,6 +51,15 @@ const Shot = struct {
     pub fn move(self: *Shot, deltaTime: f32) void {
         self.position += v2.mulScalar(self.velocity, deltaTime);
     }
+
+    pub fn hit_ground(self: *Shot) bool {
+        return self.position[1] >= basics.ground_level;
+    }
+
+    pub fn out_of_bounds(self: *Shot) bool {
+        return self.position[0] < 0 or self.position[0] > window_width or
+               self.position[1] < 0 or self.position[1] > window_height;
+    }
 };
 
 pub const GameState = struct {
@@ -93,11 +102,10 @@ pub const GameState = struct {
                 // Remove shots that are out of bounds
                 var i: usize = 0;
                 while (i < self.shots.items.len) {
-                    const shot = self.shots.items[i];
-                    const hit_ground = shot.position[1] > basics.ground_level;
-                    if (shot.position[1] < 0 or hit_ground or
-                        shot.position[0] < 0 or
-                        shot.position[0] > window_width)
+                    const shot = &self.shots.items[i];
+                    const hit_ground = shot.hit_ground();
+                    const out_of_bounds = shot.out_of_bounds();
+                    if (hit_ground or out_of_bounds)
                     {
                         std.debug.print("Removing shot at index {}\n", .{i});
                         _ = self.shots.swapRemove(i);
