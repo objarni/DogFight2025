@@ -134,10 +134,6 @@ pub const GameState = struct {
                         _ = self.shots.swapRemove(shot_ix)
                     else
                         shot_ix += 1;
-                    // if (remove_shot)
-                    //     self.shots.swapRemove(shot_ix)
-                    // else
-                    //     shot_ix += 1;
                 }
 
                 // Move planes
