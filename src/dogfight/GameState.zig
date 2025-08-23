@@ -112,11 +112,7 @@ pub const GameState = struct {
                 // Remove shots that are out of bounds
                 var i: usize = 0;
                 while (i < self.shots.items.len) {
-                    const shot = &self.shots.items[i];
-                    if (shot.out_of_bounds()) {
-                        std.debug.print("Removing shot at index {}\n", .{i});
-                        _ = self.shots.swapRemove(i);
-                    } else i += 1;
+                    if (self.shots.items[i].out_of_bounds()) _ = self.shots.swapRemove(i) else i += 1;
                 }
                 // Does a shot hit plane?
                 var shot_ix: usize = 0;
