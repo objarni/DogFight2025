@@ -337,7 +337,7 @@ fn drawGame(
         const plane = state.players[plane_ix].plane;
         const rectangle = rl.Rectangle{
             .x = plane.position[0] - 14,
-            .y = window_height - 29,
+            .y = window_height - 28,
             .width = @floatFromInt(res.plane.width - 9),
             .height = 4,
         };
