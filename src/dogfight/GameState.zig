@@ -25,13 +25,13 @@ const V = v2.V;
 const v = v2.v;
 
 const plane1_initial_parameters: PlaneConstants = .{
-    .initial_position = v(20.0, window_height - 30),
+    .initial_position = v(20.0, basics.ground_level),
     .takeoff_length = 150.0,
     .ground_acceleration_per_second = 40.0,
 };
 
 const plane2_initial_parameters: PlaneConstants = .{
-    .initial_position = v(window_width - 280, window_height - 30),
+    .initial_position = v(window_width - 280, basics.ground_level),
     .takeoff_length = 150.0,
     .ground_acceleration_per_second = 40.0,
 };
@@ -94,7 +94,7 @@ pub const GameState = struct {
                 var i: usize = 0;
                 while (i < self.shots.items.len) {
                     const shot = self.shots.items[i];
-                    const hit_ground = shot.position[1] > self.players[0].plane.plane_constants.initial_position[1];
+                    const hit_ground = shot.position[1] > basics.ground_level;
                     if (shot.position[1] < 0 or hit_ground or
                         shot.position[0] < 0 or
                         shot.position[0] > window_width)

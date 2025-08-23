@@ -48,3 +48,4 @@ pub const PropellerAudio = struct {
 
 pub const window_width: u16 = 960;
 pub const window_height: u16 = 540;
+pub const ground_level: f32 = window_height - 30;
