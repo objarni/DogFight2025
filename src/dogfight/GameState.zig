@@ -57,8 +57,9 @@ const Shot = struct {
     }
 
     pub fn out_of_bounds(self: *Shot) bool {
-        return self.position[0] < 0 or self.position[0] > window_width or
-               self.position[1] < 0 or self.position[1] > window_height;
+        const x = self.position[0];
+        const y = self.position[1];
+        return x < 0 or x > window_width or y < 0 or self.hit_ground();
     }
 };
 
@@ -98,26 +99,23 @@ pub const GameState = struct {
                 // Move shots
                 for (self.shots.items) |*shot| {
                     shot.move(time.deltaTime);
+                    if (shot.hit_ground()) {
+                        self.explosions[self.num_explosions] = Explosion.init(
+                            0.3,
+                            shot.position,
+                            4,
+                            0,
+                        );
+                        self.num_explosions += 1;
+                    }
                 }
                 // Remove shots that are out of bounds
                 var i: usize = 0;
                 while (i < self.shots.items.len) {
                     const shot = &self.shots.items[i];
-                    const hit_ground = shot.hit_ground();
-                    const out_of_bounds = shot.out_of_bounds();
-                    if (hit_ground or out_of_bounds)
-                    {
+                    if (shot.out_of_bounds()) {
                         std.debug.print("Removing shot at index {}\n", .{i});
                         _ = self.shots.swapRemove(i);
-                        if (hit_ground) {
-                            self.explosions[self.num_explosions] = Explosion.init(
-                                0.3,
-                                shot.position,
-                                4,
-                                0,
-                            );
-                            self.num_explosions += 1;
-                        }
                     } else i += 1;
                 }
                 // Does a shot hit plane?
