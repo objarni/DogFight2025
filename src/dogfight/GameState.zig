@@ -93,6 +93,13 @@ pub const GameState = struct {
         self.shots.deinit();
     }
 
+    fn removeShotsOutOfBounds(self: *GameState) void {
+        var i: usize = 0;
+        while (i < self.shots.items.len) {
+            if (self.shots.items[i].out_of_bounds()) _ = self.shots.swapRemove(i) else i += 1;
+        }
+    }
+
     pub fn handleMsg(self: *GameState, msg: Msg, commands: *std.array_list.Managed(Command)) !void {
         switch (msg) {
             .timePassed => |time| {
@@ -110,10 +117,8 @@ pub const GameState = struct {
                     }
                 }
                 // Remove shots that are out of bounds
-                var i: usize = 0;
-                while (i < self.shots.items.len) {
-                    if (self.shots.items[i].out_of_bounds()) _ = self.shots.swapRemove(i) else i += 1;
-                }
+                self.removeShotsOutOfBounds();
+
                 // Does a shot hit plane?
                 var shot_ix: usize = 0;
                 var remove_shot: bool = undefined;
