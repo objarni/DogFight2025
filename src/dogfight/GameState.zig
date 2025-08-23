@@ -47,6 +47,10 @@ const Player = struct {
 const Shot = struct {
     position: V,
     velocity: V,
+
+    pub fn move(self: *Shot, deltaTime: f32) void {
+        self.position += v2.mulScalar(self.velocity, deltaTime);
+    }
 };
 
 pub const GameState = struct {
@@ -84,8 +88,7 @@ pub const GameState = struct {
             .timePassed => |time| {
                 // Move shots
                 for (self.shots.items) |*shot| {
-                    shot.position[0] += shot.velocity[0] * time.deltaTime;
-                    shot.position[1] += shot.velocity[1] * time.deltaTime;
+                    shot.move(time.deltaTime);
                 }
                 // Remove shots that are out of bounds
                 var i: usize = 0;
@@ -109,7 +112,6 @@ pub const GameState = struct {
                         }
                     } else i += 1;
                 }
-
                 // Does a shot hit plane?
                 var shot_ix: usize = 0;
                 var remove_shot: bool = undefined;
