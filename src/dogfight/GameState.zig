@@ -273,12 +273,11 @@ pub const GameState = struct {
     }
 
     fn updateExplosions(self: *GameState, time: TimePassed) void {
-        for (0..self.num_explosions) |ix| {
-            var e = &self.explosions[ix];
+        for (self.the_explosions.items) |*e|
             e.timePassed(time.deltaTime);
-        }
+
         var i: usize = 0;
-        while (i < self.num_explosions) {
+        while (i < self.the_explosions.items.len) {
             if (!self.explosions[i].alive)
                 _ = self.the_explosions.swapRemove(i)
             else
@@ -290,15 +289,13 @@ pub const GameState = struct {
         self.players[plane_ix].lives -= 1;
         self.players[plane_ix].resurrect_timeout = 4.0; // Time until plane can be resurrected
         for (0..5) |_| {
-            if (self.num_explosions < self.explosions.len) {
-                const rad = std.crypto.random.float(f32) * std.math.pi * 2;
-                const dist = std.crypto.random.float(f32) * 50.0;
-                const new_explosion = explosion.randomExplosionAt(
-                    self.players[plane_ix].plane.position[0] + dist * std.math.cos(rad),
-                    self.players[plane_ix].plane.position[1] + dist * std.math.sin(rad),
-                );
-                try self.the_explosions.append(self.ally, new_explosion);
-            }
+            const rad = std.crypto.random.float(f32) * std.math.pi * 2;
+            const dist = std.crypto.random.float(f32) * 50.0;
+            const new_explosion = explosion.randomExplosionAt(
+                self.players[plane_ix].plane.position[0] + dist * std.math.cos(rad),
+                self.players[plane_ix].plane.position[1] + dist * std.math.sin(rad),
+            );
+            try self.the_explosions.append(self.ally, new_explosion);
         }
         try commands.append(Command{
             .playSoundEffect = SoundEffect.crash,
