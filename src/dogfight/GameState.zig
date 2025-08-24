@@ -106,6 +106,7 @@ pub const GameState = struct {
     pub fn handleMsg(self: *GameState, msg: Msg, commands: *std.array_list.Managed(Command)) !void {
         switch (msg) {
             .timePassed => |time| {
+
                 // Move shots
                 for (self.shots.items) |*shot| {
                     shot.move(time.deltaTime);
@@ -278,7 +279,7 @@ pub const GameState = struct {
 
         var i: usize = 0;
         while (i < self.the_explosions.items.len) {
-            if (!self.explosions[i].alive)
+            if (!self.the_explosions.items[i].alive)
                 _ = self.the_explosions.swapRemove(i)
             else
                 i += 1;

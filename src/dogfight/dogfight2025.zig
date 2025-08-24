@@ -114,9 +114,11 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
         const after: i128 = std.time.nanoTimestamp();
         drawAverage += after - before;
         drawAverageCount += 1;
-        if (drawAverageCount == 10000) {
+        if (drawAverageCount == 2000) {
             const average: i128 = @divTrunc(@divTrunc(drawAverage, drawAverageCount), 1000);
             std.debug.print("average draw time: {d} ms\n", .{average});
+            std.debug.print("Number of the_explosions: {d}\n", .{game.the_explosions.items.len});
+            std.debug.print("Number of explosions: {d}\n", .{game.the_explosions.items.len});
             drawAverage = 0;
             drawAverageCount = 0;
         }
@@ -356,9 +358,8 @@ fn drawGame(
         rl.DrawTexture(res.cloud, @intFromFloat(cloud[0]), @intFromFloat(cloud[1]), color);
     }
 
-    for (0..state.num_explosions) |ix| {
-        drawExplosion(state.explosions[ix]);
-    }
+    for (state.the_explosions.items) |e|
+        drawExplosion(e);
 }
 
 fn drawRotatedTexture(texture: rl.struct_Texture, position: @Vector(2, f32), rotation_deg: f32, color: anytype) void {
