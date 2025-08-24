@@ -295,7 +295,7 @@ pub const GameState = struct {
 
         for (0..2) |plane_ix| {
             const plane = self.players[plane_ix].plane;
-            if (plane.state == PlaneState.FLYING) {
+            if (plane.state == PlaneState.FLYING and plane.power == 1) {
                 if (self.smoke_trails.items.len == 0 or
                     v2.len(plane.position - self.smoke_trails.items[self.smoke_trails.items.len - 1]) > 10)
                 {
