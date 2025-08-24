@@ -300,6 +300,7 @@ pub const GameState = struct {
                 );
                 self.explosions[self.num_explosions] = new_explosion;
                 self.num_explosions += 1;
+                try self.the_explosions.append(self.ally, new_explosion);
             }
         }
         try commands.append(Command{
