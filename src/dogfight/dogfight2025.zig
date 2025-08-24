@@ -44,7 +44,7 @@ fn initRaylib() Resources {
         .shoot = rl.LoadSound("assets/Shoot.wav"),
         .hit = rl.LoadSound("assets/Hit.wav"),
         .game_over = rl.LoadSound("assets/GameOver.mp3"),
-        .plane = rl.LoadTexture("assets/Plane.png"),
+        .plane = rl.LoadTexture("assets/Samuel-planes.png"),
         .cloud = rl.LoadTexture("assets/CloudBig.png"),
         .propellers = .{
             rl.LoadMusicStream("assets/PropellerPlane.mp3"),
@@ -340,7 +340,7 @@ fn drawGame(
         const rectangle = rl.Rectangle{
             .x = plane.position[0] - 14,
             .y = window_height - 28,
-            .width = @floatFromInt(res.plane.width - 9),
+            .width = 32,
             .height = 4,
         };
         rl.DrawRectangleRounded(rectangle, 2.0, 10, rl.BLACK);
@@ -349,7 +349,7 @@ fn drawGame(
             const position = plane.position;
             const rotation_deg = plane.direction;
             const color = if (plane_ix == 0) rl.WHITE else rl.GREEN;
-            drawRotatedTexture(texture, position, rotation_deg, color);
+            drawRotatedPlane(texture, position, rotation_deg, color);
         }
     }
 
@@ -371,14 +371,14 @@ fn drawGame(
         drawExplosion(e);
 }
 
-fn drawRotatedTexture(texture: rl.struct_Texture, position: @Vector(2, f32), rotation_deg: f32, color: anytype) void {
+fn drawRotatedPlane(texture: rl.struct_Texture, position: @Vector(2, f32), rotation_deg: f32, color: anytype) void {
+    const w: f32 = 32;
     const source_rect = rl.Rectangle{
         .x = 0,
         .y = 0,
-        .width = @floatFromInt(texture.width),
+        .width = w,
         .height = @floatFromInt(texture.height),
     };
-    const w: f32 = @floatFromInt(texture.width);
     const h: f32 = @floatFromInt(texture.height);
     const dest_rect = rl.Rectangle{
         .x = position[0],
