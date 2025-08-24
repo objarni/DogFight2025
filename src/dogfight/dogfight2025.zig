@@ -353,6 +353,15 @@ fn drawGame(
         }
     }
 
+    for(state.smoke_trails.items) |smoke| {
+        rl.DrawCircle(
+            @intFromFloat(smoke[0]),
+            @intFromFloat(smoke[1]),
+            10,
+            rl.GRAY,
+        );
+    }
+
     for (state.clouds) |cloud| {
         const color = if (cloud[1] < 300) rl.LIGHTGRAY else rl.GRAY;
         rl.DrawTexture(res.cloud, @intFromFloat(cloud[0]), @intFromFloat(cloud[1]), color);

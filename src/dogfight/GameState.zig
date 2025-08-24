@@ -67,6 +67,7 @@ pub const GameState = struct {
     clouds: [2]V,
     players: [2]Player,
     the_explosions: std.ArrayList(Explosion) = .empty,
+    smoke_trails: std.ArrayList(V) = .empty,
     shots: std.ArrayList(Shot) = .empty,
     ally: std.mem.Allocator,
 
@@ -192,6 +193,18 @@ pub const GameState = struct {
                         player.resurrect_timeout -= time.deltaTime;
                         if (player.resurrect_timeout <= 0) {
                             player.plane = Plane.init(plane_constants[plane_ix]);
+                        }
+                    }
+                }
+
+                // Add smoke trails
+                for (0..2) |plane_ix| {
+                    const plane = self.players[plane_ix].plane;
+                    if (plane.state == PlaneState.FLYING) {
+                        if (self.smoke_trails.items.len == 0 or
+                            v2.len(plane.position - self.smoke_trails.items[self.smoke_trails.items.len - 1]) > 10)
+                        {
+                            try self.smoke_trails.append(self.ally, plane.position);
                         }
                     }
                 }
