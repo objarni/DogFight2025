@@ -110,13 +110,13 @@ pub const GameState = struct {
                 for (self.shots.items) |*shot| {
                     shot.move(time.deltaTime);
                     if (shot.hit_ground()) {
-                        self.explosions[self.num_explosions] = Explosion.init(
+                        const new_explosion = Explosion.init(
                             0.3,
                             shot.position,
                             4,
                             0,
                         );
-                        self.num_explosions += 1;
+                        try self.the_explosions.append(self.ally, new_explosion);
                     }
                 }
                 // Remove shots that are out of bounds
