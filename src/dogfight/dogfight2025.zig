@@ -348,8 +348,7 @@ fn drawGame(
             const texture = res.plane;
             const position = plane.position;
             const rotation_deg = plane.direction;
-            const color = if (plane_ix == 0) rl.WHITE else rl.GREEN;
-            drawRotatedPlane(texture, position, rotation_deg, color);
+            drawRotatedPlane(texture, position, rotation_deg, @intCast(plane_ix * 4));
         }
     }
 
@@ -371,11 +370,11 @@ fn drawGame(
         drawExplosion(e);
 }
 
-fn drawRotatedPlane(texture: rl.struct_Texture, position: @Vector(2, f32), rotation_deg: f32, color: anytype) void {
+fn drawRotatedPlane(texture: rl.struct_Texture, position: @Vector(2, f32), rotation_deg: f32, frame: u3) void {
     const w: f32 = 32;
     const h: f32 = 16;
     const source_rect = rl.Rectangle{
-        .x = 0,
+        .x = @as(f32, @floatFromInt(frame)) * w,
         .y = 0,
         .width = w,
         .height = h,
@@ -396,7 +395,7 @@ fn drawRotatedPlane(texture: rl.struct_Texture, position: @Vector(2, f32), rotat
         dest_rect,
         anchor,
         rotation_deg,
-        color,
+        rl.WHITE,
     );
 }
 
