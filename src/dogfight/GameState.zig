@@ -292,10 +292,11 @@ pub const GameState = struct {
             if (self.num_explosions < self.explosions.len) {
                 const rad = std.crypto.random.float(f32) * std.math.pi * 2;
                 const dist = std.crypto.random.float(f32) * 50.0;
-                self.explosions[self.num_explosions] = explosion.randomExplosionAt(
+                const new_explosion = explosion.randomExplosionAt(
                     self.players[plane_ix].plane.position[0] + dist * std.math.cos(rad),
                     self.players[plane_ix].plane.position[1] + dist * std.math.sin(rad),
                 );
+                self.explosions[self.num_explosions] = new_explosion;
                 self.num_explosions += 1;
             }
         }
