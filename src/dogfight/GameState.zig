@@ -299,8 +299,6 @@ pub const GameState = struct {
                     self.players[plane_ix].plane.position[0] + dist * std.math.cos(rad),
                     self.players[plane_ix].plane.position[1] + dist * std.math.sin(rad),
                 );
-                self.explosions[self.num_explosions] = new_explosion;
-                self.num_explosions += 1;
                 try self.the_explosions.append(self.ally, new_explosion);
             }
         }
