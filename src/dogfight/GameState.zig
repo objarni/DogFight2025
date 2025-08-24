@@ -66,8 +66,6 @@ const Shot = struct {
 pub const GameState = struct {
     clouds: [2]V,
     players: [2]Player,
-    explosions: [10]Explosion = undefined, // Array of explosions, max 10
-    num_explosions: u8 = 0,
     the_explosions: std.ArrayList(Explosion) = .empty,
     shots: std.array_list.Managed(Shot) = undefined,
     ally: std.mem.Allocator,
