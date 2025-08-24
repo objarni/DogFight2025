@@ -480,3 +480,4 @@ test {
 // TODO: figure out how to play menu theme at start of game (some kind of init for states?)
 // TODO: refactor away from array_list.Managed to std.ArrayList
 // TODO: Switch explosion array to array_list.Managed
+// TODO: Do not draw plane shadows when plane is dead
