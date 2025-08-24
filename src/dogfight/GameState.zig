@@ -70,6 +70,7 @@ pub const GameState = struct {
     num_explosions: u8 = 0,
     the_explosions: std.ArrayList(Explosion) = .empty,
     shots: std.array_list.Managed(Shot) = undefined,
+    ally: std.mem.Allocator,
 
     pub fn init(ally: std.mem.Allocator) GameState {
         return GameState{
@@ -87,6 +88,7 @@ pub const GameState = struct {
                 },
             },
             .shots = .init(ally),
+            .ally = ally,
         };
     }
 
