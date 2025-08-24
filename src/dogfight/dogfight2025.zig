@@ -373,13 +373,13 @@ fn drawGame(
 
 fn drawRotatedPlane(texture: rl.struct_Texture, position: @Vector(2, f32), rotation_deg: f32, color: anytype) void {
     const w: f32 = 32;
+    const h: f32 = 16;
     const source_rect = rl.Rectangle{
         .x = 0,
         .y = 0,
         .width = w,
-        .height = @floatFromInt(texture.height),
+        .height = h,
     };
-    const h: f32 = @floatFromInt(texture.height);
     const dest_rect = rl.Rectangle{
         .x = position[0],
         .y = position[1],
