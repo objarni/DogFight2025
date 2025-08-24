@@ -358,7 +358,7 @@ fn drawGame(
             @intFromFloat(smoke[0]),
             @intFromFloat(smoke[1]),
             10,
-            rl.GRAY,
+            rl.ColorAlpha(rl.GRAY, 0.5),
         );
     }
 
