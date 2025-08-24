@@ -67,7 +67,7 @@ pub const GameState = struct {
     clouds: [2]V,
     players: [2]Player,
     the_explosions: std.ArrayList(Explosion) = .empty,
-    shots: std.array_list.Managed(Shot) = undefined,
+    shots: std.ArrayList(Shot) = .empty,
     ally: std.mem.Allocator,
 
     pub fn init(ally: std.mem.Allocator) GameState {
@@ -85,13 +85,13 @@ pub const GameState = struct {
                     .lives = 3,
                 },
             },
-            .shots = .init(ally),
+            .shots = .empty,
             .ally = ally,
         };
     }
 
     pub fn deinit(self: *GameState) void {
-        self.shots.deinit();
+        self.shots.deinit(self.ally);
     }
 
     fn removeShotsOutOfBounds(self: *GameState) void {
@@ -262,7 +262,7 @@ pub const GameState = struct {
             std.math.cos(radians),
             std.math.sin(radians),
         );
-        try self.shots.append(Shot{
+        try self.shots.append(self.ally, Shot{
             .position = plane.position + v2.mulScalar(plane_direction, 20),
             .velocity = v2.mulScalar(plane.velocity, 3.0),
         });
