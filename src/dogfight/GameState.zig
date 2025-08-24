@@ -197,17 +197,7 @@ pub const GameState = struct {
                     }
                 }
 
-                // Add smoke trails
-                for (0..2) |plane_ix| {
-                    const plane = self.players[plane_ix].plane;
-                    if (plane.state == PlaneState.FLYING) {
-                        if (self.smoke_trails.items.len == 0 or
-                            v2.len(plane.position - self.smoke_trails.items[self.smoke_trails.items.len - 1]) > 10)
-                        {
-                            try self.smoke_trails.append(self.ally, plane.position);
-                        }
-                    }
-                }
+                try self.updateSmokeTrails(time);
 
                 // Move clouds
                 const deltaX: f32 = time.deltaTime;
@@ -295,6 +285,23 @@ pub const GameState = struct {
                 _ = self.the_explosions.swapRemove(i)
             else
                 i += 1;
+        }
+    }
+
+    fn updateSmokeTrails(self: *GameState, time: TimePassed) !void {
+        for(self.smoke_trails.items) |*smoke| {
+            smoke[1] -= 5 * time.deltaTime; // Move smoke up
+        }
+
+        for (0..2) |plane_ix| {
+            const plane = self.players[plane_ix].plane;
+            if (plane.state == PlaneState.FLYING) {
+                if (self.smoke_trails.items.len == 0 or
+                    v2.len(plane.position - self.smoke_trails.items[self.smoke_trails.items.len - 1]) > 10)
+                {
+                    try self.smoke_trails.append(self.ally, plane.position);
+                }
+            }
         }
     }
 
