@@ -44,6 +44,19 @@ pub const Plane = struct {
         };
     }
 
+    pub fn makeSmoke(self: Plane) !bool {
+        if (self.state != .FLYING)
+            return false;
+        // Probability of smoke is higher with lower power
+        const hurt: f32 = 5.0 - @as(f32, @floatFromInt(self.power));
+        std.debug.print("Plane power: {}, hurt: {}\n", .{self.power, hurt});
+        const smoke_probability = hurt * 2.0;
+        std.debug.print("Smoke probability: {}\n", .{smoke_probability});
+        const r = std.crypto.random.float(f32);
+        std.debug.print("Random value: {}\n", .{r});
+        return r * 100.0 < smoke_probability;
+    }
+
     pub fn rise(self: *Plane, pressed: bool) void {
         self.risingPressed = pressed;
         switch (self.state) {
@@ -114,7 +127,7 @@ pub const Plane = struct {
                 const radians = std.math.degreesToRadians(self.direction);
                 const acceleration = std.math.sin(radians);
                 speed += seconds * (10.0 + acceleration * 40.0);
-                if(speed > self.plane_constants.max_speed)
+                if (speed > self.plane_constants.max_speed)
                     speed = self.plane_constants.max_speed;
                 if (self.risingPressed)
                     self.direction -= (40.0 + speed) * seconds;

@@ -36,7 +36,7 @@ fn initRaylib() Resources {
     rl.SetConfigFlags(rl.FLAG_WINDOW_HIGHDPI);
     rl.InitWindow(window_width, window_height, "DogFight 2025");
     rl.InitAudioDevice();
-    //rl.ToggleFullscreen();
+    // rl.ToggleFullscreen();
 
     const res = Resources{
         .boom = rl.LoadSound("assets/Boom.wav"),
@@ -52,6 +52,8 @@ fn initRaylib() Resources {
         },
         .background = rl.LoadTexture("assets/Background.png"),
     };
+
+    // rl.SetTextureFilter(res.plane, rl.TEXTURE_FILTER_POINT);
 
     const screen_w = rl.GetScreenWidth();
     const screen_h = rl.GetScreenHeight();
@@ -117,8 +119,6 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
         if (drawAverageCount == 2000) {
             const average: i128 = @divTrunc(@divTrunc(drawAverage, drawAverageCount), 1000);
             std.debug.print("average draw time: {d} ms\n", .{average});
-            std.debug.print("Number of the_explosions: {d}\n", .{game.the_explosions.items.len});
-            std.debug.print("Number of explosions: {d}\n", .{game.the_explosions.items.len});
             drawAverage = 0;
             drawAverageCount = 0;
         }
