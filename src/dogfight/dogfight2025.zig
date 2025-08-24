@@ -338,9 +338,9 @@ fn drawGame(
     for (0..2) |plane_ix| {
         const plane = state.players[plane_ix].plane;
         const rectangle = rl.Rectangle{
-            .x = plane.position[0] - 14,
-            .y = window_height - 28,
-            .width = 32,
+            .x = plane.position[0] - 16,
+            .y = window_height - 25,
+            .width = 28,
             .height = 4,
         };
         rl.DrawRectangleRounded(rectangle, 2.0, 10, rl.BLACK);
