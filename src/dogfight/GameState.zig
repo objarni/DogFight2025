@@ -283,6 +283,7 @@ pub const GameState = struct {
                 std.debug.print("Removing dead explosion at index {}\n", .{i});
                 self.num_explosions -= 1;
                 self.explosions[i] = self.explosions[self.num_explosions];
+                _ = self.the_explosions.swapRemove(i);
             } else i += 1;
         }
     }
