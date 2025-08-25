@@ -168,7 +168,7 @@ test "initialization of plane" {
         .velocity = v(0, 0),
         .state = .STILL,
         .plane_constants = testPlaneConstants,
-        .direction = 0.0,
+        .direction = -20.0,
         .power = 5,
     };
     try std.testing.expectEqual(expected, plane);
