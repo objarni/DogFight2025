@@ -74,8 +74,8 @@ pub const Explosion = struct {
     }
 };
 
-fn writeExplosionString(buffer: *std.array_list.Managed(u8), explosion: Explosion) !void {
-    var writer = buffer.writer();
+fn writeExplosionString(ally: std.mem.Allocator, buffer: *std.ArrayList(u8), explosion: Explosion) !void {
+    var writer = buffer.writer(ally);
     try writer.print(
         \\t={d}
         \\outerPosition={d:.0},{d:.0}
@@ -144,9 +144,9 @@ test "explosion state printer" {
         std.math.pi,
     );
 
-    var actual = std.array_list.Managed(u8).init(ally);
-    defer actual.deinit();
-    try writeExplosionString(&actual, expl);
+    var actual: std.ArrayList(u8) = .empty;
+    defer actual.deinit(ally);
+    try writeExplosionString(ally, &actual, expl);
 
     try std.testing.expectEqualStrings(expected, actual.items);
 }
@@ -160,9 +160,9 @@ test "explosion init function" {
         std.math.pi / 4.0, // 45 degrees in radians
     );
 
-    var actual = std.array_list.Managed(u8).init(ally);
-    defer actual.deinit();
-    try writeExplosionString(&actual, explosion);
+    var actual: std.ArrayList(u8) = .empty;
+    defer actual.deinit(ally);
+    try writeExplosionString(ally, &actual, explosion);
 
     const expected =
         \\t=0
@@ -220,9 +220,9 @@ test "the life of an explosion 2" {
         \\
     ;
     const ally = std.testing.allocator;
-    var actual = std.array_list.Managed(u8).init(ally);
-    defer actual.deinit();
-    const writer = actual.writer();
+    var actual: std.ArrayList(u8) = .empty;
+    defer actual.deinit(ally);
+    const writer = actual.writer(ally);
     _ = try writer.write("Explosion at 50,50 of size 100, lifetime 1 second:\n\n");
     var explosion: Explosion = .init(
         1.0,
@@ -230,14 +230,14 @@ test "the life of an explosion 2" {
         100,
         std.math.pi * 1.001,
     );
-    try writeExplosionString(&actual, explosion);
+    try writeExplosionString(ally, &actual, explosion);
     explosion.timePassed(0.25);
-    try writeExplosionString(&actual, explosion);
+    try writeExplosionString(ally, &actual, explosion);
     explosion.timePassed(0.25);
-    try writeExplosionString(&actual, explosion);
+    try writeExplosionString(ally, &actual, explosion);
     explosion.timePassed(0.25);
-    try writeExplosionString(&actual, explosion);
+    try writeExplosionString(ally, &actual, explosion);
     explosion.timePassed(0.25);
-    try writeExplosionString(&actual, explosion);
+    try writeExplosionString(ally, &actual, explosion);
     try std.testing.expectEqualStrings(expectedStorybook, actual.items);
 }
