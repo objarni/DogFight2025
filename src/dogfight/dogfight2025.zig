@@ -116,8 +116,8 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
         const after: i128 = std.time.nanoTimestamp();
         drawAverage += after - before;
         drawAverageCount += 1;
-        if (drawAverageCount == 2000) {
-            const average: i128 = @divTrunc(@divTrunc(drawAverage, drawAverageCount), 1000);
+        if (drawAverageCount == 5000) {
+            const average: i128 = @divTrunc(@divTrunc(drawAverage, drawAverageCount), 5000);
             std.debug.print("average draw time: {d} ms\n", .{average});
             drawAverage = 0;
             drawAverageCount = 0;
@@ -420,14 +420,12 @@ fn executeCommands(
                     },
                     .crash => {
                         rl.PlaySound(res.crash);
-                        std.debug.print("Playing crash sound effect\n", .{});
                     },
                     .shoot => {
                         rl.PlaySound(res.shoot);
                     },
                     .game_over => {
                         rl.PlaySound(res.game_over);
-                        std.debug.print("Playing game over sound effect\n", .{});
                     },
                     .hit => {
                         rl.PlaySound(res.hit);

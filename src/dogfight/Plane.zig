@@ -50,11 +50,8 @@ pub const Plane = struct {
             return false;
         // Probability of smoke is higher with lower power
         const hurt: f32 = 5.0 - @as(f32, @floatFromInt(self.power));
-        std.debug.print("Plane power: {}, hurt: {}\n", .{self.power, hurt});
         const smoke_probability = hurt * 200.0 * time.deltaTime;
-        std.debug.print("Smoke probability: {}\n", .{smoke_probability});
         const r = std.crypto.random.float(f32);
-        std.debug.print("Random value: {}\n", .{r});
         return r * 100.0 < smoke_probability;
     }
 
