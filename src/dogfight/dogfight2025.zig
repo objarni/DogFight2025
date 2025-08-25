@@ -339,9 +339,9 @@ fn drawGame(
         const plane = state.players[plane_ix].plane;
         const rectangle = rl.Rectangle{
             .x = plane.position[0] - 16,
-            .y = window_height - 25,
-            .width = 28,
-            .height = 4,
+            .y = window_height - 28,
+            .width = 26,
+            .height = 3,
         };
         rl.DrawRectangleRounded(rectangle, 2.0, 10, rl.BLACK);
         if (state.players[plane_ix].resurrect_timeout <= 0) {
@@ -349,11 +349,16 @@ fn drawGame(
             const position = plane.position;
             const rotation_deg = plane.direction;
             const frame: u3 = @intFromFloat(std.crypto.random.float(f32) * 4);
-            drawRotatedPlane(texture, position, rotation_deg, @as(u3, @intCast(plane_ix * 4)) + frame);
+            drawRotatedPlane(
+                texture,
+                position,
+                rotation_deg,
+                @as(u3, @intCast(plane_ix * 4)) + frame,
+            );
         }
     }
 
-    for(state.smoke_trails.items) |smoke| {
+    for (state.smoke_trails.items) |smoke| {
         rl.DrawCircle(
             @intFromFloat(smoke[0]),
             @intFromFloat(smoke[1]),
@@ -429,7 +434,7 @@ fn executeCommands(
                     },
                     .hit => {
                         rl.PlaySound(res.hit);
-                    }
+                    },
                 }
             },
             .playPropellerAudio => |audio| {

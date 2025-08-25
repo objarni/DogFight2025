@@ -40,7 +40,7 @@ pub const Plane = struct {
             .velocity = v(0, 0),
             .state = .STILL,
             .plane_constants = constants,
-            .direction = 0.0,
+            .direction = -20.0,
             .power = 5,
         };
     }
@@ -50,7 +50,8 @@ pub const Plane = struct {
             return false;
         // Probability of smoke is higher with lower power
         const hurt: f32 = 5.0 - @as(f32, @floatFromInt(self.power));
-        const smoke_probability = hurt * 200.0 * time.deltaTime;
+        var smoke_probability = hurt * 200.0 * time.deltaTime;
+        if (self.power == 1) smoke_probability += 0.5;
         const r = std.crypto.random.float(f32);
         return r * 100.0 < smoke_probability;
     }
@@ -60,6 +61,8 @@ pub const Plane = struct {
         switch (self.state) {
             .STILL => |_| {
                 self.state = .TAKEOFF_ROLL;
+                self.direction = 0;
+                self.position[1] -= 3;
             },
             .TAKEOFF_ROLL => |_| {
                 const distanceFromStart = @abs(self.position[0] - self.plane_constants.initial_position[0]);
