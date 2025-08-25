@@ -15,12 +15,11 @@ const window_height: u16 = basics.window_height;
 
 pub const MenuState = struct {
     blink: bool = false,
-    es: std.array_list.Managed(Explosion),
+    es: std.ArrayList(Explosion),
     e: Explosion,
     ally: std.mem.Allocator,
 
     pub fn init(ally: std.mem.Allocator) MenuState {
-        const explosionsArray = std.array_list.Managed(Explosion).init(ally);
         return MenuState{
             .blink = false,
             .e = Explosion.init(
@@ -29,13 +28,13 @@ pub const MenuState = struct {
                 100.0,
                 std.math.pi / 4.0,
             ),
-            .es = explosionsArray,
+            .es = .empty,
             .ally = ally,
         };
     }
 
-    pub fn deinit(self: MenuState) void {
-        self.es.deinit();
+    pub fn deinit(self: *MenuState) void {
+        self.es.deinit(self.ally);
     }
 
     pub fn handleMsg(self: *MenuState, msg: Msg, commands: *std.array_list.Managed(Command)) !void {
@@ -61,8 +60,8 @@ pub const MenuState = struct {
                 self.e.timePassed(time.deltaTime);
                 if (!self.e.alive) {
                     self.e = randomExplosion();
-                    try self.es.append(randomExplosion());
-                    try self.es.append(randomExplosion());
+                    try self.es.append(self.ally, randomExplosion());
+                    try self.es.append(self.ally, randomExplosion());
                 }
                 for (0..self.es.items.len) |ix| {
                     self.es.items[ix].timePassed(time.deltaTime);
