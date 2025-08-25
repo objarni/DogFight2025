@@ -17,6 +17,7 @@ pub const MenuState = struct {
     blink: bool = false,
     es: std.array_list.Managed(Explosion),
     e: Explosion,
+    ally: std.mem.Allocator,
 
     pub fn init(ally: std.mem.Allocator) MenuState {
         const explosionsArray = std.array_list.Managed(Explosion).init(ally);
@@ -29,6 +30,7 @@ pub const MenuState = struct {
                 std.math.pi / 4.0,
             ),
             .es = explosionsArray,
+            .ally = ally,
         };
     }
 
