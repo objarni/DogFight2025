@@ -65,7 +65,8 @@ const Shot = struct {
 
 const Smoke = struct {
     position: V,
-    lifetime: f32 = 0.0, // seconds
+    lifetime: f32 = 0.0,
+    radius: f32,
 };
 
 pub const GameState = struct {
@@ -312,7 +313,7 @@ pub const GameState = struct {
             if (try plane.makeSmoke(time)) {
                 const new_smoke = Smoke{
                     .position = plane.position,
-                    .lifetime = 0.0,
+                    .radius = std.crypto.random.float(f32) * 10.0 + 2.5,
                 };
                 try self.smoke_trails.append(self.ally, new_smoke);
             }

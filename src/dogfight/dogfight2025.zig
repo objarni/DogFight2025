@@ -365,7 +365,7 @@ fn drawGame(
         rl.DrawCircle(
             @intFromFloat(smoke.position[0]),
             @intFromFloat(smoke.position[1]),
-            10,
+            smoke.radius,
             rl.ColorAlpha(rl.GRAY, 1.0 - smoke.lifetime),
         );
     }
