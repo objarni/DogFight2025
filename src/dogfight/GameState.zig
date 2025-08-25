@@ -219,7 +219,7 @@ pub const GameState = struct {
                     .plane2_rise => self.players[1].plane.rise(true),
                     .plane2_dive => self.players[1].plane.dive(true),
                     .plane2_fire => try self.planeFire(commands, 1),
-                    else => {},
+                    .general_action => { self.players[0].plane.power -= 1; },
                 }
                 for (0..2) |plane_ix| {
                     if (self.players[plane_ix].plane.state == PlaneState.CRASH and
@@ -295,7 +295,7 @@ pub const GameState = struct {
 
         for (0..2) |plane_ix| {
             const plane = self.players[plane_ix].plane;
-            if (try plane.makeSmoke())
+            if (try plane.makeSmoke(time))
                 try self.smoke_trails.append(self.ally, plane.position);
         }
     }
