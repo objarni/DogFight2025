@@ -102,6 +102,7 @@ pub const GameState = struct {
     }
 
     fn removeShotsOutOfBounds(self: *GameState) void {
+        // TODO: is it possible to write a generic function for this swapRemove pattern?
         var i: usize = 0;
         while (i < self.shots.items.len) {
             if (self.shots.items[i].out_of_bounds()) _ = self.shots.swapRemove(i) else i += 1;
@@ -299,6 +300,11 @@ pub const GameState = struct {
         for (self.smoke_trails.items) |*smoke| {
             smoke.lifetime += time.deltaTime;
             smoke.position[1] -= 5 * time.deltaTime; // Move smoke up
+        }
+
+        var i: usize = 0;
+        while (i < self.smoke_trails.items.len) {
+            if (self.smoke_trails.items[i].lifetime > 1.0) _ = self.smoke_trails.swapRemove(i) else i += 1;
         }
 
         for (0..2) |plane_ix| {
