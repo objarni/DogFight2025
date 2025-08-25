@@ -67,6 +67,7 @@ const Smoke = struct {
     position: V,
     lifetime: f32 = 0.0,
     radius: f32,
+    color: u8,
 };
 
 pub const GameState = struct {
@@ -310,10 +311,13 @@ pub const GameState = struct {
 
         for (0..2) |plane_ix| {
             const plane = self.players[plane_ix].plane;
+            const color: u8 = std.crypto.random.int(u6);
+            std.debug.print("Smoke color: {d}\n", .{color});
             if (try plane.makeSmoke(time)) {
                 const new_smoke = Smoke{
                     .position = plane.position,
                     .radius = std.crypto.random.float(f32) * 10.0 + 2.5,
+                    .color = color + 32,
                 };
                 try self.smoke_trails.append(self.ally, new_smoke);
             }

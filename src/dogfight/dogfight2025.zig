@@ -362,11 +362,17 @@ fn drawGame(
     }
 
     for (state.smoke_trails.items) |smoke| {
+        const color = rl.Color{
+            .r = smoke.color,
+            .g = smoke.color,
+            .b = smoke.color,
+            .a = 255,
+        };
         rl.DrawCircle(
             @intFromFloat(smoke.position[0]),
             @intFromFloat(smoke.position[1]),
             smoke.radius,
-            rl.ColorAlpha(rl.GRAY, 1.0 - smoke.lifetime),
+            rl.ColorAlpha(color, 1.0 - smoke.lifetime),
         );
     }
 
