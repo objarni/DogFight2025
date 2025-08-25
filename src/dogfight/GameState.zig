@@ -63,11 +63,16 @@ const Shot = struct {
     }
 };
 
+const Smoke = struct {
+    position: V,
+    lifetime: f32 = 0.0, // seconds
+};
+
 pub const GameState = struct {
     clouds: [2]V,
     players: [2]Player,
     the_explosions: std.ArrayList(Explosion) = .empty,
-    smoke_trails: std.ArrayList(V) = .empty,
+    smoke_trails: std.ArrayList(Smoke) = .empty,
     shots: std.ArrayList(Shot) = .empty,
     ally: std.mem.Allocator,
 
@@ -219,7 +224,9 @@ pub const GameState = struct {
                     .plane2_rise => self.players[1].plane.rise(true),
                     .plane2_dive => self.players[1].plane.dive(true),
                     .plane2_fire => try self.planeFire(commands, 1),
-                    .general_action => { self.players[0].plane.power -= 1; },
+                    .general_action => {
+                        self.players[0].plane.power -= 1;
+                    },
                 }
                 for (0..2) |plane_ix| {
                     if (self.players[plane_ix].plane.state == PlaneState.CRASH and
@@ -290,13 +297,19 @@ pub const GameState = struct {
 
     fn updateSmokeTrails(self: *GameState, time: TimePassed) !void {
         for (self.smoke_trails.items) |*smoke| {
-            smoke[1] -= 5 * time.deltaTime; // Move smoke up
+            smoke.lifetime += time.deltaTime;
+            smoke.position[1] -= 5 * time.deltaTime; // Move smoke up
         }
 
         for (0..2) |plane_ix| {
             const plane = self.players[plane_ix].plane;
-            if (try plane.makeSmoke(time))
-                try self.smoke_trails.append(self.ally, plane.position);
+            if (try plane.makeSmoke(time)) {
+                const new_smoke = Smoke{
+                    .position = plane.position,
+                    .lifetime = 0.0,
+                };
+                try self.smoke_trails.append(self.ally, new_smoke);
+            }
         }
     }
 

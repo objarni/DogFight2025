@@ -360,10 +360,10 @@ fn drawGame(
 
     for (state.smoke_trails.items) |smoke| {
         rl.DrawCircle(
-            @intFromFloat(smoke[0]),
-            @intFromFloat(smoke[1]),
+            @intFromFloat(smoke.position[0]),
+            @intFromFloat(smoke.position[1]),
             10,
-            rl.ColorAlpha(rl.GRAY, 0.5),
+            rl.ColorAlpha(rl.GRAY, 1.0 - smoke.lifetime),
         );
     }
 
