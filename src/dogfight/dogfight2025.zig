@@ -101,7 +101,6 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
         rl.BeginDrawing();
 
         // Draw
-        const before: i128 = std.time.nanoTimestamp();
         switch (currentState) {
             .menu => |_| {
                 drawMenu(menu);
@@ -112,15 +111,6 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
             .game_over => |_| {
                 drawGameOver(game_over, res);
             },
-        }
-        const after: i128 = std.time.nanoTimestamp();
-        drawAverage += after - before;
-        drawAverageCount += 1;
-        if (drawAverageCount == 5000) {
-            const average: i128 = @divTrunc(@divTrunc(drawAverage, drawAverageCount), 5000);
-            std.debug.print("average draw time: {d} ms\n", .{average});
-            drawAverage = 0;
-            drawAverageCount = 0;
         }
 
         // Update music streams
@@ -154,7 +144,20 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
         // If any of the players lives are 0, there is a winner
         if (game.players[0].lives == 0 or game.players[1].lives == 0)
             game_over.winning_player = if (game.players[0].lives > 0) 0 else 1;
-        rl.EndDrawing();
+
+        const before: i128 = std.time.nanoTimestamp();
+        {
+            rl.EndDrawing();
+        }
+        const after: i128 = std.time.nanoTimestamp();
+        drawAverage += after - before;
+        drawAverageCount += 1;
+        if (drawAverageCount == 5000) {
+            const average: i128 = @divTrunc(@divTrunc(drawAverage, drawAverageCount), 5000);
+            std.debug.print("average draw time: {d} ms\n", .{average});
+            drawAverage = 0;
+            drawAverageCount = 0;
+        }
     }
 }
 
