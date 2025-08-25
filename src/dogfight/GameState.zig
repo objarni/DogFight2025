@@ -138,7 +138,7 @@ pub const GameState = struct {
                         var plane = &self.players[player_ix].plane;
                         if (self.players[player_ix].resurrect_timeout <= 0) {
                             const distance = v2.len(plane.position - shot.position);
-                            if (distance < 10 and plane.state == PlaneState.FLYING) {
+                            if (distance < 20 and plane.state == PlaneState.FLYING) {
                                 remove_shot = true;
                                 plane.power -= 1;
                                 std.debug.print("Plane {d} hit, power left: {d}", .{ player_ix, plane.power });
