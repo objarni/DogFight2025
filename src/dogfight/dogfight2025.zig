@@ -84,9 +84,9 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
     var drawAverage: i128 = 0;
     var drawAverageCount: u32 = 0;
 
-    var allMsgs: std.array_list.Managed(Msg) = .init(ally);
-    defer allMsgs.deinit();
-    try allMsgs.ensureTotalCapacity(10);
+    var allMsgs: std.ArrayList(Msg) = .empty;
+    defer allMsgs.deinit(ally);
+    try allMsgs.ensureTotalCapacity(ally, 10);
 
     var menu: MenuState = .init(ally);
     defer menu.deinit();
@@ -118,7 +118,7 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
         rl.UpdateMusicStream(res.propellers[1]);
 
         allMsgs.clearRetainingCapacity();
-        try collectMessages(&allMsgs);
+        try collectMessages(ally, &allMsgs);
         for (allMsgs.items) |msg| {
             effects.clearRetainingCapacity();
             switch (currentState) {
@@ -161,40 +161,40 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
     }
 }
 
-fn collectMessages(allMsgs: *std.array_list.Managed(Msg)) !void {
+fn collectMessages(ally: std.mem.Allocator, allMsgs: *std.ArrayList(Msg)) !void {
     if (rl.IsKeyPressed(rl.KEY_SPACE))
-        try allMsgs.append(Msg{ .inputPressed = Inputs.general_action });
+        try allMsgs.append(ally, Msg{ .inputPressed = Inputs.general_action });
 
     if (rl.IsKeyPressed(rl.KEY_LEFT_CONTROL))
-        try allMsgs.append(Msg{ .inputPressed = Inputs.plane1_fire });
+        try allMsgs.append(ally, Msg{ .inputPressed = Inputs.plane1_fire });
     if (rl.IsKeyPressed(rl.KEY_A))
-        try allMsgs.append(Msg{ .inputPressed = Inputs.plane1_rise });
+        try allMsgs.append(ally, Msg{ .inputPressed = Inputs.plane1_rise });
     if (rl.IsKeyReleased(rl.KEY_A))
-        try allMsgs.append(Msg{ .inputReleased = Inputs.plane1_rise });
+        try allMsgs.append(ally, Msg{ .inputReleased = Inputs.plane1_rise });
 
     if (rl.IsKeyPressed(rl.KEY_S))
-        try allMsgs.append(Msg{ .inputPressed = Inputs.plane1_dive });
+        try allMsgs.append(ally, Msg{ .inputPressed = Inputs.plane1_dive });
     if (rl.IsKeyReleased(rl.KEY_S))
-        try allMsgs.append(Msg{ .inputReleased = Inputs.plane1_dive });
+        try allMsgs.append(ally, Msg{ .inputReleased = Inputs.plane1_dive });
 
     if (rl.IsKeyPressed(rl.KEY_PERIOD))
-        try allMsgs.append(Msg{ .inputPressed = Inputs.plane2_fire });
+        try allMsgs.append(ally, Msg{ .inputPressed = Inputs.plane2_fire });
     if (rl.IsKeyPressed(rl.KEY_J))
-        try allMsgs.append(Msg{ .inputPressed = Inputs.plane2_rise });
+        try allMsgs.append(ally, Msg{ .inputPressed = Inputs.plane2_rise });
     if (rl.IsKeyReleased(rl.KEY_J))
-        try allMsgs.append(Msg{ .inputReleased = Inputs.plane2_rise });
+        try allMsgs.append(ally, Msg{ .inputReleased = Inputs.plane2_rise });
 
     if (rl.IsKeyPressed(rl.KEY_K))
-        try allMsgs.append(Msg{ .inputPressed = Inputs.plane2_dive });
+        try allMsgs.append(ally, Msg{ .inputPressed = Inputs.plane2_dive });
     if (rl.IsKeyReleased(rl.KEY_K))
-        try allMsgs.append(Msg{ .inputReleased = Inputs.plane2_dive });
+        try allMsgs.append(ally, Msg{ .inputReleased = Inputs.plane2_dive });
 
     const timePassed = Msg{ .timePassed = TimePassed{
         .totalTime = @floatCast(rl.GetTime()),
         .deltaTime = @floatCast(rl.GetFrameTime()),
     } };
 
-    allMsgs.append(timePassed) catch |err| {
+    allMsgs.append(ally, timePassed) catch |err| {
         std.debug.print("Error appending time message: {}\n", .{err});
     };
 }
