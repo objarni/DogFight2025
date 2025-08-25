@@ -16,19 +16,21 @@ const window_height: u16 = basics.window_height;
 pub const GameOverState = struct {
     blink: bool = false,
     winning_player: u1,
+    ally: std.mem.Allocator,
 
-    pub fn init(winning_player: u1) GameOverState {
+    pub fn init(ally: std.mem.Allocator, winning_player: u1) GameOverState {
         return GameOverState{
             .blink = false,
             .winning_player = winning_player,
+            .ally = ally,
         };
     }
 
-    pub fn handleMsg(self: *GameOverState, msg: Msg, commands: *std.array_list.Managed(Command)) !void {
+    pub fn handleMsg(self: *GameOverState, msg: Msg, commands: *std.ArrayList(Command)) !void {
         switch (msg) {
             .inputPressed => |input| {
                 if (input == Inputs.general_action) {
-                    try commands.append(Command{
+                    try commands.append(self.ally, Command{
                         .switchScreen = SubScreen.menu,
                     });
                 }
@@ -48,9 +50,9 @@ pub const GameOverState = struct {
 
 test "GameOverState.handleMsg: hitting action button should switch to menu" {
     const ally = std.testing.allocator;
-    var gameover_state = GameOverState.init(0);
-    var actual_commands = std.array_list.Managed(Command).init(ally);
-    defer actual_commands.deinit();
+    var gameover_state = GameOverState.init(ally, 0);
+    var actual_commands: std.ArrayList(Command) = .empty;
+    defer actual_commands.deinit(ally);
     _ = try gameover_state.handleMsg(
         Msg{ .inputPressed = Inputs.general_action },
         &actual_commands,
@@ -67,11 +69,11 @@ test "GameOverState.handleMsg: hitting action button should switch to menu" {
 
 test "GameOverState.handleMsg: press space blinks every 0.5 second on game over screen" {
     const ally = std.testing.allocator;
-    var commands = std.array_list.Managed(Command).init(ally);
-    defer commands.deinit();
+    var commands: std.ArrayList(Command) = .empty;
+    defer commands.deinit(ally);
 
     // No text expected
-    var gameover_state: GameOverState = .init(0);
+    var gameover_state: GameOverState = .init(ally, 0);
     const msg = Msg{
         .timePassed = .{
             .totalTime = 0.41,

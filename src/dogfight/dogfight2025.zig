@@ -92,11 +92,11 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
     defer menu.deinit();
     var game: GameState = .init(ally);
     defer game.deinit();
-    var game_over: GameOverState = .init(0);
+    var game_over: GameOverState = .init(ally, 0);
     var currentState = State.menu;
 
-    var effects: std.array_list.Managed(Command) = .init(ally);
-    defer effects.deinit();
+    var effects: std.ArrayList(Command) = .empty;
+    defer effects.deinit(ally);
     while (!rl.WindowShouldClose()) {
         rl.BeginDrawing();
 
@@ -123,7 +123,7 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
             effects.clearRetainingCapacity();
             switch (currentState) {
                 .menu => |_| {
-                    try menu.handleMsg(msg, &effects);
+                    try menu.handleMsg(ally, msg, &effects);
                 },
                 .game => |_| {
                     try game.handleMsg(msg, &effects);

@@ -37,14 +37,14 @@ pub const MenuState = struct {
         self.es.deinit(self.ally);
     }
 
-    pub fn handleMsg(self: *MenuState, msg: Msg, commands: *std.array_list.Managed(Command)) !void {
+    pub fn handleMsg(self: *MenuState, ally: std.mem.Allocator, msg: Msg, commands: *std.ArrayList(Command)) !void {
         switch (msg) {
             .inputPressed => |input| {
                 if (input == Inputs.general_action) {
-                    try commands.append(Command{
+                    try commands.append(ally, Command{
                         .playSoundEffect = SoundEffect.boom,
                     });
-                    try commands.append(Command{
+                    try commands.append(ally, Command{
                         .switchScreen = SubScreen.game,
                     });
                 }
@@ -81,9 +81,10 @@ pub const MenuState = struct {
 test "MenuState.handleMsg: hitting action button should switch to game and play Boom sound" {
     const ally = std.testing.allocator;
     var menu_state = MenuState.init(ally);
-    var actual_commands = std.array_list.Managed(Command).init(ally);
-    defer actual_commands.deinit();
+    var actual_commands: std.ArrayList(Command) = .empty;
+    defer actual_commands.deinit(ally);
     _ = try menu_state.handleMsg(
+        ally,
         Msg{ .inputPressed = Inputs.general_action },
         &actual_commands,
     );
@@ -100,8 +101,8 @@ test "MenuState.handleMsg: hitting action button should switch to game and play 
 
 test "MenuState.handleMsg: press space blinks every 0.5 second on menu screen" {
     const ally = std.testing.allocator;
-    var commands = std.array_list.Managed(Command).init(ally);
-    defer commands.deinit();
+    var commands: std.ArrayList(Command) = .empty;
+    defer commands.deinit(ally);
 
     // No text expected
     var menuState: MenuState = .init(ally);
@@ -111,7 +112,7 @@ test "MenuState.handleMsg: press space blinks every 0.5 second on menu screen" {
             .deltaTime = 0.40,
         },
     };
-    _ = try menuState.handleMsg(msg, &commands);
+    _ = try menuState.handleMsg(ally, msg, &commands);
     try std.testing.expectEqual(menuState.blink, false);
 
     // Test expected
@@ -121,7 +122,7 @@ test "MenuState.handleMsg: press space blinks every 0.5 second on menu screen" {
             .deltaTime = 0.35,
         },
     };
-    _ = try menuState.handleMsg(msg2, &commands);
+    _ = try menuState.handleMsg(ally, msg2, &commands);
 
     try std.testing.expectEqual(menuState.blink, true);
 }
