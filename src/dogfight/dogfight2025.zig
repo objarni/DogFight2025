@@ -11,8 +11,8 @@ const Inputs = basics.Inputs;
 const TimePassed = basics.TimePassed;
 const State = basics.State;
 
-const window_width: u16 = 960;
-const window_height: u16 = 540;
+const window_width: u16 = basics.window_width;
+const window_height: u16 = basics.window_height;
 
 const Explosion = @import("Explosion.zig").Explosion;
 const MenuState = @import("MenuState.zig").MenuState;
