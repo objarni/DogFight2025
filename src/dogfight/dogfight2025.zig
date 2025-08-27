@@ -53,8 +53,6 @@ fn initRaylib() Resources {
         .background = rl.LoadTexture("assets/Background.png"),
     };
 
-    // rl.SetTextureFilter(res.plane, rl.TEXTURE_FILTER_POINT);
-
     const screen_w = rl.GetScreenWidth();
     const screen_h = rl.GetScreenHeight();
     const fb_w = rl.GetRenderWidth();
