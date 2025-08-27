@@ -144,7 +144,8 @@ pub const GameState = struct {
                             const distance = v2.len(plane.position - shot.position);
                             if (distance < 20) {
                                 remove_shot = true;
-                                plane.power -= 1;
+                                if (plane.power > 0)
+                                    plane.power -= 1;
                                 std.debug.print("Plane {d} hit, power left: {d}", .{ player_ix, plane.power });
                                 try commands.append(self.ally, Command{ .playSoundEffect = SoundEffect.hit });
                                 if (plane.power == 0)
@@ -326,6 +327,7 @@ pub const GameState = struct {
 
     fn crashPlane(self: *GameState, plane_ix: usize, commands: *std.ArrayList(Command)) !void {
         self.players[plane_ix].lives -= 1;
+        self.players[plane_ix].plane.state = PlaneState.CRASH;
         self.players[plane_ix].resurrect_timeout = 4.0; // Time until plane can be resurrected
         for (0..5) |_| {
             const rad = std.crypto.random.float(f32) * std.math.pi * 2;
