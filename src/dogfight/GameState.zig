@@ -40,7 +40,7 @@ const plane_constants: [2]PlaneConstants = .{ plane1_initial_parameters, plane2_
 
 const Player = struct {
     plane: Plane,
-    resurrect_timeout: f32 = 0.0, // Time until plane can be resurrected after crash
+    resurrect_timeout: f32, // Time until plane can be resurrected after crash
     lives: u8, // Number of lives for plane
 };
 
