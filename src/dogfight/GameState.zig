@@ -165,7 +165,7 @@ pub const GameState = struct {
                 };
                 for (0..2) |plane_ix| {
                     var player: *Player = &self.players[plane_ix];
-                    if (player.resurrect_timeout <= 0) {
+                    if (player.plane.visible()) {
                         const propellerPitch: f32 = @max(
                             0.5,
                             @min(
