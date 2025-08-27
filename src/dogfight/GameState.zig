@@ -313,7 +313,6 @@ pub const GameState = struct {
         for (0..2) |plane_ix| {
             const plane = self.players[plane_ix].plane;
             const color: u8 = std.crypto.random.int(u6);
-            std.debug.print("Smoke color: {d}\n", .{color});
             if (try plane.makeSmoke(time)) {
                 const new_smoke = Smoke{
                     .position = plane.position,
