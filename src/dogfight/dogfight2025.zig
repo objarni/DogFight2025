@@ -338,6 +338,8 @@ fn drawGame(
 
     for (0..2) |plane_ix| {
         const plane = state.players[plane_ix].plane;
+        if (!plane.visible())
+            continue;
         const rectangle = rl.Rectangle{
             .x = plane.position[0] - 16,
             .y = window_height - 28,

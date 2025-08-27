@@ -45,6 +45,10 @@ pub const Plane = struct {
         };
     }
 
+    pub fn visible(self: Plane) bool {
+        return self.state != .CRASH;
+    }
+
     pub fn makeSmoke(self: Plane, time: TimePassed) !bool {
         if (self.state != .FLYING)
             return false;
