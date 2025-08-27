@@ -347,18 +347,16 @@ fn drawGame(
             .height = 3,
         };
         rl.DrawRectangleRounded(rectangle, 2.0, 10, rl.BLACK);
-        if (state.players[plane_ix].resurrect_timeout <= 0) {
-            const texture = res.plane;
-            const position = plane.position;
-            const rotation_deg = plane.direction;
-            const frame: u3 = @intFromFloat(std.crypto.random.float(f32) * 4);
-            drawRotatedPlane(
-                texture,
-                position,
-                rotation_deg,
-                @as(u3, @intCast(plane_ix * 4)) + frame,
-            );
-        }
+        const texture = res.plane;
+        const position = plane.position;
+        const rotation_deg = plane.direction;
+        const frame: u3 = @intFromFloat(std.crypto.random.float(f32) * 4);
+        drawRotatedPlane(
+            texture,
+            position,
+            rotation_deg,
+            @as(u3, @intCast(plane_ix * 4)) + frame,
+        );
     }
 
     for (state.smoke_trails.items) |smoke| {
