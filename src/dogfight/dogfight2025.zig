@@ -52,6 +52,9 @@ fn initRaylib() Resources {
         },
         .background = rl.LoadTexture("assets/Background.png"),
     };
+    rl.SetSoundVolume(res.hit, 1.0);
+    rl.SetSoundVolume(res.shoot, 0.3);
+
 
     const screen_w = rl.GetScreenWidth();
     const screen_h = rl.GetScreenHeight();
