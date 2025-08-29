@@ -86,7 +86,6 @@ pub const Plane = struct {
                     self.state = .CRASH;
                 return;
             },
-            .FLYING => |_| {},
             else => {},
         }
     }
@@ -100,8 +99,8 @@ pub const Plane = struct {
             .TAKEOFF_ROLL => |_| {
                 self.state = .CRASH;
             },
-            .FLYING => |_| {},
-            else => {},
+            else => {
+            }
         }
     }
 
@@ -119,22 +118,23 @@ pub const Plane = struct {
                 }
             },
             .STALL => {
-                // In STALL state, the plane slowly descends
-                self.position[1] += 20.0 * seconds; // Descend at 20 pixels per second
+                self.velocity[1] += seconds;
+                self.position = self.position + v2.mulScalar(self.velocity, 10 * seconds);
+                if(self.divingPressed) {
+                    self.direction += 50.0 * seconds;
+                }
+                if(self.risingPressed) {
+                    self.direction -= 50.0 * seconds;
+                }
                 if (self.position[1] > basics.ground_level) {
                     self.state = .CRASH;
                     return;
                 }
                 // Allow recovery to FLYING state if the player presses rise and has some forward speed
                 const speed = self.computeSpeed();
-                if (self.risingPressed and speed > 30.0) {
+                std.debug.print("{d} {d}\n", .{speed, self.direction});
+                if (self.risingPressed and speed > 4.0 and (self.direction > 360-45 or self.direction < 45)) {
                     self.state = .FLYING;
-                    self.direction = -10.0; // Slightly nose up
-                    const radians = std.math.degreesToRadians(self.direction);
-                    self.velocity = v(
-                        speed * std.math.cos(radians),
-                        speed * std.math.sin(radians),
-                    );
                 }
             },
             .TAKEOFF_ROLL => {
@@ -149,8 +149,9 @@ pub const Plane = struct {
             },
             .FLYING => {
                 var speed = self.computeSpeed();
-                if (speed < 1.0) {
+                if (speed < 10.0) {
                     self.state = .STALL;
+                    self.velocity[1] = 0;
                     return;
                 }
                 const radians = std.math.degreesToRadians(self.direction);
