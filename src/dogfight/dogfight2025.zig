@@ -500,5 +500,3 @@ test {
 // TODO: wrap clouds around the screen
 // TODO: debris with gravity and rotation
 // TODO: figure out how to play menu theme at start of game (some kind of init for states?)
-// TODO: Do not draw plane shadows when plane is dead
-// TODO: remove smoke that whose lifetime is > 1.0
