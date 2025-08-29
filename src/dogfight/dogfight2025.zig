@@ -82,8 +82,8 @@ fn deinitRaylib(res: Resources) void {
 }
 
 fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
-    var drawAverage: i128 = 0;
-    var drawAverageCount: u32 = 0;
+    // var drawAverage: i128 = 0;
+    // var drawAverageCount: u32 = 0;
 
     var allMsgs: std.ArrayList(Msg) = .empty;
     defer allMsgs.deinit(ally);
@@ -146,19 +146,19 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
         if (game.players[0].lives == 0 or game.players[1].lives == 0)
             game_over.winning_player = if (game.players[0].lives > 0) 0 else 1;
 
-        const before: i128 = std.time.nanoTimestamp();
-        {
+        // const before: i128 = std.time.nanoTimestamp();
+        // {
             rl.EndDrawing();
-        }
-        const after: i128 = std.time.nanoTimestamp();
-        drawAverage += after - before;
-        drawAverageCount += 1;
-        if (drawAverageCount == 5000) {
-            const average: i128 = @divTrunc(@divTrunc(drawAverage, drawAverageCount), 5000);
-            std.debug.print("average draw time: {d} ms\n", .{average});
-            drawAverage = 0;
-            drawAverageCount = 0;
-        }
+        // }
+        // const after: i128 = std.time.nanoTimestamp();
+        // drawAverage += after - before;
+        // drawAverageCount += 1;
+        // if (drawAverageCount == 5000) {
+            // const average: i128 = @divTrunc(@divTrunc(drawAverage, drawAverageCount), 5000);
+            // std.debug.print("average draw time: {d} ms\n", .{average});
+            // drawAverage = 0;
+            // drawAverageCount = 0;
+        // }
     }
 }
 

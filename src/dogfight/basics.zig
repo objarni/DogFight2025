@@ -46,7 +46,7 @@ pub const PropellerAudio = struct {
     pitch: f32 = 0, // 1.0 is normal, 0.5 is half speed, 2.0 is double speed
 };
 
-pub const size_multiplier: f32 = 2.0;
+pub const size_multiplier: f32 = 1.0;
 pub const window_width: u16 = 960 * size_multiplier;
 pub const window_height: u16 = 540 * size_multiplier;
 pub const ground_level: f32 = window_height - 30;
