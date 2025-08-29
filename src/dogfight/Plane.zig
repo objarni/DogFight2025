@@ -18,6 +18,7 @@ pub const PlaneState = enum {
     TAKEOFF_ROLL,
     FLYING,
     CRASH,
+    STALL,
 };
 
 const tweak = @import("tweak.zig");
@@ -117,6 +118,25 @@ pub const Plane = struct {
                     self.state = .TAKEOFF_ROLL;
                 }
             },
+            .STALL => {
+                // In STALL state, the plane slowly descends
+                self.position[1] += 20.0 * seconds; // Descend at 20 pixels per second
+                if (self.position[1] > basics.ground_level) {
+                    self.state = .CRASH;
+                    return;
+                }
+                // Allow recovery to FLYING state if the player presses rise and has some forward speed
+                const speed = self.computeSpeed();
+                if (self.risingPressed and speed > 30.0) {
+                    self.state = .FLYING;
+                    self.direction = -10.0; // Slightly nose up
+                    const radians = std.math.degreesToRadians(self.direction);
+                    self.velocity = v(
+                        speed * std.math.cos(radians),
+                        speed * std.math.sin(radians),
+                    );
+                }
+            },
             .TAKEOFF_ROLL => {
                 const newVelocity = self.velocity + v(self.plane_constants.ground_acceleration_per_second * seconds, 0);
                 const newPosition = self.position + v(newVelocity[0] * seconds, 0);
@@ -129,6 +149,10 @@ pub const Plane = struct {
             },
             .FLYING => {
                 var speed = self.computeSpeed();
+                if (speed < 1.0) {
+                    self.state = .STALL;
+                    return;
+                }
                 const radians = std.math.degreesToRadians(self.direction);
                 const acceleration = std.math.sin(radians);
                 speed += seconds * (10.0 + acceleration * 40.0);
