@@ -19,6 +19,12 @@ const MenuState = @import("MenuState.zig").MenuState;
 const GameState = @import("GameState.zig").GameState;
 const GameOverState = @import("GameOverState.zig").GameOverState;
 
+const ScreenMode = enum {
+    windowed,
+    windowed_double,
+    fullscreen,
+};
+
 pub fn run() !void {
     const res = initRaylib();
     defer deinitRaylib(res);
@@ -82,6 +88,8 @@ fn deinitRaylib(res: Resources) void {
 fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
     // var drawAverage: i128 = 0;
     // var drawAverageCount: u32 = 0;
+    //
+    var screen_mode: ScreenMode = .windowed;
 
     var allMsgs: std.ArrayList(Msg) = .empty;
     defer allMsgs.deinit(ally);
@@ -99,8 +107,31 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
     while (!rl.WindowShouldClose()) {
 
         // Screen mode control
-        if (rl.IsKeyPressed(rl.KEY_F))
-            rl.ToggleFullscreen();
+        if (rl.IsKeyPressed(rl.KEY_F)) {
+            switch (screen_mode) {
+                .windowed => {
+                    // Switch to double size windowed
+                    screen_mode = .windowed_double;
+                    rl.SetWindowSize(window_width * 2, window_height * 2);
+                    if (rl.IsWindowFullscreen())
+                        rl.ToggleFullscreen();
+                },
+                .windowed_double => {
+                    // Switch to fullscreen
+                    screen_mode = .fullscreen;
+                    rl.SetWindowSize(window_width, window_height);
+                    if (!rl.IsWindowFullscreen())
+                        rl.ToggleFullscreen();
+                },
+                .fullscreen => {
+                    // Switch to windowed
+                    screen_mode = .windowed;
+                    rl.SetWindowSize(window_width, window_height);
+                    if (rl.IsWindowFullscreen())
+                        rl.ToggleFullscreen();
+                },
+            }
+        }
 
         rl.BeginDrawing();
 
