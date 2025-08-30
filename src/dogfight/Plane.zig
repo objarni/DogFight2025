@@ -149,11 +149,11 @@ pub const Plane = struct {
             },
             .FLYING => {
                 var speed = self.computeSpeed();
-                if (speed < 10.0) {
-                    self.state = .STALL;
-                    self.velocity[1] = 0;
-                    return;
-                }
+                // if (speed < 10.0) {
+                //     self.state = .STALL;
+                //     self.velocity[1] = 0;
+                //     return;
+                // }
                 const radians = std.math.degreesToRadians(self.direction);
                 const acceleration = std.math.sin(radians);
                 speed += seconds * (10.0 + acceleration * 40.0);
