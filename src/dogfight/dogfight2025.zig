@@ -166,7 +166,7 @@ fn collectMessages(ally: std.mem.Allocator, allMsgs: *std.ArrayList(Msg)) !void 
     if (rl.IsKeyPressed(rl.KEY_SPACE))
         try allMsgs.append(ally, Msg{ .inputPressed = Inputs.general_action });
 
-    if (rl.IsKeyPressed(rl.KEY_LEFT_CONTROL))
+    if (rl.IsKeyPressed(rl.KEY_LEFT_CONTROL) or rl.IsKeyPressed(rl.KEY_LEFT_SHIFT) or rl.IsKeyPressed(rl.KEY_ONE))
         try allMsgs.append(ally, Msg{ .inputPressed = Inputs.plane1_fire });
     if (rl.IsKeyPressed(rl.KEY_A))
         try allMsgs.append(ally, Msg{ .inputPressed = Inputs.plane1_rise });
@@ -178,7 +178,7 @@ fn collectMessages(ally: std.mem.Allocator, allMsgs: *std.ArrayList(Msg)) !void 
     if (rl.IsKeyReleased(rl.KEY_S))
         try allMsgs.append(ally, Msg{ .inputReleased = Inputs.plane1_dive });
 
-    if (rl.IsKeyPressed(rl.KEY_PERIOD))
+    if (rl.IsKeyPressed(rl.KEY_PERIOD) or rl.IsKeyPressed(rl.KEY_RIGHT_SHIFT) or rl.IsKeyPressed(rl.KEY_SEVEN))
         try allMsgs.append(ally, Msg{ .inputPressed = Inputs.plane2_fire });
     if (rl.IsKeyPressed(rl.KEY_J))
         try allMsgs.append(ally, Msg{ .inputPressed = Inputs.plane2_rise });
@@ -316,9 +316,16 @@ fn drawGame(
     rl.DrawCircle(window_width - 50, window_height - 100, 50, rl.RED);
     rl.DrawTexture(res.background, 0, window_height - res.background.height, rl.WHITE);
     drawTextCenteredAt(
-        "Red controls: A rise, S dive, LCtrl fire",
+        "Red controls: A rise, S dive",
         210,
         50,
+        20,
+        rl.BLACK,
+    );
+    drawTextCenteredAt(
+        "Fire with 1, LCTRL or LSHIFT",
+        210,
+        70,
         20,
         rl.BLACK,
     );
@@ -326,6 +333,13 @@ fn drawGame(
         "Green controls: J rise, K dive, . is fire",
         730,
         50,
+        20,
+        rl.BLACK,
+    );
+    drawTextCenteredAt(
+        "Fire with 7, . or RSHIFT",
+        730,
+        70,
         20,
         rl.BLACK,
     );
