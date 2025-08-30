@@ -85,11 +85,11 @@ fn deinitRaylib(res: Resources) void {
     rl.CloseWindow();
 }
 
+var screen_mode: ScreenMode = .windowed;
+
 fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
     // var drawAverage: i128 = 0;
     // var drawAverageCount: u32 = 0;
-    //
-    var screen_mode: ScreenMode = .windowed;
 
     var allMsgs: std.ArrayList(Msg) = .empty;
     defer allMsgs.deinit(ally);
@@ -248,12 +248,21 @@ fn drawTextCenteredAt(text: []const u8, x: i16, y: i16, fontSize: i16, color: rl
     rl.DrawText(text.ptr, x_pos, y_pos, fontSize, color);
 }
 
+fn multiplierForScreenMode() u16 {
+    return switch (screen_mode) {
+        .windowed => 1.0,
+        .windowed_double => 2.0,
+        .fullscreen => 1.0,
+    };
+}
+
 fn drawMenu(menu: MenuState) void {
+    const multiplier: u16 = multiplierForScreenMode();
     rl.ClearBackground(rl.DARKBLUE);
-    const textSize = 40;
-    drawCenteredText("Dogfight 2025", 180, textSize, rl.GREEN);
+    const textSize: u16 = 40 * multiplier;
+    drawCenteredText("Dogfight 2025", 180 * multiplier, textSize, rl.GREEN);
     if (menu.blink)
-        drawCenteredText("Press SPACE to START!", 220, 20, rl.GRAY);
+        drawCenteredText("Press SPACE to START!", 220 * multiplier, 20 * multiplier, rl.GRAY);
     drawExplosion(menu.e);
     for (menu.es.items) |e| {
         drawExplosion(e);
