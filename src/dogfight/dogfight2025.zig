@@ -531,3 +531,4 @@ test {
 // TODO: wrap clouds around the screen
 // TODO: debris with gravity and rotation
 // TODO: figure out how to play menu theme at start of game (some kind of init for states?)
+// TODO: center rendertexture on screen in fullscreen mode
