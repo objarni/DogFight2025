@@ -188,15 +188,23 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
             .width = @as(f32, @floatFromInt(res.target.texture.width)),
             .height = -@as(f32, @floatFromInt(res.target.texture.height)),
         };
-        const flipped_rect = rl.Rectangle{
+        const w = if(screen_mode == .fat_pixels) window_width * 2 else window_width;
+        const h = if(screen_mode == .fat_pixels) window_height * 2 else window_height;
+        const destination_rect = rl.Rectangle{
             .x = 0,
             .y = 0,
-            .width = @as(f32, @floatFromInt(basics.window_width)),
-            .height = @as(f32, @floatFromInt(basics.window_height)),
+            .width = @as(f32, @floatFromInt(w)),
+            .height = @as(f32, @floatFromInt(h)),
         };
         const pos = rl.Vector2{ .x = 0, .y = 0 };
-        // rl.DrawTextureRec(res.target.texture, flipped_rect, pos, rl.WHITE);
-        rl.DrawTexturePro(res.target.texture, source_rect, flipped_rect, pos, 0, rl.WHITE);
+        rl.DrawTexturePro(
+            res.target.texture,
+            source_rect,
+            destination_rect,
+            pos,
+            0,
+            rl.WHITE,
+        );
         rl.EndDrawing();
     }
 }
