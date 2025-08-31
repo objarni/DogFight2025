@@ -36,7 +36,10 @@ fn initRaylib() Resources {
     rl.SetConfigFlags(rl.FLAG_WINDOW_HIGHDPI);
     rl.InitWindow(window_width, window_height, "DogFight 2025");
     rl.InitAudioDevice();
-    const target = rl.LoadRenderTexture(320, 200);
+    const target = rl.LoadRenderTexture(
+        basics.window_width,
+        basics.window_height,
+    );
 
     const res = Resources{
         .target = target,
@@ -151,7 +154,21 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
 
         rl.EndTextureMode();
         rl.BeginDrawing();
-        rl.DrawTexture(res.target.texture, 0, 0, rl.WHITE);
+        const source_rect = rl.Rectangle{
+            .x = 0,
+            .y = 0,
+            .width = @as(f32, @floatFromInt(res.target.texture.width)),
+            .height = -@as(f32, @floatFromInt(res.target.texture.height)),
+        };
+        const flipped_rect = rl.Rectangle{
+            .x = 0,
+            .y = 0,
+            .width = @as(f32, @floatFromInt(basics.window_width)),
+            .height = @as(f32, @floatFromInt(basics.window_height)),
+        };
+        const pos = rl.Vector2{ .x = 0, .y = 0 };
+        // rl.DrawTextureRec(res.target.texture, flipped_rect, pos, rl.WHITE);
+        rl.DrawTexturePro(res.target.texture, source_rect, flipped_rect, pos, 0, rl.WHITE);
         rl.EndDrawing();
     }
 }
@@ -237,7 +254,12 @@ fn drawGameOver(game_over: GameOverState, res: Resources) void {
         color,
     );
     if (game_over.blink) {
-        drawCenteredText(if (red_won) "Red player won" else "Green player won", 320, 20, color);
+        drawCenteredText(
+            if (red_won) "Red player won" else "Green player won",
+            320,
+            20,
+            color,
+        );
     }
 }
 
