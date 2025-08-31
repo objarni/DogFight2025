@@ -36,8 +36,10 @@ fn initRaylib() Resources {
     rl.SetConfigFlags(rl.FLAG_WINDOW_HIGHDPI);
     rl.InitWindow(window_width, window_height, "DogFight 2025");
     rl.InitAudioDevice();
+    const target = rl.LoadRenderTexture(320, 200);
 
     const res = Resources{
+        .target = target,
         .boom = rl.LoadSound("assets/Boom.wav"),
         .crash = rl.LoadSound("assets/Crash.mp3"),
         .shoot = rl.LoadSound("assets/Shoot.wav"),
@@ -76,6 +78,7 @@ fn deinitRaylib(res: Resources) void {
     rl.UnloadMusicStream(res.propellers[0]);
     rl.UnloadMusicStream(res.propellers[1]);
     rl.CloseAudioDevice();
+    rl.UnloadRenderTexture(res.target);
     rl.CloseWindow();
 }
 
@@ -102,7 +105,7 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
         if (rl.IsKeyPressed(rl.KEY_F))
             rl.ToggleFullscreen();
 
-        rl.BeginDrawing();
+        rl.BeginTextureMode(res.target);
 
         // Draw
         switch (currentState) {
@@ -151,7 +154,7 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
 
         // const before: i128 = std.time.nanoTimestamp();
         // {
-        rl.EndDrawing();
+        rl.EndTextureMode();
         // }
         // const after: i128 = std.time.nanoTimestamp();
         // drawAverage += after - before;
@@ -162,6 +165,10 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
         // drawAverage = 0;
         // drawAverageCount = 0;
         // }
+        //
+        rl.BeginDrawing();
+        rl.DrawTexture(res.target.texture, 0, 0, rl.WHITE);
+        rl.EndDrawing();
     }
 }
 
@@ -283,6 +290,7 @@ const Resources = struct {
     cloud: rl.Texture2D,
     background: rl.Texture2D,
     propellers: [2]rl.Music,
+    target: rl.RenderTexture2D,
 };
 
 const tweak = @import("tweak.zig");
