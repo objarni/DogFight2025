@@ -235,9 +235,10 @@ fn collectMessages(ally: std.mem.Allocator, allMsgs: *std.ArrayList(Msg)) !void 
 }
 
 fn drawCenteredText(text: []const u8, y: u16, fontSize: u16, color: rl.Color) void {
+    const multiplier = multiplierForScreenMode();
     const textWidth: u16 = @intCast(rl.MeasureText(text.ptr, fontSize));
     const xPos: u16 = (window_width - textWidth) / 2;
-    rl.DrawText(text.ptr, xPos, y, fontSize, color);
+    rl.DrawText(text.ptr, xPos * multiplier, y * multiplier, fontSize * multiplier, color);
 }
 
 fn drawTextCenteredAt(text: []const u8, x: i16, y: i16, fontSize: i16, color: rl.Color) void {
@@ -257,12 +258,11 @@ fn multiplierForScreenMode() u16 {
 }
 
 fn drawMenu(menu: MenuState) void {
-    const multiplier: u16 = multiplierForScreenMode();
     rl.ClearBackground(rl.DARKBLUE);
-    const textSize: u16 = 40 * multiplier;
-    drawCenteredText("Dogfight 2025", 180 * multiplier, textSize, rl.GREEN);
+    const textSize: u16 = 40;
+    drawCenteredText("Dogfight 2025", 180, textSize, rl.GREEN);
     if (menu.blink)
-        drawCenteredText("Press SPACE to START!", 220 * multiplier, 20 * multiplier, rl.GRAY);
+        drawCenteredText("Press SPACE to START!", 220, 20, rl.GRAY);
     drawExplosion(menu.e);
     for (menu.es.items) |e| {
         drawExplosion(e);
