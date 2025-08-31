@@ -83,9 +83,6 @@ fn deinitRaylib(res: Resources) void {
 }
 
 fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
-    // var drawAverage: i128 = 0;
-    // var drawAverageCount: u32 = 0;
-
     var allMsgs: std.ArrayList(Msg) = .empty;
     defer allMsgs.deinit(ally);
     try allMsgs.ensureTotalCapacity(ally, 10);
@@ -152,20 +149,7 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
         if (game.players[0].lives == 0 or game.players[1].lives == 0)
             game_over.winning_player = if (game.players[0].lives > 0) 0 else 1;
 
-        // const before: i128 = std.time.nanoTimestamp();
-        // {
         rl.EndTextureMode();
-        // }
-        // const after: i128 = std.time.nanoTimestamp();
-        // drawAverage += after - before;
-        // drawAverageCount += 1;
-        // if (drawAverageCount == 5000) {
-        // const average: i128 = @divTrunc(@divTrunc(drawAverage, drawAverageCount), 5000);
-        // std.debug.print("average draw time: {d} ms\n", .{average});
-        // drawAverage = 0;
-        // drawAverageCount = 0;
-        // }
-        //
         rl.BeginDrawing();
         rl.DrawTexture(res.target.texture, 0, 0, rl.WHITE);
         rl.EndDrawing();
