@@ -85,6 +85,14 @@ fn deinitRaylib(res: Resources) void {
     rl.CloseWindow();
 }
 
+const ScreenMode = enum {
+    windowed,
+    fat_pixels,
+    fullscreen,
+};
+
+var screen_mode: ScreenMode = .windowed;
+
 fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
     var allMsgs: std.ArrayList(Msg) = .empty;
     defer allMsgs.deinit(ally);
@@ -102,8 +110,28 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
     while (!rl.WindowShouldClose()) {
 
         // Screen mode control
-        if (rl.IsKeyPressed(rl.KEY_F))
-            rl.ToggleFullscreen();
+        if (rl.IsKeyPressed(rl.KEY_F)) {
+            switch (screen_mode) {
+                .windowed => {
+                    screen_mode = .fat_pixels;
+                    rl.SetWindowPosition(0, 0);
+                    rl.SetWindowSize(basics.window_width * 2, basics.window_height * 2);
+                },
+                .fat_pixels => {
+                    screen_mode = .fullscreen;
+                    rl.SetWindowSize(basics.window_width, basics.window_height);
+                    rl.ToggleFullscreen();
+                },
+                .fullscreen => {
+                    screen_mode = .windowed;
+                    rl.ToggleFullscreen();
+                    rl.SetWindowPosition(
+                        @divTrunc(rl.GetScreenWidth() - basics.window_width, 2),
+                        @divTrunc(rl.GetScreenHeight() - basics.window_height, 2),
+                    );
+                },
+            }
+        }
 
         rl.BeginTextureMode(res.target);
 
