@@ -241,12 +241,18 @@ fn drawCenteredText(text: []const u8, y: u16, fontSize: u16, color: rl.Color) vo
     rl.DrawText(text.ptr, xPos * multiplier, y * multiplier, fontSize * multiplier, color);
 }
 
-fn drawTextCenteredAt(text: []const u8, x: i16, y: i16, fontSize: i16, color: rl.Color) void {
-    const text_width: i16 = @intCast(rl.MeasureText(text.ptr, fontSize));
-    const x_pos = x - @divFloor(text_width, 2);
-    const y_pos = y - @divFloor(fontSize, 2);
-    // std.debug.print("x: {d} y: {d} Text width: {d}", .{x_pos, y_pos, text_width});
-    rl.DrawText(text.ptr, x_pos, y_pos, fontSize, color);
+fn drawTextCenteredAt(text: []const u8, x: u16, y: u16, fontSize: u16, color: rl.Color) void {
+    const multiplier: u16 = multiplierForScreenMode();
+    const text_width: u16 = @intCast(rl.MeasureText(text.ptr, fontSize));
+    const x_pos: u16 = x - @divFloor(text_width, 2);
+    const y_pos: u16 = y - @divFloor(fontSize, 2);
+    rl.DrawText(
+        text.ptr,
+        x_pos * multiplier,
+        y_pos * multiplier,
+        fontSize * multiplier,
+        color,
+    );
 }
 
 fn multiplierForScreenMode() u16 {
