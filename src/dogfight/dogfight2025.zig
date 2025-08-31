@@ -270,8 +270,9 @@ fn drawMenu(menu: MenuState) void {
     if (menu.blink)
         drawCenteredText("Press SPACE to START!", 220, 20, rl.GRAY);
     drawExplosion(menu.e);
-    for (menu.es.items) |e|
+    for (menu.es.items) |e| {
         drawExplosion(e);
+    }
 }
 
 fn drawGameOver(game_over: GameOverState, res: Resources) void {
@@ -296,24 +297,23 @@ fn drawGameOver(game_over: GameOverState, res: Resources) void {
 }
 
 fn drawExplosion(e: Explosion) void {
-    const multiplier = multiplierForScreenMode();
     if (!e.alive) return;
 
     rl.DrawCircle(
-        @as(u16, @intFromFloat(e.outerPosition[0])) * multiplier,
-        @as(u16, @intFromFloat(e.outerPosition[1])) * multiplier,
+        @intFromFloat(e.outerPosition[0]),
+        @intFromFloat(e.outerPosition[1]),
         e.outerDiameter / 2 + 1,
         rl.ORANGE,
     );
     rl.DrawCircle(
-        @as(u16, @intFromFloat(e.outerPosition[0])) * multiplier,
-        @as(u16, @intFromFloat(e.outerPosition[1])) * multiplier,
+        @intFromFloat(e.outerPosition[0]),
+        @intFromFloat(e.outerPosition[1]),
         e.outerDiameter / 2,
         rl.YELLOW,
     );
     rl.DrawCircle(
-        @as(u16, @intFromFloat(e.innerPosition[0])) * multiplier,
-        @as(u16, @intFromFloat(e.innerPosition[1])) * multiplier,
+        @intFromFloat(e.innerPosition[0]),
+        @intFromFloat(e.innerPosition[1]),
         e.innerDiameter / 2,
         rl.SKYBLUE,
     );
