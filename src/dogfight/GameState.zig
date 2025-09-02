@@ -278,10 +278,11 @@ pub const GameState = struct {
             std.math.cos(radians),
             std.math.sin(radians),
         );
-        try self.shots.append(self.ally, Shot{
-            .position = plane.position + v2.mulScalar(plane_direction, 20),
-            .velocity = v2.mulScalar(plane.velocity, 3.0),
-        });
+        const new_shot = Shot{
+            .position = plane.position + v2.mulScalar(plane_direction, 22),
+            .velocity = v2.mulScalar(plane_direction, 200) + v2.mulScalar(plane.velocity, 1.0),
+        };
+        try self.shots.append(self.ally, new_shot);
         try commands.append(self.ally, Command{
             .playSoundEffect = SoundEffect.shoot,
         });

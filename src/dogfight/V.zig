@@ -17,6 +17,12 @@ pub fn len(vec: V) f32 {
     return std.math.sqrt(vec[0] * vec[0] + vec[1] * vec[1]);
 }
 
+pub fn normalize(vec: V) V {
+    const length = len(vec);
+    if (length == 0) return vec;
+    return mulScalar(vec, 1.0 / length);
+}
+
 pub const V: type = @Vector(2, f32);
 
 const std = @import("std");
