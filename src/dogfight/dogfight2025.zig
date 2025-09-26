@@ -383,7 +383,7 @@ fn drawGame(
         rl.BLACK,
     );
     drawTextCenteredAt(
-        "Green controls: J rise, K dive, . is fire",
+        "Green controls: J rise, K dive",
         730,
         50,
         20,
