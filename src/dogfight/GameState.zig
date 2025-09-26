@@ -229,9 +229,7 @@ pub const GameState = struct {
                     .plane2_rise => self.players[1].plane.rise(true),
                     .plane2_dive => self.players[1].plane.dive(true),
                     .plane2_fire => try self.planeFire(commands, 1),
-                    .general_action => {
-                        self.players[0].plane.power -= 1;
-                    },
+                    else => {},
                 }
                 for (0..2) |plane_ix| {
                     if (self.players[plane_ix].plane.state == PlaneState.CRASH and
