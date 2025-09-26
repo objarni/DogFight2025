@@ -61,6 +61,10 @@ pub const Plane = struct {
         return r * 100.0 < smoke_probability;
     }
 
+    fn distanceFromStart(self: *Plane) f32 {
+        return @abs(self.position[0] - self.plane_constants.initial_position[0]);
+    }
+
     pub fn rise(self: *Plane, pressed: bool) void {
         self.risingPressed = pressed;
         switch (self.state) {
@@ -70,8 +74,8 @@ pub const Plane = struct {
                 self.position[1] -= 3;
             },
             .TAKEOFF_ROLL => |_| {
-                const distanceFromStart = @abs(self.position[0] - self.plane_constants.initial_position[0]);
-                if (distanceFromStart > self.plane_constants.takeoff_length) {
+                const distFromStart = self.distanceFromStart();
+                if (distFromStart > self.plane_constants.takeoff_length) {
                     self.state = .FLYING;
                     self.direction = -15;
                     const radians = std.math.degreesToRadians(self.direction);
@@ -82,7 +86,7 @@ pub const Plane = struct {
                     );
                     return;
                 }
-                if (distanceFromStart > 10)
+                if (distFromStart > 10.0)
                     self.state = .CRASH;
                 return;
             },
@@ -99,8 +103,7 @@ pub const Plane = struct {
             .TAKEOFF_ROLL => |_| {
                 self.state = .CRASH;
             },
-            else => {
-            }
+            else => {},
         }
     }
 
@@ -122,10 +125,10 @@ pub const Plane = struct {
             .STALL => {
                 self.velocity[1] += seconds;
                 self.position = self.position + v2.mulScalar(self.velocity, 10 * seconds);
-                if(self.divingPressed) {
+                if (self.divingPressed) {
                     self.direction += 50.0 * seconds;
                 }
-                if(self.risingPressed) {
+                if (self.risingPressed) {
                     self.direction -= 50.0 * seconds;
                 }
                 if (self.position[1] > basics.ground_level) {
@@ -134,8 +137,8 @@ pub const Plane = struct {
                 }
                 // Allow recovery to FLYING state if the player presses rise and has some forward speed
                 const speed = self.computeSpeed();
-                std.debug.print("{d} {d}\n", .{speed, self.direction});
-                if (self.risingPressed and speed > 4.0 and (self.direction > 360-45 or self.direction < 45)) {
+                std.debug.print("{d} {d}\n", .{ speed, self.direction });
+                if (self.risingPressed and speed > 4.0 and (self.direction > 360 - 45 or self.direction < 45)) {
                     self.state = .FLYING;
                 }
             },
@@ -148,7 +151,7 @@ pub const Plane = struct {
                 }
                 self.position = newPosition;
                 self.velocity = newVelocity;
-                self.direction = 15;
+                self.direction = -15;
             },
             .FLYING => {
                 var speed = self.computeSpeed();
@@ -237,7 +240,7 @@ test "plane is tilted during takeoff roll" {
     var plane = Plane.init(testPlaneConstants);
     plane.rise(true);
     plane.timePassed(2.0);
-    try std.testing.expectEqual(15, plane.direction);
+    try std.testing.expectEqual(-15, plane.direction);
 }
 
 test "plane crashes on dive - even when it has accelerated far enough" {
