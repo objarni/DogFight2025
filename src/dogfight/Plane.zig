@@ -111,12 +111,14 @@ pub const Plane = struct {
     pub fn timePassed(self: *Plane, seconds: f32) void {
         switch (self.state) {
             .STILL => {
+                // TODO: simplify to single condition
                 if (self.risingPressed) {
                     self.state = .TAKEOFF_ROLL;
                 } else if (self.divingPressed) {
                     self.state = .TAKEOFF_ROLL;
                 }
             },
+            // TODO: implement STALL state when speed is very low
             .STALL => {
                 self.velocity[1] += seconds;
                 self.position = self.position + v2.mulScalar(self.velocity, 10 * seconds);
@@ -146,6 +148,7 @@ pub const Plane = struct {
                 }
                 self.position = newPosition;
                 self.velocity = newVelocity;
+                self.direction = 15;
             },
             .FLYING => {
                 var speed = self.computeSpeed();
@@ -228,6 +231,13 @@ test "plane crashes if not enough speed during takeoff roll" {
     plane.timePassed(2.0);
     plane.rise(true);
     try std.testing.expectEqual(PlaneState.CRASH, plane.state);
+}
+
+test "plane is tilted during takeoff roll" {
+    var plane = Plane.init(testPlaneConstants);
+    plane.rise(true);
+    plane.timePassed(2.0);
+    try std.testing.expectEqual(15, plane.direction);
 }
 
 test "plane crashes on dive - even when it has accelerated far enough" {
