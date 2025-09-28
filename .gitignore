@@ -7,3 +7,5 @@ assets/.DS_Store
 # IDE specific
 .idea/
 ZigBrains.iml
+
+*.zip
