@@ -410,6 +410,8 @@ fn drawGame(
         const plane = state.players[plane_ix].plane;
         if (!plane.visible())
             continue;
+        if(plane_ix == 0)
+            std.debug.print("Plane 0 pos: {any} dir: {any}\n", .{plane.position, plane.direction});
         const rectangle = rl.Rectangle{
             .x = plane.position[0] - 16,
             .y = window_height - 28,

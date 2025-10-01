@@ -71,7 +71,7 @@ pub const Plane = struct {
             .STILL => |_| {
                 self.state = .TAKEOFF_ROLL;
                 self.direction = 0;
-                self.position[1] -= 3;
+                self.position[1] -= 1;
             },
             .TAKEOFF_ROLL => |_| {
                 const distFromStart = self.distanceFromStart();
