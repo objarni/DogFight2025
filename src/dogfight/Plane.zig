@@ -152,6 +152,8 @@ pub const Plane = struct {
                 self.position = newPosition;
                 self.velocity = newVelocity;
                 self.direction = if (self.distanceFromStart() > self.plane_constants.takeoff_length) 0 else -15;
+                if(self.direction == 0 and self.position[1] == self.plane_constants.initial_position[1] - 1)
+                    self.position[1] -= 2;
             },
             .FLYING => {
                 var speed = self.computeSpeed();
