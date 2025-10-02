@@ -190,8 +190,8 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
             .width = @as(f32, @floatFromInt(res.target.texture.width)),
             .height = -@as(f32, @floatFromInt(res.target.texture.height)),
         };
-        const w = if(screen_mode == .fat_pixels) window_width * 2 else window_width;
-        const h = if(screen_mode == .fat_pixels) window_height * 2 else window_height;
+        const w = if (screen_mode == .fat_pixels) window_width * 2 else window_width;
+        const h = if (screen_mode == .fat_pixels) window_height * 2 else window_height;
         const destination_rect = rl.Rectangle{
             .x = 0,
             .y = 0,
@@ -410,17 +410,26 @@ fn drawGame(
         );
     }
 
-    for(state.debris.items) |debris| {
+    for (state.debris.items) |debris| {
         const tex = if (debris.which == 0) res.debris1 else res.debris2;
-        rl.DrawTexture(tex,  @intFromFloat(debris.position[0]), @intFromFloat(debris.position[1]), rl.WHITE);
+        rl.DrawTextureEx(
+            tex,
+            rl.Vector2{
+                .x = debris.position[0],
+                .y = debris.position[1],
+            },
+            debris.direction,
+            1.0,
+            rl.WHITE,
+        );
     }
 
     for (0..2) |plane_ix| {
         const plane = state.players[plane_ix].plane;
         if (!plane.visible())
             continue;
-        if(plane_ix == 0)
-            std.debug.print("Plane 0 pos: {any} dir: {any}\n", .{plane.position, plane.direction});
+        if (plane_ix == 0)
+            std.debug.print("Plane 0 pos: {any} dir: {any}\n", .{ plane.position, plane.direction });
         const rectangle = rl.Rectangle{
             .x = plane.position[0] - 16,
             .y = window_height - 28,

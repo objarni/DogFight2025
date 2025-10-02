@@ -73,6 +73,8 @@ const Smoke = struct {
 const Debris = struct {
     position: V,
     velocity: V,
+    direction: f32,
+    angular_velocity: f32,
     which: u1,
 };
 
@@ -154,6 +156,8 @@ pub const GameState = struct {
                                     .position = plane.position,
                                     .velocity = v(0, 0),
                                     .which = std.crypto.random.int(u1),
+                                    .direction = std.crypto.random.float(f32) * 360.0,
+                                    .angular_velocity = std.crypto.random.float(f32) - 0.5,
                                 };
                                 try self.debris.append(self.ally, new_debris);
                                 remove_shot = true;
@@ -226,7 +230,7 @@ pub const GameState = struct {
                 const deltaX: f32 = time.deltaTime;
                 self.clouds[0][0] -= deltaX * 5.0;
                 self.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
-                for(0..2) |ix| {
+                for (0..2) |ix| {
                     if (self.clouds[ix][0] < -200.0) self.clouds[ix][0] += @as(f32, window_width) + 200.0;
                 }
 
