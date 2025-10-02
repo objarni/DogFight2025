@@ -153,7 +153,7 @@ pub const GameState = struct {
                                 const new_debris = Debris{
                                     .position = plane.position,
                                     .velocity = v(0, 0),
-                                    .which = @as(u1, std.crypto.random.int(u1)),
+                                    .which = std.crypto.random.int(u1),
                                 };
                                 try self.debris.append(self.ally, new_debris);
                                 remove_shot = true;
