@@ -176,6 +176,12 @@ pub const GameState = struct {
                         shot_ix += 1;
                 }
 
+                for(self.debris.items) |*d| {
+                    d.position += v2.mulScalar(d.velocity, time.deltaTime);
+                    d.direction += d.angular_velocity * time.deltaTime * 60.0;
+                    d.velocity[1] += 20.0 * time.deltaTime; // gravity
+                }
+
                 // Move planes
                 const plane_old_state: [2]PlaneState = .{
                     self.players[0].plane.state,
