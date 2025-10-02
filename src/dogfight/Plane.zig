@@ -123,24 +123,6 @@ pub const Plane = struct {
             },
             // TODO: implement STALL state when speed is very low
             .STALL => {
-                self.velocity[1] += seconds;
-                self.position = self.position + v2.mulScalar(self.velocity, 10 * seconds);
-                if (self.divingPressed) {
-                    self.direction += 50.0 * seconds;
-                }
-                if (self.risingPressed) {
-                    self.direction -= 50.0 * seconds;
-                }
-                if (self.position[1] > basics.ground_level) {
-                    self.state = .CRASH;
-                    return;
-                }
-                // Allow recovery to FLYING state if the player presses rise and has some forward speed
-                const speed = self.computeSpeed();
-                std.debug.print("{d} {d}\n", .{ speed, self.direction });
-                if (self.risingPressed and speed > 4.0 and (self.direction > 360 - 45 or self.direction < 45)) {
-                    self.state = .FLYING;
-                }
             },
             .TAKEOFF_ROLL => {
                 const newVelocity = self.velocity + v(self.plane_constants.ground_acceleration_per_second * seconds, 0);
@@ -157,11 +139,6 @@ pub const Plane = struct {
             },
             .FLYING => {
                 var speed = self.computeSpeed();
-                // if (speed < 10.0) {
-                //     self.state = .STALL;
-                //     self.velocity[1] = 0;
-                //     return;
-                // }
                 const radians = std.math.degreesToRadians(self.direction);
                 const acceleration = std.math.sin(radians);
                 speed += seconds * (10.0 + acceleration * 40.0);
