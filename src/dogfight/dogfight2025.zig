@@ -406,6 +406,15 @@ fn drawGame(
         );
     }
 
+    for(state.debris.items) |debris| {
+        rl.DrawCircle(
+            @intFromFloat(debris.position[0]),
+            @intFromFloat(debris.position[1]),
+            3,
+            rl.GRAY,
+        );
+    }
+
     for (0..2) |plane_ix| {
         const plane = state.players[plane_ix].plane;
         if (!plane.visible())
