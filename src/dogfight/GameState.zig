@@ -70,12 +70,19 @@ const Smoke = struct {
     color: u8,
 };
 
+const Debris = struct {
+    position: V,
+    velocity: V,
+    which: u1,
+};
+
 pub const GameState = struct {
     clouds: [2]V,
     players: [2]Player,
     the_explosions: std.ArrayList(Explosion) = .empty,
     smoke_trails: std.ArrayList(Smoke) = .empty,
     shots: std.ArrayList(Shot) = .empty,
+    debris: std.ArrayList(Debris) = .empty,
     ally: std.mem.Allocator,
 
     pub fn init(ally: std.mem.Allocator) GameState {
