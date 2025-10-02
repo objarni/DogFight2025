@@ -213,6 +213,9 @@ pub const GameState = struct {
                 const deltaX: f32 = time.deltaTime;
                 self.clouds[0][0] -= deltaX * 5.0;
                 self.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
+                for(0..2) |ix| {
+                    if (self.clouds[ix][0] < -200.0) self.clouds[ix][0] += @as(f32, window_width) + 200.0;
+                }
 
                 self.updateExplosions(time);
             },
