@@ -150,6 +150,12 @@ pub const GameState = struct {
                         if (plane.visible() and plane.state == PlaneState.FLYING) {
                             const distance = v2.len(plane.position - shot.position);
                             if (distance < 20) {
+                                const new_debris = Debris{
+                                    .position = plane.position,
+                                    .velocity = v(0, 0),
+                                    .which = @as(u1, std.crypto.random.int(u1)),
+                                };
+                                try self.debris.append(self.ally, new_debris);
                                 remove_shot = true;
                                 if (plane.power > 0)
                                     plane.power -= 1;
