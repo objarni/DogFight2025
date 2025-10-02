@@ -23,6 +23,15 @@ pub fn normalize(vec: V) V {
     return mulScalar(vec, 1.0 / length);
 }
 
+pub fn angleToDirection(angle_degrees: f32) V {
+    const radians = std.math.degreesToRadians(angle_degrees);
+    return v(
+        std.math.cos(radians),
+        std.math.sin(radians),
+    );
+}
+
+
 pub const V: type = @Vector(2, f32);
 
 const std = @import("std");

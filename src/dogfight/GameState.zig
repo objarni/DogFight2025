@@ -152,14 +152,7 @@ pub const GameState = struct {
                         if (plane.visible() and plane.state == PlaneState.FLYING) {
                             const distance = v2.len(plane.position - shot.position);
                             if (distance < 20) {
-                                const new_debris = Debris{
-                                    .position = plane.position,
-                                    .velocity = v(0, 0),
-                                    .which = std.crypto.random.int(u1),
-                                    .direction = std.crypto.random.float(f32) * 360.0,
-                                    .angular_velocity = std.crypto.random.float(f32) - 0.5,
-                                };
-                                try self.debris.append(self.ally, new_debris);
+                                try self.addDebris(shot);
                                 remove_shot = true;
                                 if (plane.power > 0)
                                     plane.power -= 1;
@@ -287,6 +280,17 @@ pub const GameState = struct {
                 }
             },
         }
+    }
+
+    fn addDebris(self: *GameState, shot: Shot) !void {
+        const new_debris = Debris{
+            .position = shot.position,
+            .velocity = v2.mulScalar(shot.velocity, 0.1),
+            .which = std.crypto.random.int(u1),
+            .direction = std.crypto.random.float(f32) * 360.0,
+            .angular_velocity = (std.crypto.random.float(f32) - 0.5) * 10.0,
+        };
+        try self.debris.append(self.ally, new_debris);
     }
 
     fn planeFire(self: *GameState, commands: *std.ArrayList(Command), player_ix: u1) !void {
