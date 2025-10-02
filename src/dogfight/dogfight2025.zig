@@ -50,6 +50,8 @@ fn initRaylib() Resources {
         .game_over = rl.LoadSound("assets/GameOver.mp3"),
         .plane = rl.LoadTexture("assets/Samuel-planes.png"),
         .cloud = rl.LoadTexture("assets/CloudBig.png"),
+        .debris1 = rl.LoadTexture("assets/Debris1.gif"),
+        .debris2 = rl.LoadTexture("assets/Debris2.gif"),
         .propellers = .{
             rl.LoadMusicStream("assets/PropellerPlane.mp3"),
             rl.LoadMusicStream("assets/PropellerPlane.mp3"),
@@ -331,6 +333,8 @@ const Resources = struct {
     plane: rl.Texture2D,
     cloud: rl.Texture2D,
     background: rl.Texture2D,
+    debris1: rl.Texture2D,
+    debris2: rl.Texture2D,
     propellers: [2]rl.Music,
     target: rl.RenderTexture2D,
 };
@@ -407,12 +411,8 @@ fn drawGame(
     }
 
     for(state.debris.items) |debris| {
-        rl.DrawCircle(
-            @intFromFloat(debris.position[0]),
-            @intFromFloat(debris.position[1]),
-            3,
-            rl.GRAY,
-        );
+        const tex = if (debris.which == 0) res.debris1 else res.debris2;
+        rl.DrawTexture(tex,  @intFromFloat(debris.position[0]), @intFromFloat(debris.position[1]), rl.WHITE);
     }
 
     for (0..2) |plane_ix| {
