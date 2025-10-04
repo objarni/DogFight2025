@@ -152,7 +152,7 @@ pub const GameState = struct {
                         if (plane.visible() and plane.state == PlaneState.FLYING) {
                             const distance = v2.len(plane.position - shot.position);
                             if (distance < 20) {
-                                for (1..(5 - plane.power)) |_| {
+                                for (1..2) |_| {
                                     try self.addDebris(shot);
                                 }
                                 remove_shot = true;
@@ -175,6 +175,11 @@ pub const GameState = struct {
                     d.position += v2.mulScalar(d.velocity, time.deltaTime);
                     d.direction += d.angular_velocity * time.deltaTime * 60.0;
                     d.velocity[1] += 20.0 * time.deltaTime; // gravity
+                    if (d.position[1] > basics.ground_level) {
+                        d.position[1] = basics.ground_level;
+                        d.velocity = v(0, 0);
+                        d.angular_velocity = 0;
+                    }
                 }
 
                 // Move planes
