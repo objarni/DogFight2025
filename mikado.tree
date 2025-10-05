@@ -1,0 +1,13 @@
+[ ] Implement v0.5
+  [ ] STALL state
+  [ ] Main theme music
+  [ ] Debris
+    [ ] Debris spawning
+      [x] Amount dependent on plane power
+      [ ] Spread debris in multiple directions
+      [ ] Spawn on plane ground crash
+  [ ] Annoyances and bugs
+    [ ] High DPI bug (raylib fix?)
+    [ ] Game over 'hack' in dogfight main loop
+    [ ] Audio spark on plane wrap
+    [ ] DRY: Generic swapRemove function?
