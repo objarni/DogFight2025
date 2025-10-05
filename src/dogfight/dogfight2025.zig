@@ -412,16 +412,7 @@ fn drawGame(
 
     for (state.debris.items) |debris| {
         const tex = if (debris.which == 0) res.debris1 else res.debris2;
-        rl.DrawTextureEx(
-            tex,
-            rl.Vector2{
-                .x = debris.position[0],
-                .y = debris.position[1],
-            },
-            debris.direction,
-            1.0,
-            rl.WHITE,
-        );
+        drawCentered(tex, debris.position, debris.direction);
     }
 
     for (0..2) |plane_ix| {
@@ -503,8 +494,8 @@ fn drawRotatedPlane(texture: rl.struct_Texture, position: @Vector(2, f32), rotat
 }
 
 fn drawCentered(texture: rl.struct_Texture, position: @Vector(2, f32), rotation_deg: f32) void {
-    const w = texture.width;
-    const h = texture.height;
+    const w: f32 = @floatFromInt(texture.width);
+    const h: f32 = @floatFromInt(texture.height);
     const source_rect = rl.Rectangle{
         .x = 0,
         .y = 0,
