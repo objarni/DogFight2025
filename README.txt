@@ -1,13 +1,13 @@
 DogFight casual 2 player game
 -----------------------------
 
-A small 2 player game written in Zig. Using Raylib for rendering and input handling.
+A small two-player 2D game written in Zig. Using Raylib for rendering and input handling.
 
 
 Requirements
 ------------
 
-Zig 0.14.1
+Zig 0.15.1
 
 
 Build and run
