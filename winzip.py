@@ -4,7 +4,7 @@ import zipfile
 import os
 
 def create_zip():
-    zip_path = "Dogfight2025.zip"
+    zip_path = "Dogfight2025-Win.zip"
     with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
         assets_dir = "zig-out/bin/assets"
         for root, _, files in os.walk(assets_dir):
