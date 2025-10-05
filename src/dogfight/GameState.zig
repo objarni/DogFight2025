@@ -182,6 +182,10 @@ pub const GameState = struct {
                         d.velocity = v(0, 0);
                         d.angular_velocity = 0;
                     }
+                    if(d.position[0] < 0)
+                        d.position[0] += @as(f32, window_width);
+                    if(d.position[0] > window_width)
+                        d.position[0] -= @as(f32, window_width);
                 }
 
                 // Move planes
