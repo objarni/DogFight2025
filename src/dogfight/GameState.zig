@@ -152,12 +152,15 @@ pub const GameState = struct {
                         if (plane.visible() and plane.state == PlaneState.FLYING) {
                             const distance = v2.len(plane.position - shot.position);
                             if (distance < 20) {
-                                for (1..2) |_| {
-                                    try self.addDebris(shot);
-                                }
                                 remove_shot = true;
                                 if (plane.power > 0)
                                     plane.power -= 1;
+                                const amount = debrisAmount(plane.power);
+                                if (amount > 0) {
+                                    for (1..amount) |_| {
+                                        try self.addDebris(shot);
+                                    }
+                                }
                                 std.debug.print("Plane {d} hit, power left: {d}", .{ player_ix, plane.power });
                                 try commands.append(self.ally, Command{ .playSoundEffect = SoundEffect.hit });
                                 if (plane.power == 0)
@@ -435,7 +438,6 @@ test "GameState: both clouds move left but the lower cloud moves faster" {
         0.1,
     );
 }
-
 
 fn debrisAmount(planePower: u8) u8 {
     if (planePower == 0) return 10;
