@@ -435,3 +435,19 @@ test "GameState: both clouds move left but the lower cloud moves faster" {
         0.1,
     );
 }
+
+
+fn debrisAmount(planePower: u8) u8 {
+    if (planePower == 0) return 10;
+    if (planePower == 1) return 5;
+    return 5 - planePower;
+}
+
+test "debrisAmount" {
+    try std.testing.expectEqual(0, debrisAmount(5));
+    try std.testing.expectEqual(1, debrisAmount(4));
+    try std.testing.expectEqual(2, debrisAmount(3));
+    try std.testing.expectEqual(3, debrisAmount(2));
+    try std.testing.expectEqual(5, debrisAmount(1));
+    try std.testing.expectEqual(10, debrisAmount(0));
+}
