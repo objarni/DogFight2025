@@ -176,7 +176,7 @@ pub const GameState = struct {
                 for (self.debris.items) |*d| {
                     d.position += v2.mulScalar(d.velocity, time.deltaTime);
                     d.direction += d.angular_velocity * time.deltaTime * 60.0;
-                    d.velocity[1] += 40.0 * time.deltaTime; // gravity
+                    d.velocity[1] += 80.0 * time.deltaTime; // gravity
                     if (d.position[1] > basics.ground_level) {
                         d.position[1] = basics.ground_level;
                         d.velocity = v(0, 0);
@@ -309,7 +309,7 @@ pub const GameState = struct {
         const spread = 45.0;
         const debris_direction = -spread / 2.0 + std.crypto.random.float(f32) * spread + shot_angle;
         const debris_velocity = v2.angleToVelocity(debris_direction);
-        const debris_speed = shot_speed * (0.5 * std.crypto.random.float(f32) + 0.25);
+        const debris_speed = shot_speed * (0.25 * std.crypto.random.float(f32) + 0.125);
         const new_debris = Debris{
             .position = shot.position,
             .velocity = baseVelocity + v2.mulScalar(debris_velocity, debris_speed),
@@ -393,6 +393,18 @@ pub const GameState = struct {
                 self.players[plane_ix].plane.position[1] + dist * std.math.sin(rad),
             );
             try self.the_explosions.append(self.ally, new_explosion);
+        }
+        for(1..10) |_| {
+            const debris_angle = std.crypto.random.float(f32) * 180.0;
+            const debris_speed = std.crypto.random.float(f32) * 100.0 + 50.0;
+            const debris_velocity = v2.mulScalar(v2.angleToVelocity(debris_angle),  debris_speed);
+            try self.addDebris(
+                Shot{
+                    .position = self.players[plane_ix].plane.position,
+                    .velocity = debris_velocity,
+                },
+                v(0, -100),
+            );
         }
         try commands.append(self.ally, Command{
             .playSoundEffect = SoundEffect.crash,

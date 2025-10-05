@@ -409,11 +409,6 @@ fn drawGame(
         );
     }
 
-    for (state.debris.items) |debris| {
-        const tex = if (debris.which == 0) res.debris1 else res.debris2;
-        drawCentered(tex, debris.position, debris.direction);
-    }
-
     for (0..2) |plane_ix| {
         const plane = state.players[plane_ix].plane;
         if (!plane.visible())
@@ -454,13 +449,18 @@ fn drawGame(
         );
     }
 
+    for (state.the_explosions.items) |e|
+        drawExplosion(e);
+
     for (state.clouds) |cloud| {
         const color = if (cloud[1] < 300) rl.LIGHTGRAY else rl.GRAY;
         rl.DrawTexture(res.cloud, @intFromFloat(cloud[0]), @intFromFloat(cloud[1]), color);
     }
 
-    for (state.the_explosions.items) |e|
-        drawExplosion(e);
+    for (state.debris.items) |debris| {
+        const tex = if (debris.which == 0) res.debris1 else res.debris2;
+        drawCentered(tex, debris.position, debris.direction);
+    }
 }
 
 fn drawRotatedPlane(texture: rl.struct_Texture, position: @Vector(2, f32), rotation_deg: f32, frame: u3) void {
