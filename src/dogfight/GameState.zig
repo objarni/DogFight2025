@@ -157,7 +157,7 @@ pub const GameState = struct {
                                 const amount = debrisAmount(plane.power);
                                 if (amount > 0) {
                                     for (1..amount) |_| {
-                                        try self.addDebris(shot);
+                                        try self.addDebris(shot, plane.velocity);
                                     }
                                 }
                                 std.debug.print("Plane {d} hit, power left: {d}", .{ player_ix, plane.power });
@@ -295,7 +295,7 @@ pub const GameState = struct {
         }
     }
 
-    fn addDebris(self: *GameState, shot: Shot) !void {
+    fn addDebris(self: *GameState, shot: Shot, baseVelocity: V) !void {
         //
         //           \  |  /
         //          PPPWWPP>
@@ -312,7 +312,7 @@ pub const GameState = struct {
         const debris_speed = shot_speed * (0.5 * std.crypto.random.float(f32) + 0.25);
         const new_debris = Debris{
             .position = shot.position,
-            .velocity = v2.mulScalar(debris_velocity, debris_speed),
+            .velocity = baseVelocity + v2.mulScalar(debris_velocity, debris_speed),
             .which = std.crypto.random.int(u1),
             .direction = std.crypto.random.float(f32) * 360.0,
             .angular_velocity = (std.crypto.random.float(f32) - 0.5) * 10.0,
@@ -456,11 +456,10 @@ test "GameState: both clouds move left but the lower cloud moves faster" {
     );
 }
 
-fn debrisAmount(_: u8) u8 {
-    return 10;
-    // if (planePower == 0) return 10;
-    // if (planePower == 1) return 5;
-    // return 5 - planePower;
+fn debrisAmount(planePower: u8) u8 {
+    if (planePower == 0) return 10;
+    if (planePower == 1) return 5;
+    return 5 - planePower;
 }
 
 test "debrisAmount" {
