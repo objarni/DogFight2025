@@ -176,7 +176,7 @@ pub const GameState = struct {
                 for (self.debris.items) |*d| {
                     d.position += v2.mulScalar(d.velocity, time.deltaTime);
                     d.direction += d.angular_velocity * time.deltaTime * 60.0;
-                    d.velocity[1] += 20.0 * time.deltaTime; // gravity
+                    d.velocity[1] += 40.0 * time.deltaTime; // gravity
                     if (d.position[1] > basics.ground_level) {
                         d.position[1] = basics.ground_level;
                         d.velocity = v(0, 0);
@@ -292,9 +292,23 @@ pub const GameState = struct {
     }
 
     fn addDebris(self: *GameState, shot: Shot) !void {
+        //
+        //           \  |  /
+        //          PPPWWPP>
+        //
+        //             S
+        //
+        //
+        //
+        const shot_angle = v2.velocityToAngle(shot.velocity);
+        const shot_speed = v2.len(shot.velocity);
+        const spread = 45.0;
+        const debris_direction = -spread / 2.0 + std.crypto.random.float(f32) * spread + shot_angle;
+        const debris_velocity = v2.angleToVelocity(debris_direction);
+        const debris_speed = shot_speed * (0.5 * std.crypto.random.float(f32) + 0.25);
         const new_debris = Debris{
             .position = shot.position,
-            .velocity = v2.mulScalar(shot.velocity, 0.1),
+            .velocity = v2.mulScalar(debris_velocity, debris_speed),
             .which = std.crypto.random.int(u1),
             .direction = std.crypto.random.float(f32) * 360.0,
             .angular_velocity = (std.crypto.random.float(f32) - 0.5) * 10.0,
@@ -438,10 +452,11 @@ test "GameState: both clouds move left but the lower cloud moves faster" {
     );
 }
 
-fn debrisAmount(planePower: u8) u8 {
-    if (planePower == 0) return 10;
-    if (planePower == 1) return 5;
-    return 5 - planePower;
+fn debrisAmount(_: u8) u8 {
+    return 10;
+    // if (planePower == 0) return 10;
+    // if (planePower == 1) return 5;
+    // return 5 - planePower;
 }
 
 test "debrisAmount" {

@@ -23,7 +23,7 @@ pub fn normalize(vec: V) V {
     return mulScalar(vec, 1.0 / length);
 }
 
-pub fn angleToDirection(angle_degrees: f32) V {
+pub fn angleToVelocity(angle_degrees: f32) V {
     const radians = std.math.degreesToRadians(angle_degrees);
     return v(
         std.math.cos(radians),
@@ -31,6 +31,9 @@ pub fn angleToDirection(angle_degrees: f32) V {
     );
 }
 
+pub fn velocityToAngle(dir: V) f32 {
+    return std.math.atan2(dir[1], dir[0]) * (180.0 / std.math.pi);
+}
 
 pub const V: type = @Vector(2, f32);
 
