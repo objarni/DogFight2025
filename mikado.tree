@@ -4,7 +4,7 @@
   [ ] Debris
     [ ] Debris spawning
       [x] Amount dependent on plane power
-      [ ] Spread debris in multiple directions
+      [x] Spread debris in multiple directions
       [ ] Spawn on plane ground crash
   [ ] Annoyances and bugs
     [ ] High DPI bug (raylib fix?)
