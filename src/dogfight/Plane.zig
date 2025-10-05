@@ -114,14 +114,10 @@ pub const Plane = struct {
     pub fn timePassed(self: *Plane, seconds: f32) void {
         switch (self.state) {
             .STILL => {
-                // TODO: simplify to single condition
-                if (self.risingPressed) {
-                    self.state = .TAKEOFF_ROLL;
-                } else if (self.divingPressed) {
+                if (self.risingPressed or self.divingPressed) {
                     self.state = .TAKEOFF_ROLL;
                 }
             },
-            // TODO: implement STALL state when speed is very low
             .STALL => {
             },
             .TAKEOFF_ROLL => {
@@ -271,8 +267,3 @@ test "plane flies if player presses rise when far enough from initial position" 
     try std.testing.expect(plane.position[1] < testPlaneConstants.initial_position[1]);
     try std.testing.expect(plane.velocity[1] < 0); // Assuming the plane is flying upwards
 }
-
-// TODO: introduce "STALL" state to very low speed - with gravity!
-// TODO: also STALL when hitting 'roof'
-// TODO: in STALL state, ability to recover to FLYING with enough y-velocity and direction downwards
-// TODO: Shots have base speed + speed of plane (instead of 2x plane speed)

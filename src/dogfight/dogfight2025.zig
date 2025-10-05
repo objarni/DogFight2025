@@ -177,7 +177,6 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
             }
         }
 
-        // TODO: this 'hack' is just so ugly :P
         // If any of the players lives are 0, there is a winner
         if (game.players[0].lives == 0 or game.players[1].lives == 0)
             game_over.winning_player = if (game.players[0].lives > 0) 0 else 1;
@@ -563,7 +562,6 @@ fn executeCommands(
                     rl.SetMusicVolume(res.propellers[plane], 0.5);
                     rl.SetMusicPitch(res.propellers[plane], audio.pitch);
                     rl.SetMusicPan(res.propellers[plane], 1 - audio.pan);
-                    // TODO: tween the pan value so that it doesn't jump left/right instantly
                 } else {
                     if (rl.IsMusicStreamPlaying(res.propellers[plane]))
                         rl.StopMusicStream(res.propellers[plane]);
@@ -603,8 +601,3 @@ test {
     _ = @import("Plane.zig");
     _ = @import("Explosion.zig");
 }
-
-// TODO: wrap clouds around the screen
-// TODO: debris with gravity and rotation
-// TODO: figure out how to play menu theme at start of game (some kind of init for states?)
-// TODO: center rendertexture on screen in fullscreen mode
