@@ -502,6 +502,35 @@ fn drawRotatedPlane(texture: rl.struct_Texture, position: @Vector(2, f32), rotat
     );
 }
 
+fn drawCentered(texture: rl.struct_Texture, position: @Vector(2, f32), rotation_deg: f32) void {
+    const w = texture.width;
+    const h = texture.height;
+    const source_rect = rl.Rectangle{
+        .x = 0,
+        .y = 0,
+        .width = w,
+        .height = h,
+    };
+    const dest_rect = rl.Rectangle{
+        .x = position[0],
+        .y = position[1],
+        .width = w,
+        .height = h,
+    };
+    const anchor = rl.Vector2{
+        .x = w / 2,
+        .y = h / 2,
+    };
+    rl.DrawTexturePro(
+        texture,
+        source_rect,
+        dest_rect,
+        anchor,
+        rotation_deg,
+        rl.WHITE,
+    );
+}
+
 const ExecuteCommandsResult = struct {
     new_state: State,
     state_changed: bool,
