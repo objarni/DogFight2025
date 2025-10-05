@@ -5,7 +5,7 @@
     [ ] Debris spawning
       [x] Amount dependent on plane power
       [x] Spread debris in multiple directions
-      [ ] Spawn on plane ground crash
+      [x] Spawn on plane ground crash
   [ ] Annoyances and bugs
     [ ] High DPI bug (raylib fix?)
     [ ] Game over 'hack' in dogfight main loop
