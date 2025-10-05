@@ -2,7 +2,7 @@
   [ ] STALL state
   [ ] Main theme music
   [ ] Debris
-    [ ] Debris spawning
+    [x] Debris spawning
       [x] Amount dependent on plane power
       [x] Spread debris in multiple directions
       [x] Spawn on plane ground crash
