@@ -1,13 +1,14 @@
 [ ] Implement v0.5
   [ ] STALL state
   [ ] Main theme music
-  [ ] Debris
-    [x] Debris spawning
-      [x] Amount dependent on plane power
-      [x] Spread debris in multiple directions
-      [x] Spawn on plane ground crash
+  [x] Debris
+    [x] Amount dependent on plane power
+    [x] Spread debris in multiple directions
+    [x] Spawn on plane ground crash
   [ ] Annoyances and bugs
-    [ ] High DPI bug (raylib fix?)
+    [ ] Reduce GameState.timePassed to max 20 lines
+      [x] Add updateShots(time) fn, and replace shot code with call to it
     [ ] Game over 'hack' in dogfight main loop
     [ ] Audio spark on plane wrap
     [ ] DRY: Generic swapRemove function?
+    [ ] High DPI bug (raylib fix?)

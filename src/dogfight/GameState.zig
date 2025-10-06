@@ -120,25 +120,26 @@ pub const GameState = struct {
         }
     }
 
+    fn updateShots(self: *GameState, time: TimePassed) !void {
+        for (self.shots.items) |*shot| {
+            shot.move(time.deltaTime);
+            if (shot.hit_ground()) {
+                const new_explosion = Explosion.init(
+                    0.3,
+                    shot.position,
+                    4,
+                    0,
+                );
+                try self.the_explosions.append(self.ally, new_explosion);
+            }
+        }
+        self.removeShotsOutOfBounds();
+    }
+
     pub fn handleMsg(self: *GameState, msg: Msg, commands: *std.ArrayList(Command)) !void {
         switch (msg) {
             .timePassed => |time| {
-
-                // Move shots
-                for (self.shots.items) |*shot| {
-                    shot.move(time.deltaTime);
-                    if (shot.hit_ground()) {
-                        const new_explosion = Explosion.init(
-                            0.3,
-                            shot.position,
-                            4,
-                            0,
-                        );
-                        try self.the_explosions.append(self.ally, new_explosion);
-                    }
-                }
-                // Remove shots that are out of bounds
-                self.removeShotsOutOfBounds();
+                try self.updateShots(time);
 
                 // Does a shot hit plane?
                 var shot_ix: usize = 0;
@@ -182,9 +183,9 @@ pub const GameState = struct {
                         d.velocity = v(0, 0);
                         d.angular_velocity = 0;
                     }
-                    if(d.position[0] < 0)
+                    if (d.position[0] < 0)
                         d.position[0] += @as(f32, window_width);
-                    if(d.position[0] > window_width)
+                    if (d.position[0] > window_width)
                         d.position[0] -= @as(f32, window_width);
                 }
 
@@ -394,10 +395,10 @@ pub const GameState = struct {
             );
             try self.the_explosions.append(self.ally, new_explosion);
         }
-        for(1..10) |_| {
+        for (1..10) |_| {
             const debris_angle = std.crypto.random.float(f32) * 180.0;
             const debris_speed = std.crypto.random.float(f32) * 100.0 + 50.0;
-            const debris_velocity = v2.mulScalar(v2.angleToVelocity(debris_angle),  debris_speed);
+            const debris_velocity = v2.mulScalar(v2.angleToVelocity(debris_angle), debris_speed);
             try self.addDebris(
                 Shot{
                     .position = self.players[plane_ix].plane.position,
