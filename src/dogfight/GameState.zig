@@ -397,14 +397,24 @@ pub const GameState = struct {
         }
         for (1..10) |_| {
             const debris_angle = std.crypto.random.float(f32) * 180.0;
-            const debris_speed = std.crypto.random.float(f32) * 100.0 + 50.0;
-            const debris_velocity = v2.mulScalar(v2.angleToVelocity(debris_angle), debris_speed);
+            const debris_speed = std.crypto.random.float(f32) * 50.0 + 30.0;
+            const debris_velocity = v2.mulScalar(
+                v2.angleToVelocity(debris_angle),
+                debris_speed,
+            );
             try self.addDebris(
                 Shot{
-                    .position = self.players[plane_ix].plane.position,
+                    .position = self.players[plane_ix].plane.position - v(0, 3),
                     .velocity = debris_velocity,
                 },
-                v(0, -100),
+                v(
+                    self.players[plane_ix].plane.velocity[0],
+                    -100,
+                ),
+            );
+            std.debug.print(
+                "Debris added at angle {d} speed {d}\n",
+                .{ debris_angle, debris_speed },
             );
         }
         try commands.append(self.ally, Command{
