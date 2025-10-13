@@ -296,7 +296,7 @@ pub const GameState = struct {
         }
     }
 
-    fn addDebris(self: *GameState, shot: Shot, baseVelocity: V) !void {
+    fn addDebris(self: *GameState, shot: Shot, plane_velocity: V) !void {
         //
         //           \  |  /
         //          PPPWWPP>
@@ -313,7 +313,7 @@ pub const GameState = struct {
         const debris_speed = shot_speed * (0.25 * std.crypto.random.float(f32) + 0.125);
         const new_debris = Debris{
             .position = shot.position,
-            .velocity = baseVelocity + v2.mulScalar(debris_velocity, debris_speed),
+            .velocity = plane_velocity + v2.mulScalar(debris_velocity, debris_speed),
             .which = std.crypto.random.int(u1),
             .direction = std.crypto.random.float(f32) * 360.0,
             .angular_velocity = (std.crypto.random.float(f32) - 0.5) * 10.0,
