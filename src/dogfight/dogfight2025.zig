@@ -48,6 +48,7 @@ fn initRaylib() Resources {
         .shoot = rl.LoadSound("assets/Shoot.wav"),
         .hit = rl.LoadSound("assets/Hit.wav"),
         .game_over = rl.LoadSound("assets/GameOver.mp3"),
+        .menu_theme = rl.LoadSound("assets/MenuTheme2.ogg"),
         .plane = rl.LoadTexture("assets/Samuel-planes.png"),
         .cloud = rl.LoadTexture("assets/CloudBig.png"),
         .debris1 = rl.LoadTexture("assets/Debris1.gif"),
@@ -174,6 +175,8 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
             if (result.state_changed) {
                 if (currentState == State.game)
                     game = GameState.init(ally);
+                if (currentState == State.menu)
+                    menu = MenuState.init(ally);
             }
         }
 
@@ -328,6 +331,7 @@ const Resources = struct {
     crash: rl.Sound,
     shoot: rl.Sound,
     game_over: rl.Sound,
+    menu_theme: rl.Sound,
     hit: rl.Sound,
     plane: rl.Texture2D,
     cloud: rl.Texture2D,
@@ -545,6 +549,9 @@ fn executeCommands(
                     },
                     .game_over => {
                         rl.PlaySound(res.game_over);
+                    },
+                    .menu_theme => {
+                        rl.PlaySound(res.menu_theme);
                     },
                     .hit => {
                         rl.PlaySound(res.hit);

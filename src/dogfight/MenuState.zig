@@ -18,6 +18,7 @@ pub const MenuState = struct {
     es: std.ArrayList(Explosion),
     e: Explosion,
     ally: std.mem.Allocator,
+    first_frame: bool,
 
     pub fn init(ally: std.mem.Allocator) MenuState {
         return MenuState{
@@ -30,6 +31,7 @@ pub const MenuState = struct {
             ),
             .es = .empty,
             .ally = ally,
+            .first_frame = true,
         };
     }
 
@@ -53,6 +55,12 @@ pub const MenuState = struct {
                 // Handle input release if needed
             },
             .timePassed => |time| {
+                if (self.first_frame) {
+                    self.first_frame = false;
+                    try commands.append(self.ally, Command{
+                        .playSoundEffect = SoundEffect.menu_theme,
+                    });
+                }
                 const numPeriods: f32 = time.totalTime / 0.5;
                 const intNumPeriods: u32 = @intFromFloat(numPeriods);
                 const blink: bool = intNumPeriods % 2 == 1;
