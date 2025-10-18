@@ -241,7 +241,6 @@ pub const GameState = struct {
                                 try self.addDebris(shot, plane.velocity);
                             }
                         }
-                        std.debug.print("Plane {d} hit, power left: {d}", .{ player_ix, plane.power });
                         try commands.append(self.ally, Command{ .playSoundEffect = SoundEffect.hit });
                         if (plane.power == 0)
                             try self.crashPlane(player_ix, commands);
@@ -337,10 +336,8 @@ pub const GameState = struct {
         const player_human_readable: u8 = @as(u8, player_ix) + 1;
         const plane = self.players[player_ix].plane;
         if (plane.state != PlaneState.FLYING) {
-            std.debug.print("Plane {d} cannot fire, not flying\n", .{player_human_readable});
             return;
         }
-        std.debug.print("Plane {d} firing\n", .{player_human_readable});
         const radians = std.math.degreesToRadians(plane.direction);
         const plane_direction = v(
             std.math.cos(radians),
@@ -423,10 +420,6 @@ pub const GameState = struct {
                     self.players[plane_ix].plane.velocity[0],
                     -100,
                 ),
-            );
-            std.debug.print(
-                "Debris added at angle {d} speed {d}\n",
-                .{ debris_angle, debris_speed },
             );
         }
         try commands.append(self.ally, Command{
