@@ -333,7 +333,6 @@ pub const GameState = struct {
     }
 
     fn planeFire(self: *GameState, commands: *std.ArrayList(Command), player_ix: u1) !void {
-        const player_human_readable: u8 = @as(u8, player_ix) + 1;
         const plane = self.players[player_ix].plane;
         if (plane.state != PlaneState.FLYING) {
             return;
