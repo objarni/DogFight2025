@@ -1,3 +1,3 @@
 [ ] GameState.handleMsg only contain calls to move() and collide(time, commands)
   [x] Add GameState.move(time) fn
-  [ ] Add GameState.collissions(time, commands) fn
+  [x] Add GameState.collissions(time, commands) fn

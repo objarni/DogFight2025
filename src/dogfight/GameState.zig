@@ -198,6 +198,41 @@ pub const GameState = struct {
         self.updateExplosions(time);
     }
 
+    pub fn collissions(self: *GameState, commands: *std.ArrayList(Command)) void {
+        // Does a shot hit plane?
+        var shot_ix: usize = 0;
+        var remove_shot: bool = undefined;
+        while (shot_ix < self.shots.items.len) {
+            const shot = self.shots.items[shot_ix];
+            remove_shot = false;
+            for (0..2) |player_ix| {
+                var plane = &self.players[player_ix].plane;
+                if (plane.visible() and plane.state == PlaneState.FLYING) {
+                    const distance = v2.len(plane.position - shot.position);
+                    if (distance < 20) {
+                        remove_shot = true;
+                        if (plane.power > 0)
+                            plane.power -= 1;
+                        const amount = debrisAmount(plane.power);
+                        if (amount > 0) {
+                            for (1..amount) |_| {
+                                try self.addDebris(shot, plane.velocity);
+                            }
+                        }
+                        std.debug.print("Plane {d} hit, power left: {d}", .{ player_ix, plane.power });
+                        try commands.append(self.ally, Command{ .playSoundEffect = SoundEffect.hit });
+                        if (plane.power == 0)
+                            try self.crashPlane(player_ix, commands);
+                    }
+                }
+            }
+            if (remove_shot)
+                _ = self.shots.swapRemove(shot_ix)
+            else
+                shot_ix += 1;
+        }
+    }
+
     pub fn handleMsg(self: *GameState, msg: Msg, commands: *std.ArrayList(Command)) !void {
         switch (msg) {
             .timePassed => |time| {
