@@ -136,6 +136,68 @@ pub const GameState = struct {
         self.removeShotsOutOfBounds();
     }
 
+    pub fn move(self: *GameState, time: TimePassed, commands: *std.ArrayList(Command)) void {
+        try self.updateShots(time);
+        const plane_old_state: [2]PlaneState = .{
+            self.players[0].plane.state,
+            self.players[1].plane.state,
+        };
+        for (0..2) |plane_ix| {
+            var player: *Player = &self.players[plane_ix];
+            if (player.plane.visible()) {
+                const propellerPitch: f32 = @max(
+                    0.5,
+                    @min(
+                        2.0,
+                        2.0 * player.plane.computeSpeed() / player.plane.plane_constants.max_speed,
+                    ),
+                );
+                const propellerPan: f32 = @max(0.0, @min(1.0, player.plane.position[0] / window_width));
+                const propellerOn = player.plane.state != PlaneState.STILL;
+                const propellerCmd = Command{
+                    .playPropellerAudio = PropellerAudio{
+                        .plane = @as(u1, @intCast(plane_ix)),
+                        .on = propellerOn,
+                        .pan = propellerPan,
+                        .pitch = propellerPitch,
+                    },
+                };
+                try commands.append(self.ally, propellerCmd);
+                player.plane.timePassed(time.deltaTime);
+                if (player.plane.state == PlaneState.CRASH and
+                    plane_old_state[plane_ix] != PlaneState.CRASH)
+                    {
+                        try self.crashPlane(plane_ix, commands);
+                    }
+            } else {
+                try commands.append(self.ally, Command{
+                    .playPropellerAudio = PropellerAudio{
+                        .plane = @as(u1, @intCast(plane_ix)),
+                        .on = false,
+                        .pan = 0,
+                        .pitch = 0,
+                    },
+                });
+                player.resurrect_timeout -= time.deltaTime;
+                if (player.resurrect_timeout <= 0) {
+                    player.plane = Plane.init(plane_constants[plane_ix]);
+                }
+            }
+        }
+
+        try self.updateSmokeTrails(time);
+
+        // Move clouds
+        const deltaX: f32 = time.deltaTime;
+        self.clouds[0][0] -= deltaX * 5.0;
+        self.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
+        for (0..2) |ix| {
+            if (self.clouds[ix][0] < -200.0) self.clouds[ix][0] += @as(f32, window_width) + 200.0;
+        }
+
+        self.updateExplosions(time);
+    }
+
     pub fn handleMsg(self: *GameState, msg: Msg, commands: *std.ArrayList(Command)) !void {
         switch (msg) {
             .timePassed => |time| {
