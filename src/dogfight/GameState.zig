@@ -136,7 +136,7 @@ pub const GameState = struct {
         self.removeShotsOutOfBounds();
     }
 
-    pub fn move(self: *GameState, time: TimePassed, commands: *std.ArrayList(Command)) !void {
+    fn movePlanes(self: *GameState, time: TimePassed, commands: *std.ArrayList(Command)) !void {
         const plane_old_state: [2]PlaneState = .{
             self.players[0].plane.state,
             self.players[1].plane.state,
@@ -183,6 +183,10 @@ pub const GameState = struct {
                 }
             }
         }
+    }
+
+    pub fn move(self: *GameState, time: TimePassed, commands: *std.ArrayList(Command)) !void {
+        try self.movePlanes(time, commands);
         try self.moveShots(time);
         try self.moveSmokeTrails(time);
         self.moveClouds(time);
