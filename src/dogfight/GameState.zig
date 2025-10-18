@@ -190,7 +190,25 @@ pub const GameState = struct {
         try self.moveShots(time);
         try self.moveSmokeTrails(time);
         self.moveClouds(time);
+        self.moveDebris(time);
         self.moveExplosions(time);
+    }
+
+    fn moveDebris(self: *GameState, time: TimePassed) void {
+        for (self.debris.items) |*d| {
+            d.position += v2.mulScalar(d.velocity, time.deltaTime);
+            d.direction += d.angular_velocity * time.deltaTime * 60.0;
+            d.velocity[1] += 80.0 * time.deltaTime; // gravity
+            if (d.position[1] > basics.ground_level) {
+                d.position[1] = basics.ground_level;
+                d.velocity = v(0, 0);
+                d.angular_velocity = 0;
+            }
+            if (d.position[0] < 0)
+                d.position[0] += @as(f32, window_width);
+            if (d.position[0] > window_width)
+                d.position[0] -= @as(f32, window_width);
+        }
     }
 
     fn moveClouds(self: *GameState, time: TimePassed) void {
@@ -203,7 +221,6 @@ pub const GameState = struct {
     }
 
     pub fn collissions(self: *GameState, commands: *std.ArrayList(Command)) !void {
-        // Does a shot hit plane?
         var shot_ix: usize = 0;
         var remove_shot: bool = undefined;
         while (shot_ix < self.shots.items.len) {
