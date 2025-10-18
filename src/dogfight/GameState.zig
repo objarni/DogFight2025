@@ -198,7 +198,7 @@ pub const GameState = struct {
         self.updateExplosions(time);
     }
 
-    pub fn collissions(self: *GameState, commands: *std.ArrayList(Command)) void {
+    pub fn collissions(self: *GameState, commands: *std.ArrayList(Command)) !void {
         // Does a shot hit plane?
         var shot_ix: usize = 0;
         var remove_shot: bool = undefined;
