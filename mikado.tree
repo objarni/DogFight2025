@@ -1,3 +1,4 @@
 [ ] GameState.handleMsg only contain calls to move() and collide(time, commands)
   [x] Add GameState.move(time) fn
   [x] Add GameState.collissions(time, commands) fn
+  [x] Change return type of move to void!

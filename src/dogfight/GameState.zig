@@ -136,7 +136,7 @@ pub const GameState = struct {
         self.removeShotsOutOfBounds();
     }
 
-    pub fn move(self: *GameState, time: TimePassed, commands: *std.ArrayList(Command)) void {
+    pub fn move(self: *GameState, time: TimePassed, commands: *std.ArrayList(Command)) !void {
         try self.updateShots(time);
         const plane_old_state: [2]PlaneState = .{
             self.players[0].plane.state,
