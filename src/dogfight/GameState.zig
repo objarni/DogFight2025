@@ -111,6 +111,7 @@ pub const GameState = struct {
         self.shots.deinit(self.ally);
         self.the_explosions.deinit(self.ally);
         self.smoke_trails.deinit(self.ally);
+        self.debris.deinit(self.ally);
     }
 
     fn removeShotsOutOfBounds(self: *GameState) void {
