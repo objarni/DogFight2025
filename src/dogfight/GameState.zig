@@ -120,7 +120,7 @@ pub const GameState = struct {
         }
     }
 
-    fn updateShots(self: *GameState, time: TimePassed) !void {
+    fn moveShots(self: *GameState, time: TimePassed) !void {
         for (self.shots.items) |*shot| {
             shot.move(time.deltaTime);
             if (shot.hit_ground()) {
@@ -137,7 +137,6 @@ pub const GameState = struct {
     }
 
     pub fn move(self: *GameState, time: TimePassed, commands: *std.ArrayList(Command)) !void {
-        try self.updateShots(time);
         const plane_old_state: [2]PlaneState = .{
             self.players[0].plane.state,
             self.players[1].plane.state,
@@ -184,18 +183,19 @@ pub const GameState = struct {
                 }
             }
         }
+        try self.moveShots(time);
+        try self.moveSmokeTrails(time);
+        self.moveClouds(time);
+        self.moveExplosions(time);
+    }
 
-        try self.updateSmokeTrails(time);
-
-        // Move clouds
+    fn moveClouds(self: *GameState, time: TimePassed) void {
         const deltaX: f32 = time.deltaTime;
         self.clouds[0][0] -= deltaX * 5.0;
         self.clouds[1][0] -= deltaX * 8.9; // lower cloud moves faster
         for (0..2) |ix| {
             if (self.clouds[ix][0] < -200.0) self.clouds[ix][0] += @as(f32, window_width) + 200.0;
         }
-
-        self.updateExplosions(time);
     }
 
     pub fn collissions(self: *GameState, commands: *std.ArrayList(Command)) !void {
@@ -334,7 +334,7 @@ pub const GameState = struct {
         });
     }
 
-    fn updateExplosions(self: *GameState, time: TimePassed) void {
+    fn moveExplosions(self: *GameState, time: TimePassed) void {
         for (self.the_explosions.items) |*e|
             e.timePassed(time.deltaTime);
 
@@ -347,7 +347,7 @@ pub const GameState = struct {
         }
     }
 
-    fn updateSmokeTrails(self: *GameState, time: TimePassed) !void {
+    fn moveSmokeTrails(self: *GameState, time: TimePassed) !void {
         for (self.smoke_trails.items) |*smoke| {
             smoke.lifetime += time.deltaTime;
             smoke.position[1] -= 5 * time.deltaTime; // Move smoke up
