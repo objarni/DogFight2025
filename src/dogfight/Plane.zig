@@ -24,6 +24,7 @@ pub const PlaneState = enum {
 const tweak = @import("tweak.zig");
 const basics = @import("basics.zig");
 const TimePassed = basics.TimePassed;
+const Command = basics.Command;
 
 pub const Plane = struct {
     position: V,
