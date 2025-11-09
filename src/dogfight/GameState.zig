@@ -368,7 +368,7 @@ pub const GameState = struct {
     fn moveSmokeTrails(self: *GameState, time: TimePassed) !void {
         for (self.smoke_trails.items) |*smoke| {
             smoke.lifetime += time.deltaTime;
-            smoke.position[1] -= 5 * time.deltaTime; // Move smoke up
+            smoke.position[1] -= 9 * time.deltaTime; // Move smoke up
         }
 
         var i: usize = 0;
