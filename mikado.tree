@@ -1,2 +1,2 @@
-[ ] Make planes STALL when speed is too low
+[x] Make planes STALL when speed is too low
   [x] Import Command type in Plane
