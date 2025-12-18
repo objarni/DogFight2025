@@ -154,6 +154,8 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
         // Update music streams
         rl.UpdateMusicStream(res.propellers[0]);
         rl.UpdateMusicStream(res.propellers[1]);
+        const scale_vec = rl.GetWindowScaleDPI();
+        std.debug.print("DPI scale: {any}\n", .{scale_vec});
 
         allMsgs.clearRetainingCapacity();
         try collectMessages(ally, &allMsgs);
@@ -197,8 +199,8 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
         const destination_rect = rl.Rectangle{
             .x = 0,
             .y = 0,
-            .width = @as(f32, @floatFromInt(w)),
-            .height = @as(f32, @floatFromInt(h)),
+            .width = @as(f32, @floatFromInt(w)) * scale_vec.x,
+            .height = @as(f32, @floatFromInt(h)) * scale_vec.y,
         };
         const pos = rl.Vector2{ .x = 0, .y = 0 };
         rl.DrawTexturePro(
