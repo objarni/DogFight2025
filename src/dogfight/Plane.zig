@@ -175,6 +175,10 @@ pub const Plane = struct {
                 } else if (self.divingPressed) {
                     self.direction += stall_direction_change_rate * seconds;
                 }
+                // Gravity effect
+                const gravity = 9.81; // units per second squared
+                self.velocity = self.velocity + v(0, gravity * seconds);
+                self.position = self.position + v2.mulScalar(self.velocity, seconds);
             },
         }
     }
@@ -287,8 +291,8 @@ test "plane flies if player presses rise when far enough from initial position" 
 // *** STALL state behaviour ***
 // # enters stall state when touching top of screen or speed < threshold
 // # initial velocity is same in x-direction, 0 in y-direction if entering from top of screen
-// direction of plane can be controlled in stall state. it changes 0 degrees per second when not pressing any key,
-//   -60 degrees per second when rising, +60 degrees per second when diving
+// #direction of plane can be controlled in stall state. it changes 0 degrees per second when not pressing any key,
+// #  -60 degrees per second when rising, +60 degrees per second when diving
 // in stall state, only gravity acts on plane
 // initial velocity is same as before stall if entering from threshold
 // the sound "ENGINE_STALL" is played when entering stall state
@@ -335,4 +339,12 @@ test "plane direction changes in stall state based on input" {
     plane.dive(true);
     plane.timePassed(1.0);
     try std.testing.expectEqual(std.math.approxEqAbs(f32, plane.direction, 0.0, 0.1), true);
+}
+
+test "plane is affected by gravity in stall state" {
+    var plane = Plane.init(testPlaneConstants);
+    plane.state = .STALL;
+    plane.velocity = v(50.0, 0.0);
+    plane.timePassed(1.0);
+    try std.testing.expect(plane.velocity[1] > 0.0); // Y velocity should increase due to gravity
 }
