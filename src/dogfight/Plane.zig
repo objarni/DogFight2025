@@ -10,7 +10,8 @@ pub const PlaneConstants = struct {
     initial_position: V,
     ground_acceleration_per_second: f32,
     takeoff_length: f32,
-    max_speed: f32 = 200.0, // Maximum speed of the plane in pixels per second
+    max_speed: f32 = 200.0,
+    stall_threshold: f32,
 };
 
 pub const PlaneState = enum {
@@ -119,8 +120,6 @@ pub const Plane = struct {
                     self.state = .TAKEOFF_ROLL;
                 }
             },
-            .STALL => {
-            },
             .TAKEOFF_ROLL => {
                 const newVelocity = self.velocity + v(self.plane_constants.ground_acceleration_per_second * seconds, 0);
                 const newPosition = self.position + v(newVelocity[0] * seconds, 0);
@@ -136,7 +135,7 @@ pub const Plane = struct {
             },
             .FLYING => {
                 var speed = self.computeSpeed();
-                if(speed < 0.1) {
+                if(speed < self.plane_constants.stall_threshold) {
                     self.state = .STALL;
                     return;
                 }
@@ -166,6 +165,8 @@ pub const Plane = struct {
             .CRASH => |_| {
                 // No further action needed, plane is already in crash state
             },
+            .STALL => {
+            },
         }
     }
 };
@@ -174,6 +175,7 @@ const testPlaneConstants = PlaneConstants{
     .initial_position = v(0, 200),
     .ground_acceleration_per_second = 10.0,
     .takeoff_length = 330.0,
+    .stall_threshold = 1.0,
 };
 
 test "initialization of plane" {
@@ -271,4 +273,24 @@ test "plane flies if player presses rise when far enough from initial position" 
     try std.testing.expectEqual(PlaneState.FLYING, plane.state);
     try std.testing.expect(plane.position[1] < testPlaneConstants.initial_position[1]);
     try std.testing.expect(plane.velocity[1] < 0); // Assuming the plane is flying upwards
+}
+
+// *** STALL state behaviour ***
+// enters stall state when touching top of screen or speed < threshold
+// initial velocity is same as before stall if entering from threshold
+// initial velocity is same in x-direction, 0 in y-direction if entering from top of screen
+// the sound "ENGINE_STALL" is played when entering stall state
+// in stall state, only gravity acts on plane
+// direction of plane can be controlled in stall state. it changes 0 degrees per second when not pressing any key,
+//   -30 degrees per second when rising, +30 degrees per second when diving
+
+test "plane enters stall state when speed drops below threshold" {
+    var plane = Plane.init(testPlaneConstants);
+    // Simulate flying with decreasing speed
+    plane.velocity = v(5.0, -5.0);
+    plane.state = .FLYING;
+    while(plane.state != PlaneState.STALL) {
+        plane.timePassed(0.1);
+    }
+    try std.testing.expectEqual(PlaneState.STALL, plane.state);
 }

@@ -23,17 +23,20 @@ const window_height: u16 = basics.window_height;
 const v2 = @import("V.zig");
 const V = v2.V;
 const v = v2.v;
+const stall_threshold = 5.0;
 
 const plane1_initial_parameters: PlaneConstants = .{
     .initial_position = v(20.0, basics.ground_level),
     .takeoff_length = 150.0,
     .ground_acceleration_per_second = 40.0,
+    .stall_threshold = stall_threshold
 };
 
 const plane2_initial_parameters: PlaneConstants = .{
     .initial_position = v(window_width - 280, basics.ground_level),
     .takeoff_length = 150.0,
     .ground_acceleration_per_second = 40.0,
+    .stall_threshold = stall_threshold
 };
 
 const plane_constants: [2]PlaneConstants = .{ plane1_initial_parameters, plane2_initial_parameters };
