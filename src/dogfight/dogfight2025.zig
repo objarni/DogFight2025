@@ -155,7 +155,6 @@ fn mainLoop(ally: std.mem.Allocator, res: Resources) !void {
         rl.UpdateMusicStream(res.propellers[0]);
         rl.UpdateMusicStream(res.propellers[1]);
         const scale_vec = rl.GetWindowScaleDPI();
-        std.debug.print("DPI scale: {any}\n", .{scale_vec});
 
         allMsgs.clearRetainingCapacity();
         try collectMessages(ally, &allMsgs);
