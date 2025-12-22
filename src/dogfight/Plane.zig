@@ -159,8 +159,11 @@ pub const Plane = struct {
                     self.position[0] -= basics.window_width;
                 if (self.position[1] > self.plane_constants.initial_position[1])
                     self.state = PlaneState.CRASH;
-                if (self.position[1] < 0)
-                    self.position[1] = 0; // Prevent going off the top of the screen
+                if (self.position[1] < 0) {
+                    self.position[1] = 0;
+                    self.velocity = v(self.velocity[0], 0);
+                    self.state = .STALL;
+                }
             },
             .CRASH => |_| {
                 // No further action needed, plane is already in crash state
@@ -276,10 +279,11 @@ test "plane flies if player presses rise when far enough from initial position" 
 }
 
 // *** STALL state behaviour ***
-// enters stall state when touching top of screen or speed < threshold
+// # enters stall state when touching top of screen or speed < threshold
 // initial velocity is same as before stall if entering from threshold
 // initial velocity is same in x-direction, 0 in y-direction if entering from top of screen
 // the sound "ENGINE_STALL" is played when entering stall state
+// there is no engine sound from a plane in STALL state
 // in stall state, only gravity acts on plane
 // direction of plane can be controlled in stall state. it changes 0 degrees per second when not pressing any key,
 //   -30 degrees per second when rising, +30 degrees per second when diving
@@ -293,4 +297,15 @@ test "plane enters stall state when speed drops below threshold" {
         plane.timePassed(0.1);
     }
     try std.testing.expectEqual(PlaneState.STALL, plane.state);
+}
+
+test "plane keeps approximate x velocity and zeroes y velocity when entering stall from top of screen" {
+    var plane = Plane.init(testPlaneConstants);
+    plane.position = v(100.0, 0.0); // At top of screen
+    plane.velocity = v(50.0, -20.0);
+    plane.state = .FLYING;
+    plane.timePassed(0.1);
+    try std.testing.expectEqual(PlaneState.STALL, plane.state);
+    try std.testing.expectEqual(std.math.approxEqAbs(f32,plane.velocity[0], 50.0, 1.0), true);
+    try std.testing.expectEqual(plane.velocity[1], 0.0);
 }
