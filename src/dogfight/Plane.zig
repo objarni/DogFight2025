@@ -169,6 +169,12 @@ pub const Plane = struct {
                 // No further action needed, plane is already in crash state
             },
             .STALL => {
+                const stall_direction_change_rate = 60.0; // degrees per second
+                if (self.risingPressed) {
+                    self.direction -= stall_direction_change_rate * seconds;
+                } else if (self.divingPressed) {
+                    self.direction += stall_direction_change_rate * seconds;
+                }
             },
         }
     }
@@ -280,13 +286,13 @@ test "plane flies if player presses rise when far enough from initial position" 
 
 // *** STALL state behaviour ***
 // # enters stall state when touching top of screen or speed < threshold
+// # initial velocity is same in x-direction, 0 in y-direction if entering from top of screen
+// direction of plane can be controlled in stall state. it changes 0 degrees per second when not pressing any key,
+//   -60 degrees per second when rising, +60 degrees per second when diving
+// in stall state, only gravity acts on plane
 // initial velocity is same as before stall if entering from threshold
-// initial velocity is same in x-direction, 0 in y-direction if entering from top of screen
 // the sound "ENGINE_STALL" is played when entering stall state
 // there is no engine sound from a plane in STALL state
-// in stall state, only gravity acts on plane
-// direction of plane can be controlled in stall state. it changes 0 degrees per second when not pressing any key,
-//   -30 degrees per second when rising, +30 degrees per second when diving
 
 test "plane enters stall state when speed drops below threshold" {
     var plane = Plane.init(testPlaneConstants);
@@ -308,4 +314,25 @@ test "plane keeps approximate x velocity and zeroes y velocity when entering sta
     try std.testing.expectEqual(PlaneState.STALL, plane.state);
     try std.testing.expectEqual(std.math.approxEqAbs(f32,plane.velocity[0], 50.0, 1.0), true);
     try std.testing.expectEqual(plane.velocity[1], 0.0);
+}
+
+test "plane direction changes in stall state based on input" {
+    var plane = Plane.init(testPlaneConstants);
+    plane.state = .STALL;
+    plane.direction = 0.0;
+
+    // No input
+    plane.timePassed(1.0);
+    try std.testing.expectEqual(std.math.approxEqAbs(f32, plane.direction, 0.0, 0.1), true);
+
+    // Rising input
+    plane.rise(true);
+    plane.timePassed(1.0);
+    try std.testing.expectEqual(std.math.approxEqAbs(f32, plane.direction, -60.0, 0.1), true);
+
+    // Diving input
+    plane.rise(false);
+    plane.dive(true);
+    plane.timePassed(1.0);
+    try std.testing.expectEqual(std.math.approxEqAbs(f32, plane.direction, 0.0, 0.1), true);
 }
