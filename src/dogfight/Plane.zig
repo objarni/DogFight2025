@@ -351,7 +351,7 @@ test "plane is affected by gravity in stall state" {
 // [x]direction of plane can be controlled in stall state. it changes 0 degrees per second when not pressing any key,
 // [x]  -60 degrees per second when rising, +60 degrees per second when diving
 // [x] in stall state, only gravity acts on plane
-// [ ] when plane exits screen through left or right, it re-enters from the other side
+// [x] when plane exits screen through left or right, it re-enters from the other side
 // [ ] plane crashes if it touches ground in stall state
 // [ ] plane exits stall state when speed goes above threshold and direction is close to 270 degrees
 // [ ] initial velocity is same as before stall if entering from threshold
