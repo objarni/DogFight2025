@@ -348,8 +348,6 @@ test "plane is affected by gravity in stall state" {
 // *** STALL state behaviour ***
 // [x] enters stall state when touching top of screen or speed < threshold
 // [x] initial velocity is same in x-direction, 0 in y-direction if entering from top of screen
-// [x]direction of plane can be controlled in stall state. it changes 0 degrees per second when not pressing any key,
-// [x]  -60 degrees per second when rising, +60 degrees per second when diving
 // [x] in stall state, only gravity acts on plane
 // [x] when plane exits screen through left or right, it re-enters from the other side
 // [x] plane crashes if it touches ground in stall state
@@ -357,6 +355,8 @@ test "plane is affected by gravity in stall state" {
 // [ ] initial velocity is same as before stall if entering from threshold
 // [ ] the sound "ENGINE_STALL" is played when entering stall state
 // [ ] there is no engine sound from a plane in STALL state
+// [ ] plane direction changes at fixed rate based on input:
+//       -60 degrees per second when rising, +60 degrees per second when diving
 
 test "plane re-enters from other side when exiting screen in stall state" {
     var plane = Plane.init(testPlaneConstants);
