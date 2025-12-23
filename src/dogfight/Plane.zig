@@ -136,6 +136,7 @@ pub const Plane = struct {
             .FLYING => {
                 var speed = self.computeSpeed();
                 if(speed < self.plane_constants.stall_threshold) {
+                    std.debug.print("Entering STALL state: speed={}\n", .{speed});
                     self.state = .STALL;
                     return;
                 }
@@ -175,6 +176,15 @@ pub const Plane = struct {
                 self.velocity = self.velocity + v(0, gravity * seconds);
                 self.position = self.position + v2.mulScalar(self.velocity, seconds);
                 self.handleEdges();
+                // Ready to fly again?
+                const speed = self.computeSpeed();
+                const direction_normalized: f32 = @mod(
+                    self.direction,
+                    360.0);
+                if (speed > self.plane_constants.stall_threshold and
+                    (direction_normalized > 70.0 and direction_normalized < 110.0)) {
+                    self.state = .FLYING;
+                }
             },
         }
     }
@@ -345,19 +355,6 @@ test "plane is affected by gravity in stall state" {
     try std.testing.expect(plane.velocity[1] > 0.0); // Y velocity should increase due to gravity
 }
 
-// *** STALL state behaviour ***
-// [x] enters stall state when touching top of screen or speed < threshold
-// [x] initial velocity is same in x-direction, 0 in y-direction if entering from top of screen
-// [x] in stall state, only gravity acts on plane
-// [x] when plane exits screen through left or right, it re-enters from the other side
-// [x] plane crashes if it touches ground in stall state
-// [ ] plane exits stall state when speed goes above threshold and direction is close to 270 degrees
-// [ ] initial velocity is same as before stall if entering from threshold
-// [ ] the sound "ENGINE_STALL" is played when entering stall state
-// [ ] there is no engine sound from a plane in STALL state
-// [ ] plane direction changes at fixed rate based on input:
-//       -60 degrees per second when rising, +60 degrees per second when diving
-
 test "plane re-enters from other side when exiting screen in stall state" {
     var plane = Plane.init(testPlaneConstants);
     plane.state = .STALL;
@@ -374,4 +371,31 @@ test "plane crashes when touching ground in stall state" {
     plane.velocity = v(50.0, 100.0); // Moving downwards
     plane.timePassed(1.0);
     try std.testing.expectEqual(PlaneState.CRASH, plane.state);
+}
+
+
+// *** STALL state behaviour ***
+// [x] enters stall state when touching top of screen or speed < threshold
+// [x] initial velocity is same in x-direction, 0 in y-direction if entering from top of screen
+// [x] in stall state, only gravity acts on plane
+// [x] when plane exits screen through left or right, it re-enters from the other side
+// [x] plane crashes if it touches ground in stall state
+// [ ] plane exits stall state when speed goes above threshold and direction is close to 270 degrees
+// [ ] initial velocity is same as before stall if entering from threshold
+// [ ] the sound "ENGINE_STALL" is played when entering stall state
+// [ ] there is no engine sound from a plane in STALL state
+// [ ] plane direction changes at fixed rate based on input:
+//       -60 degrees per second when rising, +60 degrees per second when diving
+
+test "plane exits stall state when speed goes above threshold and direction is close to -90 degrees" {
+    var plane = Plane.init(testPlaneConstants);
+    plane.state = .STALL;
+    plane.velocity = v(0.5, 0.5); // Below threshold
+    plane.position = v(100.0, 50.0);
+
+    // Simulate conditions to exit stall
+    plane.direction = 80.0;
+    plane.velocity = v(0.0, 5.0);
+    plane.timePassed(1.0);
+    try std.testing.expectEqual(PlaneState.FLYING, plane.state);
 }
