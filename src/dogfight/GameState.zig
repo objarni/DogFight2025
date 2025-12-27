@@ -337,7 +337,7 @@ pub const GameState = struct {
 
     fn planeFire(self: *GameState, commands: *std.ArrayList(Command), player_ix: u1) !void {
         const plane = self.players[player_ix].plane;
-        if (plane.state != PlaneState.FLYING) {
+        if (plane.state != PlaneState.FLYING and plane.state != PlaneState.STALL) {
             return;
         }
         const radians = std.math.degreesToRadians(plane.direction);
