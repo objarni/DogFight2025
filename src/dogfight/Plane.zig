@@ -189,6 +189,10 @@ pub const Plane = struct {
         }
     }
 
+    pub fn propellerOn(self: *Plane) bool {
+        return self.state == .FLYING or self.state == .TAKEOFF_ROLL;
+    }
+
     fn handleEdges(self: *Plane) void {
         if (self.position[0] < 0)
             self.position[0] += basics.window_width;

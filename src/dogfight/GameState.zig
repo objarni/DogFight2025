@@ -25,19 +25,9 @@ const V = v2.V;
 const v = v2.v;
 const stall_threshold = 100.0;
 
-const plane1_initial_parameters: PlaneConstants = .{
-    .initial_position = v(20.0, basics.ground_level),
-    .takeoff_length = 150.0,
-    .ground_acceleration_per_second = 40.0,
-    .stall_threshold = stall_threshold
-};
+const plane1_initial_parameters: PlaneConstants = .{ .initial_position = v(20.0, basics.ground_level), .takeoff_length = 150.0, .ground_acceleration_per_second = 40.0, .stall_threshold = stall_threshold };
 
-const plane2_initial_parameters: PlaneConstants = .{
-    .initial_position = v(window_width - 280, basics.ground_level),
-    .takeoff_length = 150.0,
-    .ground_acceleration_per_second = 40.0,
-    .stall_threshold = stall_threshold
-};
+const plane2_initial_parameters: PlaneConstants = .{ .initial_position = v(window_width - 280, basics.ground_level), .takeoff_length = 150.0, .ground_acceleration_per_second = 40.0, .stall_threshold = stall_threshold };
 
 const plane_constants: [2]PlaneConstants = .{ plane1_initial_parameters, plane2_initial_parameters };
 
@@ -147,7 +137,8 @@ pub const GameState = struct {
         };
         for (0..2) |plane_ix| {
             var player: *Player = &self.players[plane_ix];
-            if (player.plane.visible()) {
+            var plane = &player.plane;
+            if (plane.visible()) {
                 const propellerPitch: f32 = @max(
                     0.5,
                     @min(
@@ -156,7 +147,7 @@ pub const GameState = struct {
                     ),
                 );
                 const propellerPan: f32 = @max(0.0, @min(1.0, player.plane.position[0] / window_width));
-                const propellerOn = player.plane.state != PlaneState.STILL;
+                const propellerOn = plane.propellerOn();
                 const propellerCmd = Command{
                     .playPropellerAudio = PropellerAudio{
                         .plane = @as(u1, @intCast(plane_ix)),
@@ -166,12 +157,12 @@ pub const GameState = struct {
                     },
                 };
                 try commands.append(self.ally, propellerCmd);
-                player.plane.timePassed(time.deltaTime);
-                if (player.plane.state == PlaneState.CRASH and
+                plane.timePassed(time.deltaTime);
+                if (plane.state == PlaneState.CRASH and
                     plane_old_state[plane_ix] != PlaneState.CRASH)
-                    {
-                        try self.crashPlane(@intCast(plane_ix), commands);
-                    }
+                {
+                    try self.crashPlane(@intCast(plane_ix), commands);
+                }
             } else {
                 try commands.append(self.ally, Command{
                     .playPropellerAudio = PropellerAudio{
