@@ -23,7 +23,7 @@ const window_height: u16 = basics.window_height;
 const v2 = @import("V.zig");
 const V = v2.V;
 const v = v2.v;
-const stall_threshold = 50.0;
+const stall_threshold = 100.0;
 
 const plane1_initial_parameters: PlaneConstants = .{
     .initial_position = v(20.0, basics.ground_level),
