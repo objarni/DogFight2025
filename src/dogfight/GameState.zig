@@ -170,15 +170,13 @@ pub const GameState = struct {
                 if (player.plane.state == PlaneState.CRASH and
                     plane_old_state[plane_ix] != PlaneState.CRASH)
                     {
-                        try self.crashPlane(plane_ix, commands);
+                        try self.crashPlane(@intCast(plane_ix), commands);
                     }
             } else {
                 try commands.append(self.ally, Command{
                     .playPropellerAudio = PropellerAudio{
                         .plane = @as(u1, @intCast(plane_ix)),
                         .on = false,
-                        .pan = 0,
-                        .pitch = 0,
                     },
                 });
                 player.resurrect_timeout -= time.deltaTime;
@@ -246,7 +244,7 @@ pub const GameState = struct {
                         }
                         try commands.append(self.ally, Command{ .playSoundEffect = SoundEffect.hit });
                         if (plane.power == 0)
-                            try self.crashPlane(player_ix, commands);
+                            try self.crashPlane(@intCast(player_ix), commands);
                     }
                 }
             }
@@ -282,7 +280,7 @@ pub const GameState = struct {
                     if (self.players[plane_ix].plane.state == PlaneState.CRASH and
                         plane_old_state[plane_ix] != PlaneState.CRASH)
                     {
-                        try self.crashPlane(plane_ix, commands);
+                        try self.crashPlane(@intCast(plane_ix), commands);
                     }
                 }
             },
@@ -303,7 +301,7 @@ pub const GameState = struct {
                         plane_old_state[plane_ix] != PlaneState.CRASH)
                     {
                         try commands.append(self.ally, Command{ .playSoundEffect = SoundEffect.crash });
-                        try self.crashPlane(plane_ix, commands);
+                        try self.crashPlane(@intCast(plane_ix), commands);
                     }
                 }
             },
@@ -393,7 +391,7 @@ pub const GameState = struct {
         }
     }
 
-    fn crashPlane(self: *GameState, plane_ix: usize, commands: *std.ArrayList(Command)) !void {
+    fn crashPlane(self: *GameState, plane_ix: u1, commands: *std.ArrayList(Command)) !void {
         self.players[plane_ix].lives -= 1;
         self.players[plane_ix].plane.state = PlaneState.CRASH;
         self.players[plane_ix].resurrect_timeout = 4.0; // Time until plane can be resurrected
@@ -430,9 +428,7 @@ pub const GameState = struct {
         try commands.append(self.ally, Command{
             .playPropellerAudio = PropellerAudio{
                 .on = false,
-                .plane = 0, // 0 for plane 1
-                .pan = 0.0,
-                .pitch = 0.0,
+                .plane = plane_ix, // 0 for plane 1
             },
         });
         if (self.players[plane_ix].lives == 0) {
