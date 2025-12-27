@@ -172,7 +172,7 @@ pub const Plane = struct {
                     self.direction += stall_direction_change_rate * seconds;
                 }
                 // Gravity effect
-                const gravity = 9.81; // units per second squared
+                const gravity = 80.0; // units per second squared
                 self.velocity = self.velocity + v(0, gravity * seconds);
                 self.position = self.position + v2.mulScalar(self.velocity, seconds);
                 self.handleEdges();
