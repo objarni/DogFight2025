@@ -163,6 +163,13 @@ pub const GameState = struct {
                 {
                     try self.crashPlane(@intCast(plane_ix), commands);
                 }
+                if (plane.state == PlaneState.STALL and
+                    plane_old_state[plane_ix] != PlaneState.STALL)
+                {
+                    try commands.append(self.ally, Command{
+                        .playSoundEffect = SoundEffect.boom,
+                    });
+                }
             } else {
                 try commands.append(self.ally, Command{
                     .playPropellerAudio = PropellerAudio{
