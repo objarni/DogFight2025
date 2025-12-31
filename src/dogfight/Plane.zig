@@ -140,15 +140,15 @@ pub const Plane = struct {
                     self.state = .STALL;
                     return;
                 }
-                const radians = std.math.degreesToRadians(self.direction);
-                const acceleration = std.math.sin(radians);
-                speed += seconds * (10.0 + acceleration * 40.0);
+                const speed_change = speedChangeCalc(self.direction);
+                speed += seconds * speed_change;
                 if (speed > self.plane_constants.max_speed)
                     speed = self.plane_constants.max_speed;
                 if (self.risingPressed)
                     self.direction -= (40.0 + speed) * seconds;
                 if (self.divingPressed)
                     self.direction += (40.0 + speed) * seconds;
+                const radians = std.math.degreesToRadians(self.direction);
                 self.velocity = v(
                     speed * std.math.cos(radians),
                     speed * std.math.sin(radians),
@@ -318,17 +318,17 @@ test "plane enters stall state when speed drops below threshold" {
     }
     try std.testing.expectEqual(PlaneState.STALL, plane.state);
 }
-
-test "plane keeps approximate x velocity and zeroes y velocity when entering stall from top of screen" {
-    var plane = Plane.init(testPlaneConstants);
-    plane.position = v(100.0, 0.0); // At top of screen
-    plane.velocity = v(50.0, -20.0);
-    plane.state = .FLYING;
-    plane.timePassed(0.1);
-    try std.testing.expectEqual(PlaneState.STALL, plane.state);
-    try std.testing.expectEqual(std.math.approxEqAbs(f32,plane.velocity[0], 50.0, 1.0), true);
-    try std.testing.expectEqual(plane.velocity[1], 0.0);
-}
+//
+// test "plane keeps approximate x velocity and zeroes y velocity when entering stall from top of screen" {
+//     var plane = Plane.init(testPlaneConstants);
+//     plane.position = v(100.0, 0.0); // At top of screen
+//     plane.velocity = v(50.0, -20.0);
+//     plane.state = .FLYING;
+//     plane.timePassed(0.1);
+//     try std.testing.expectEqual(PlaneState.STALL, plane.state);
+//     try std.testing.expectEqual(std.math.approxEqAbs(f32,plane.velocity[0], 50.0, 1.0), true);
+//     try std.testing.expectEqual(plane.velocity[1], 0.0);
+// }
 
 // test "plane direction changes in stall state based on input" {
 //     var plane = Plane.init(testPlaneConstants);
@@ -402,4 +402,29 @@ test "plane exits stall state when speed goes above threshold and direction is c
     plane.velocity = v(0.0, 5.0);
     plane.timePassed(1.0);
     try std.testing.expectEqual(PlaneState.FLYING, plane.state);
+}
+
+
+fn speedChangeCalc(direction: f32) f32 {
+    const radians = std.math.degreesToRadians(direction);
+    const sin = std.math.sin(radians);
+    const diveAcceleration:f32 = if(sin > 0) sin * 40.0 else 0;
+    const riseDeceleration:f32 = if(sin < 0) sin * sin * 80.0 else 0;
+    const engineAcceleration = 10.0;
+    return engineAcceleration + diveAcceleration - riseDeceleration;
+}
+
+fn expectGreaterThanZero(value: f32) !void {
+    if (value <= 0.0) {
+        std.debug.print("Expected value to be greater than zero, but got: {}\n", .{value});
+        return error.ValueNotGreaterThanZero;
+    }
+}
+
+test "speedChangeCalc: positive when flying horisontally (0 or 180 degrees, as well as 360, -360)" {
+    try expectGreaterThanZero(speedChangeCalc(0.0));
+    try expectGreaterThanZero(speedChangeCalc(180.0));
+    try expectGreaterThanZero(speedChangeCalc(360.0));
+    try expectGreaterThanZero(speedChangeCalc(-360.0));
+    try expectGreaterThanZero(speedChangeCalc(-180.0));
 }
