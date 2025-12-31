@@ -453,8 +453,8 @@ test "speedChangeCalc: negative when rising steeply (-90 degrees)" {
     try expectLessThanZero(rising_steeply);
 }
 
-test "speedChangeCalc: absolute value lower when diving steeply (90 degrees) than when rising steeply (-90 degrees)" {
+test "speedChangeCalc: rising steeply (90 degrees) reduces speed faster than diving steeply (90 degrees) increases speed" {
     const rising_steeply = speedChangeCalc(-90.0);
     const diving_steeply = speedChangeCalc(90.0);
-    try std.testing.expect(@abs(diving_steeply) < @abs(rising_steeply));
+    try expectGreaterThanZero(@abs(rising_steeply) - @abs(diving_steeply));
 }
