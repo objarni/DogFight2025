@@ -421,10 +421,40 @@ fn expectGreaterThanZero(value: f32) !void {
     }
 }
 
+fn expectLessThanZero(value: f32) !void {
+    if (value >= 0.0) {
+        std.debug.print("Expected value to be less than zero, but got: {}\n", .{value});
+        return error.ValueNotLessThanZero;
+    }
+}
+
 test "speedChangeCalc: positive when flying horisontally (0 or 180 degrees, as well as 360, -360)" {
     try expectGreaterThanZero(speedChangeCalc(0.0));
     try expectGreaterThanZero(speedChangeCalc(180.0));
     try expectGreaterThanZero(speedChangeCalc(360.0));
     try expectGreaterThanZero(speedChangeCalc(-360.0));
     try expectGreaterThanZero(speedChangeCalc(-180.0));
+}
+
+test "speedChangeCalc: greater when diving (90 degrees) than when flying horisontally" {
+    const horizontal = speedChangeCalc(0.0);
+    const diving = speedChangeCalc(90.0);
+    try std.testing.expect(diving > horizontal);
+}
+
+test "speedChangeCalc: greater when diving (90 degrees) than when flying slightly upwards (-10 degrees)" {
+    const slight_up = speedChangeCalc(-10.0);
+    const diving = speedChangeCalc(90.0);
+    try std.testing.expect(diving > slight_up);
+}
+
+test "speedChangeCalc: negative when rising steeply (-90 degrees)" {
+    const rising_steeply = speedChangeCalc(-90.0);
+    try expectLessThanZero(rising_steeply);
+}
+
+test "speedChangeCalc: absolute value lower when diving steeply (90 degrees) than when rising steeply (-90 degrees)" {
+    const rising_steeply = speedChangeCalc(-90.0);
+    const diving_steeply = speedChangeCalc(90.0);
+    try std.testing.expect(@abs(diving_steeply) < @abs(rising_steeply));
 }
