@@ -464,6 +464,14 @@ fn drawGame(
         const tex = if (debris.which == 0) res.debris1 else res.debris2;
         drawCentered(tex, debris.position, debris.direction);
     }
+
+    for (state.airdrops.items) |ad| {
+        const x: i32 = @intFromFloat(ad.position[0]);
+        const y: i32 = @intFromFloat(ad.position[1]);
+        const width: i32 = 16;
+        const height: i32 = 12;
+        rl.DrawRectangle(x - width / 2, y - height / 2, width, height, rl.RED);
+    }
 }
 
 fn drawRotatedPlane(texture: rl.struct_Texture, position: @Vector(2, f32), rotation_deg: f32, frame: u3) void {

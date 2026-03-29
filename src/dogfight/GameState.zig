@@ -8,6 +8,10 @@ const PlaneState = p.PlaneState;
 const explosion = @import("Explosion.zig");
 const Explosion = explosion.Explosion;
 
+const airdrop = @import("Airdrop.zig");
+const Airdrop = airdrop.Airdrop;
+const PowerupType = airdrop.PowerupType;
+
 const basics = @import("basics.zig");
 const Command = basics.Command;
 const TimePassed = basics.TimePassed;
@@ -78,6 +82,8 @@ pub const GameState = struct {
     smoke_trails: std.ArrayList(Smoke) = .empty,
     shots: std.ArrayList(Shot) = .empty,
     debris: std.ArrayList(Debris) = .empty,
+    airdrops: std.ArrayList(Airdrop) = .empty,
+    airdrop_spawn_timer: f32 = 0.0,
     ally: std.mem.Allocator,
 
     pub fn init(ally: std.mem.Allocator) GameState {
@@ -105,6 +111,7 @@ pub const GameState = struct {
         self.the_explosions.deinit(self.ally);
         self.smoke_trails.deinit(self.ally);
         self.debris.deinit(self.ally);
+        self.airdrops.deinit(self.ally);
     }
 
     fn removeShotsOutOfBounds(self: *GameState) void {
@@ -192,6 +199,7 @@ pub const GameState = struct {
         self.moveClouds(time);
         self.moveDebris(time);
         self.moveExplosions(time);
+        try self.moveAirdrops(time, commands);
     }
 
     fn moveDebris(self: *GameState, time: TimePassed) void {
@@ -385,6 +393,56 @@ pub const GameState = struct {
                     .color = color + 32,
                 };
                 try self.smoke_trails.append(self.ally, new_smoke);
+            }
+        }
+    }
+
+    const airdrop_spawn_interval: f32 = 30.0;
+    const max_lives: u8 = 3;
+
+    fn moveAirdrops(self: *GameState, time: TimePassed, commands: *std.ArrayList(Command)) !void {
+        _ = commands;
+        self.airdrop_spawn_timer += time.deltaTime;
+        if (self.airdrop_spawn_timer >= airdrop_spawn_interval) {
+            self.airdrop_spawn_timer = 0.0;
+            const x = std.crypto.random.float(f32) * (window_width - 100) + 50;
+            const new_airdrop = Airdrop.init(x, -20, .life);
+            try self.airdrops.append(self.ally, new_airdrop);
+        }
+
+        var i: usize = 0;
+        while (i < self.airdrops.items.len) {
+            var ad = &self.airdrops.items[i];
+            ad.velocity = 50.0;
+            ad.update(time.deltaTime);
+
+            if (ad.outOfBounds(basics.ground_level)) {
+                _ = self.airdrops.swapRemove(i);
+                continue;
+            }
+
+            for (0..2) |player_ix| {
+                var player = &self.players[player_ix];
+                const plane = player.plane;
+                if (plane.visible() and (plane.state == PlaneState.FLYING or plane.state == PlaneState.STALL)) {
+                    const distance = v2.len(plane.position - v2.V{ ad.position[0], ad.position[1] });
+                    if (distance < 20) {
+                        switch (ad.powerup_type) {
+                            .life => {
+                                if (player.lives < max_lives) {
+                                    player.lives += 1;
+                                }
+                            },
+                        }
+                        ad.active = false;
+                        _ = self.airdrops.swapRemove(i);
+                        break;
+                    }
+                }
+            }
+
+            if (i < self.airdrops.items.len and self.airdrops.items[i].active) {
+                i += 1;
             }
         }
     }
