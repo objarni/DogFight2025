@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "server",
+  "dolt_database": "DogFight2025",
+  "project_id": "7a8ac262-ab93-4757-8962-86f80ebb84c1"
+}

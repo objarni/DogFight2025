@@ -9,3 +9,8 @@ assets/.DS_Store
 ZigBrains.iml
 
 *.zip
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
